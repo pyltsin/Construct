@@ -561,7 +561,7 @@ class Test_profile(unittest.TestCase):
         self.assertLess(abs(pr.jy()-2879.35)/2879.35,0.001) 
         self.assertLess(abs(pr.jxy()-0)/0.0001,0.001) 
         
-        pr=sost_ugol_tavr_st_up(h=80, b=50, s=5, t=5, r1=8, r2=2.7, dx=10)
+        pr=sost_ugol_tavr_st_up(h=80, b=50, t=5, r1=8, r2=2.7, r3=0, dx=10)
         
 
         print pr.a()

@@ -1242,19 +1242,16 @@ class shvel(profiles_simple):
 
     
 class  profiles_sostav(object):
-    def __init__(self, pr1=False, alpha1=False, x1=False, y1=False, mir1=False, pr2=False, x2=False, y2=False, alpha2=False, mir2=False, title=''\
-    , h=False, b=False\
-    , s=False, t=False, r1=False, r2=False, a1=False, a2=False\
-    , r=False, r3=False, dx=False, dy=False):
+    def __init__(self, pr1=False, alpha1=False, x1=False, y1=False, mir1=False, pr2=False, x2=False, y2=False, alpha2=False, mir2=False, title=''):
 #за перемещение от нижней левой точки
 #если nir=1 то зеркально относиткльно оси Y
 
             
 
         
-        self.user_init( pr1, alpha1, x1, y1, mir1, pr2, x2, y2, alpha2, mir2, title    , h, b, s, t, r1, r2, a1, a2 , r, r3, dx, dy)
+        self.user_init( pr1, alpha1, x1, y1, mir1, pr2, x2, y2, alpha2, mir2, title    )
         
-    def user_init(self, pr1, alpha1, x1, y1, mir1, pr2, x2, y2, alpha2, mir2, title    , h, b, s, t, r1, r2, a1, a2 , r, r3, dx, dy):
+    def user_init(self, pr1, alpha1, x1, y1, mir1, pr2, x2, y2, alpha2, mir2, title  ):
 
         self.pr1=pr1
         self.pr2=pr2
@@ -1270,8 +1267,7 @@ class  profiles_sostav(object):
         self.__title=title
         self.__title0='sostav'
 
-        self.__dx=float(dx)
-        self.__dy=float(dy)
+
         
         self.solve()
     def solve(self):
@@ -1362,18 +1358,13 @@ class  profiles_sostav(object):
         
         jxy=jxy1+jxy2
         
-        massiv6 = jxjy(jx, jy, jxy)
-        alpha = massiv6[0]
-        jx0 = massiv6[1]
-        jy0 = massiv6[2]
+
 
         self.__a=a
         self.__jx=jx
         self.__jy=jy        
         self.__jxy=jxy
-        self.__jx0=jx0
-        self.__jy0=jy0   
-        self.__alpha=alpha
+
         self.__xi=xi
         self.__yi=yi
 
@@ -1403,15 +1394,8 @@ class  profiles_sostav(object):
     def jy(self):
         return self.__jy 
         
-#    def jx0(self):
-#        return self.__jx0 
-#
-#    def jy0(self):
-#        return self.__jy0 
-#                      
-#    def alpha1(self):
-#        return self.__a1 
-#
+
+
     def alpha2(self):
         return self.__a2 
         
@@ -1446,12 +1430,38 @@ class  profiles_sostav(object):
     def title(self):
         return self.__title 
 
-class  profiles_blank(object):
-    def __init__(self, pr1=False, alpha1=False, x1=False, y1=False, mir1=False, pr2=False, x2=False, y2=False, alpha2=False, mir2=False, title=''\
-    , h=False, b=False\
-    , s=False, t=False, r1=False, r2=False, a1=False, a2=False\
-    , r=False, r3=False, dx=False, dy=False):
-        self.user_init(pr1, alpha1, x1, y1, mir1, pr2, x2, y2, alpha2, mir2, title    , h, b, s, t, r1, r2, a1, a2 , r, r3, dx, dy)
+
+class  profiles_blank_sostav(object):
+
+    def h(self):
+        return self.__h
+    def b(self):
+        return self.__b  
+    def s(self):
+        return self.__s          
+    def t(self):
+        return self.__t 
+    def r1(self):
+        return self.__r1 
+    def r2(self):
+        return self.__r2 
+
+    def r3(self):
+        return self.__r3 
+
+
+    def r(self):
+        return self.__r 
+    
+    def ix(self):
+        return (self.jx()/self.a())**0.5
+    def iy(self):
+        return (self.jy()/self.a())**0.5
+    def wx(self):
+        return self.jx()/self.h()*2
+    def wy(self):
+        return self.jy()/self.b()*2       
+
     def xi(self):
         return self.__xi 
 
@@ -1476,17 +1486,13 @@ class  profiles_blank(object):
     def jy(self):
         return self.__jy 
         
-#    def jx0(self):
-#        return self.__jx0 
-#
-#    def jy0(self):
-#        return self.__jy0 
+
                       
     def alpha1(self):
-        return self.__a1 
+        return self.__alpha1 
 
     def alpha2(self):
-        return self.__a2 
+        return self.__alpha2 
 
     def x1(self):
         return self.__x1 
@@ -1515,20 +1521,25 @@ class  profiles_blank(object):
 
     def title(self):
         return self.__title 
+    def def_char(self):
+        self.__a=self.sostav.a()
+        self.__jx=self.sostav.jx()
+        self.__jy=self.sostav.jy  ()      
+        self.__jxy=self.sostav.jxy()
+
+        self.__xi=self.sostav.xi()
+        self.__yi=self.sostav.yi ()     
         
-class sost_ugol_tavr_st_up(profiles_sostav):   
+class sost_ugol_tavr_st_up(profiles_blank_sostav):   
     #r1 +
     #r3 - радиус уголков на концах
     #r2 - срез для гнутого уголка
     
-    def __init__(self, pr1=False, alpha1=False, x1=False, y1=False, mir1=False, pr2=False, x2=False, y2=False, alpha2=False, mir2=False, title=''\
-    , h=False, b=False\
-    , s=False, t=False, r1=False, r2=False, a1=False, a2=False\
-    , r=False, r3=False, dx=False, dy=False):
-        super(sost_ugol_tavr_st_up, self).__init__(pr1, alpha1, x1, y1, mir1, pr2, x2, y2, alpha2, mir2, title    , h, b, s, t, r1, r2, a1, a2, r, r3, dx, dy)
-
-    def user_init(self,pr1, alpha1, x1, y1, mir1, pr2, x2, y2, alpha2, mir2, title    , h, b, s, t, r1, r2, a1, a2 , r, r3, dx, dy):
-        self.pr1=ugol(h=h,b=b,t=t, s=s, r2=r2, r1=r1, r3=r3)
+    def __init__(self     , h=False, b=False\
+    , t=False, r1=False, r2=False,  r3=False , dx=False):
+  
+        
+        self.pr1=ugol(h=h,b=b,t=t, r2=r2, r1=r1, r3=r3)
         self.pr2=self.pr1
         
 #        print 'self.__at1', self.__at1  
@@ -1543,107 +1554,21 @@ class sost_ugol_tavr_st_up(profiles_sostav):
         self.__y2=float(0)
         self.__mir1=float(0)
         self.__mir2=float(1)
-        self.__a1=float(1)
-        self.__a2=float(0)
+        self.__alpha1=float(0)
+        self.__alpha2=float(0)
 
 
         
         self.__title='ugol_tavr_st_up'
         self.__title0='sostav'
-
-        self.solve()
         
-#        a=self.pr1.a()+self.pr2.a()
-#        
-#        a1=float(1.0)
-#        a2=float(0.0)
-#
-# 
-#        
-#        mir1=float(0)
-#        mir2=float(1)
-#        print 'mir', mir1, mir2
-#      
-#        x1=float(dx)/2
-#        x2=-float(dx)
-# 
-#        
-#        y1=0
-#        y2=0
-#
-#        jxyi1=self.pr1.jxy()
-#        jxyi2=self.pr2.jxy()
-#        
-#        xi1=self.pr1.dx()
-#        xi2=self.pr2.dx()        
-#
-#        yi1=self.pr1.dy()
-#        yi2=self.pr2.dy()   
-#        
-#        if mir1==1:
-#            jxyi1=-jxyi1
-#            xi1=-xi1
-#        if mir2==1:
-#            jxyi2=-jxyi2
-#            xi2=-xi2
-#            
-#        jxi1, jyi1, jxyi1=jda(self.pr1.jx(), self.pr1.jy(), jxyi1, -a1)
-#        
-#
-#        jxi2, jyi2, jxyi2=jda(self.pr2.jx(), self.pr2.jy(),  jxyi2, -a2)
-#
-#        print u'после поворота'
-#        print jxi1, jyi1, jxyi1
-#        print jxi2, jyi2, jxyi2
-#        
-#        print 'xi1, x1', xi1, x1
-#        print 'xi2, x2', xi2, x2
-#        
-#        yi=(self.pr1.a()*(yi1+y1)+  self.pr2.a()*(yi2+y2))/a
-#        xi=(self.pr1.a()*(xi1+x1)+  self.pr2.a()*(xi2+x2))/a
-#        
-#        print 'xi', xi
-#        print 'yi', yi
-#        
-#        jx1=jxdx(jxi1, self.pr1.a(), yi1+y1-yi)  
-#        jx2=jxdx(jxi2, self.pr2.a(), yi2+y2-yi)
-#        
-#        jx=jx1+jx2
-#
-#        print xi1, x1, xi
-#        print xi2, x2, xi
-#        print u'сумма xi1', xi1+x1-xi
-#        print u'сумма xi2', xi2+x2-xi   
-#        
-#        jy1=jxdx(jyi1, self.pr1.a(), xi1+x1-xi)  
-#        jy2=jxdx(jyi2, self.pr2.a(), xi2+x2-xi)
-#
-#        print 'jy1', jy1
-#        print 'jy2', jy2 
-#        
-#        jy=jy1+jy2
-#
-#
-#        jxy1=jxydxdy(jxyi1, self.pr1.a(), xi1+x1-xi, yi1+y1-yi)  
-#        jxy2=jxydxdy(jxyi2, self.pr2.a(), xi2+x1-xi, yi2+y1-yi)  
-#  
-#        
-#        jxy=jxy1+jxy2
-#        
-#        massiv6 = jxjy(jx, jy, jxy)
-#        alpha = massiv6[0]
-#        jx0 = massiv6[1]
-#        jy0 = massiv6[2]
-#
-#        self.__a=a
-#        self.__jx=jx
-#        self.__jy=jy        
-#        self.__jxy=jxy
-#        self.__jx0=jx0
-#        self.__jy0=jy0   
-#        self.__alpha=alpha
-#        self.__xi=xi
-#        self.__yi=yi
+
+        self.sostav=profiles_sostav( pr1=self.pr1, alpha1=self.__alpha1, x1=self.__x1, y1=self.__y1, mir1=self.__mir1  , pr2=self.pr2, x2=self.__x2, y2=self.__y2, alpha2=self.__alpha2, mir2=self.__mir2, title=self.__title)
+        
+        self.def_char()
+        
+
+
         
 class sost_ugol_tavr_st_right(profiles_sostav):   
     #r1 +
