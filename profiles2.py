@@ -9,6 +9,10 @@ from table import *
 
 
 def profiles_infile(files, number,typ): 
+    """Достает данные из файлов
+    files - файл
+    number - номер профиля
+    typ - пока достает только 'dvut' или 'truba_pryam'"""
     num=str(int(number))
     table=tables_csv((str(files)),'float')
     if typ=='dvut':
