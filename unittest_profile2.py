@@ -564,9 +564,11 @@ class Test_profile(unittest.TestCase):
         pr=sost_ugol_tavr_st_up(h=80, b=50, t=5, r1=8, r2=2.7, r3=0, dx=10)
         
 
-        print pr.a()
+        print pr.jy()
+        print pr.xi() 
+        print pr.yi()
         self.assertLess(abs(pr.a()-1274.34)/1274.34,0.0001)        
-        self.assertLess(abs(pr.jx()-0)/841074.988855,0.0001) 
+        self.assertLess(abs(pr.jx()-841074.988855)/841074.988855,0.0001) 
         self.assertLess(abs(pr.jy()-6157.265)/6157.265,0.0001) 
         self.assertLess(abs(pr.xi()-0)/0.001,0.0001)
         self.assertLess(abs(pr.yi()-2.2827)/2.2827,0.0001)                
