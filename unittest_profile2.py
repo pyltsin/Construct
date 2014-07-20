@@ -591,8 +591,25 @@ class Test_profile(unittest.TestCase):
         self.assertLess(abs(pr.xi()-0)/0.0001,0.0001)
         
         self.assertLess(abs(pr.yi()-11.322)/11.322,0.0001)
+    
+    def test_sost_ugol_tavr_st_krest(self):
+        pr=sost_ugol_tavr_st_krest(h=80, b=50, t=5, r1=8, r2=0, r3=2.7, dx=10, dy=20)
 
+#        print 'pr.jx0()',pr.jx0()
+#        print 'pr.jy0()',pr.jy0()
+#        print 'pr.alpha()',pr.alpha()
+        self.assertLess(abs(pr.a()-1272)/1272,0.001)
+        self.assertLess(abs(pr.jx()-2480100)/2480100,0.0001)
+        self.assertLess(abs(pr.jy()-592300)/592300,0.0001)
 
+        self.assertLess(abs(pr.jxy()-483100)/483100,0.0001)
+        
+        self.assertLess(abs(pr.xi()-0)/0.0001,0.0001)      
+        self.assertLess(abs(pr.yi()-0)/0.0001,0.0001)
+
+        self.assertLess(abs(pr.jx0()-2596951.0526)/2596951.0526,0.0002)      
+        self.assertLess(abs(pr.jy0()-475821.0692)/475821.0692,0.0002)
+        
 if __name__ == "__main__":
     unittest.main()
 

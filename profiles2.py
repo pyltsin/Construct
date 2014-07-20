@@ -1373,7 +1373,10 @@ class  profiles_sostav(object):
         self.__xi=xi
         self.__yi=yi
 
-
+        massiv6 = jxjy(jx, jy, jxy)
+        self.__alpha = massiv6[0]
+        self.__jx0 = massiv6[1]
+        self.__jy0 = massiv6[2]
          
     def xi(self):
         return self.__xi 
@@ -1400,6 +1403,15 @@ class  profiles_sostav(object):
         return self.__jy 
         
 
+    def jx0(self):
+        return self.__jx0 
+        
+    def alpha(self):
+        return self.__alpha 
+        
+    def jy0(self):
+        return self.__jy0 
+        
 
     def alpha2(self):
         return self.__a2 
@@ -1517,6 +1529,15 @@ class  profiles_blank_sostav(object):
     def mir2(self):
         return self.__mir2 
         
+    def jx0(self):
+        return self.__jx0
+        
+    def jy0(self):
+        return self.__jy0 
+        
+    def alpha(self):
+        return self.__alpha 
+        
         
 #    def alpha(self):
 #        return self.__alpha 
@@ -1534,6 +1555,10 @@ class  profiles_blank_sostav(object):
 
         self.__xi=self.sostav.xi()
         self.__yi=self.sostav.yi ()     
+
+        self.__alpha=self.sostav.alpha()
+        self.__jx0=self.sostav.jx0()
+        self.__jy0=self.sostav.jy0()
         
 class sost_ugol_tavr_st_up(profiles_blank_sostav):   
     """Расчет сечения сдвоенных уголков. Для неравнополочных - длинная сторона направлена вверх
@@ -1628,29 +1653,37 @@ class sost_ugol_tavr_st_right(profiles_blank_sostav):
         self.def_char()
         
         
-class sost_ugol_tavr_st_krest(profiles_sostav):   
-    #r1 +
-    #r3 - радиус уголков на концах
-    #r2 - срез для гнутого уголка
+class sost_ugol_tavr_st_krest(profiles_blank_sostav):   
+    """Расчет сечения уголков вкрест
+    Входные данные - h, b, t, 
+    r1 - между полками, 
+    r3 - на концах полок, 
+    r2 - для гнутого уголка, 
+    dx - расстояние по горизонтали между уголками (толщина фасонки, которая ставится внутрь!)
+    dy - расстояние по вертикали между уголками (толщина фасонки, которая ставится внутрь!)
+    Выходные данные:
+    A; Jx; Jy; Jxy; xi; yi
+    title0 - sostav
+    title - ugol_tavr_st_krest
+    """
     
-    def __init__(self, pr1=False, alpha1=False, x1=False, y1=False, mir1=False, pr2=False, x2=False, y2=False, alpha2=False, mir2=False, title=''\
-    , h=False, b=False\
-    , s=False, t=False, r1=False, r2=False, a1=False, a2=False\
-    , r=False, r3=False, dx=False, dy=False):
+    
+    def __init__(self     , h=False, b=False\
+    , t=False, r1=False, r2=False,  r3=False , dx=False, dy=False):
 
-        self.pr1=ugol(h=h,b=b,t=t, s=s, r2=r2, r1=r1, r3=r3)
+        self.pr1=ugol(h=h,b=b,t=t, s=t, r2=r2, r1=r1, r3=r3)
         self.pr2=self.pr1
         
-        self.__a1=float()
-        self.__a2=float(pi)
+        self.__alpha1=float()
+        self.__alpha2=float(pi)
         self.__dx=float(dx)
         self.__dy=float(dy)
         
         self.__x1=self.__dx/2
-        self.__x2=-self.__dx/2-2*self.pr2.xi()
+        self.__x2=-self.__dx/2-2*self.pr2.dx()
         
         self.__y1=self.__dy/2
-        self.__y2=self.__dy/2-2*self.pr2.yi()
+        self.__y2=-self.__dy/2-2*self.pr2.dy()
         
         self.__mir1=float(0)
         self.__mir2=float(0)
@@ -1659,5 +1692,7 @@ class sost_ugol_tavr_st_krest(profiles_sostav):
         
         self.__title='ugol_tavr_st_krest'
         self.__title0='sostav'
-        self.solve()
+
+        self.sostav=profiles_sostav( pr1=self.pr1, alpha1=self.__alpha1, x1=self.__x1, y1=self.__y1, mir1=self.__mir1  , pr2=self.pr2, x2=self.__x2, y2=self.__y2, alpha2=self.__alpha2, mir2=self.__mir2, title=self.__title)
         
+        self.def_char()       
