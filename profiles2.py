@@ -846,9 +846,11 @@ class truba_pryam(profiles_simple):
 #        return self.h()-self.t()*2
 
 class ugol(profiles_simple):   
-    #r1 +
-    #r3 - радиус уголков на концах
-    #r2 - срез для гнутого уголка
+    """"Определяет характеристики обычного уголка
+     r1 - между полками
+     r2 - для гнутого уголка
+     r3 - для края
+    """
     
     def __init__(self, h=False, b=False\
     , s=False, t=False, r1=False, r2=False, a1=False, a2=False, x1=False\
@@ -1274,27 +1276,27 @@ class  profiles_sostav(object):
         #определяем jxy,jx, jy, a, alpha, jx0, jy0, xi, yi
         
         a=self.pr1.a()+self.pr2.a()
-        print 'a_solve', a
+#        print 'a_solve', a
 
-#        a1=self.alpha1()
-#        mir1=self.mir1()
-#        mir1=self.mir1()
+        a1=self.alpha1()
+        mir1=self.mir1()
+        mir1=self.mir1()
 
 
         mir1=self.mir1()
         mir2=self.mir2()
-        print 'mir', mir1, mir2
-        
+#        print 'mir', mir1, mir2
+#        
         
         x1=self.x1()
         x2=self.x2()
-        print 'x', x1, x2  
+#        print 'x', x1, x2  
 
 
 
         a1=self.alpha1()
         a2=self.alpha2()
-        print 'alpha', self.alpha1(), self.alpha2()
+#        print 'alpha', self.alpha1(), self.alpha2()
         
         y1=self.__y1
         y2=self.__y2
@@ -1320,37 +1322,38 @@ class  profiles_sostav(object):
 
         jxi2, jyi2, jxyi2=jda(self.pr2.jx(), self.pr2.jy(),  jxyi2, -a2)
 
-        print u'после поворота'
-        print jxi1, jyi1, jxyi1
-        print jxi2, jyi2, jxyi2
+#        print u'после поворота'
+#        print jxi1, jyi1, jxyi1
+#        print jxi2, jyi2, jxyi2
         
-        print 'xi1, x1', xi1, x1
-        print 'xi2, x2', xi2, x2
+#        print 'xi1, x1', xi1, x1
+#        print 'xi2, x2', xi2, x2
         
         yi=(self.pr1.a()*(yi1+y1)+  self.pr2.a()*(yi2+y2))/a
         xi=(self.pr1.a()*(xi1+x1)+  self.pr2.a()*(xi2+x2))/a
         
-        print 'xi', xi
-        print 'yi', yi
-        
+#        print 'xi', xi
+#        print 'yi', yi
+#        
         jx1=jxdx(jxi1, self.pr1.a(), yi1+y1-yi)  
         jx2=jxdx(jxi2, self.pr2.a(), yi2+y2-yi)
         
         jx=jx1+jx2
-
-        print xi1, x1, xi
-        print xi2, x2, xi
-        print u'сумма xi1', xi1+x1-xi
-        print u'сумма xi2', xi2+x2-xi   
+#        print 'jx', jx
+        
+#        print xi1, x1, xi
+#        print xi2, x2, xi
+#        print u'сумма xi1', xi1+x1-xi
+#        print u'сумма xi2', xi2+x2-xi   
         
         jy1=jxdx(jyi1, self.pr1.a(), xi1+x1-xi)  
         jy2=jxdx(jyi2, self.pr2.a(), xi2+x2-xi)
 
-        print 'jy1', jy1
-        print 'jy2', jy2 
+#        print 'jy1', jy1
+#        print 'jy2', jy2 
         
         jy=jy1+jy2
-
+     
 
         jxy1=jxydxdy(jxyi1, self.pr1.a(), xi1+x1-xi, yi1+y1-yi)  
         jxy2=jxydxdy(jxyi2, self.pr2.a(), xi2+x1-xi, yi2+y1-yi)  
@@ -1359,7 +1362,9 @@ class  profiles_sostav(object):
         jxy=jxy1+jxy2
         
 
-
+#        print 'jy',jy
+#        print 'jx',jx   
+        
         self.__a=a
         self.__jx=jx
         self.__jy=jy        
@@ -1531,9 +1536,18 @@ class  profiles_blank_sostav(object):
         self.__yi=self.sostav.yi ()     
         
 class sost_ugol_tavr_st_up(profiles_blank_sostav):   
-    #r1 +
-    #r3 - радиус уголков на концах
-    #r2 - срез для гнутого уголка
+    """Расчет сечения сдвоенных уголков. Для неравнополочных - длинная сторона направлена вверх
+    Входные данные - h, b, t, 
+    r1 - между полками, 
+    r3 - на концах полок, 
+    r2 - для гнутого уголка, 
+    dx - расстояние между уголками (толщина фасонки, которая ставится внутрь!)
+    Выходные данные:
+    A; Jx; Jy; Jxy; xi; yi
+    title0 - sostav
+    title - ugol_tavr_st_up
+    """
+
     
     def __init__(self     , h=False, b=False\
     , t=False, r1=False, r2=False,  r3=False , dx=False):
@@ -1549,7 +1563,7 @@ class sost_ugol_tavr_st_up(profiles_blank_sostav):
         
         self.__x1=self.__dx/2.
         self.__x2=-self.__dx/2.
-        print '__x1', self.__x1
+
         self.__y1=float(0)
         self.__y2=float(0)
         self.__mir1=float(0)
@@ -1570,30 +1584,35 @@ class sost_ugol_tavr_st_up(profiles_blank_sostav):
 
 
         
-class sost_ugol_tavr_st_right(profiles_sostav):   
-    #r1 +
-    #r3 - радиус уголков на концах
-    #r2 - срез для гнутого уголка
+class sost_ugol_tavr_st_right(profiles_blank_sostav):   
+    """Расчет сечения сдвоенных уголков. Для неравнополочных - длинная сторона направлена вбок
+    Входные данные - h, b, t, 
+    r1 - между полками, 
+    r3 - на концах полок, 
+    r2 - для гнутого уголка, 
+    dx - расстояние между уголками (толщина фасонки, которая ставится внутрь!)
+    Выходные данные:
+    A; Jx; Jy; Jxy; xi; yi
+    title0 - sostav
+    title - ugol_tavr_st_right
+    """
     
-    def __init__(self, pr1=False, alpha1=False, x1=False, y1=False, mir1=False, pr2=False, x2=False, y2=False, alpha2=False, mir2=False, title=''\
-    , h=False, b=False\
-    , s=False, t=False, r1=False, r2=False, a1=False, a2=False\
-    , r=False, r3=False, dx=False, dy=False):
-        super( shvel, self).__init__(h,b,s,t,r1,r2,a1,a2,x1,x2,y1,y2,r,r3, title2)
+    def __init__(self     , h=False, b=False\
+    , t=False, r1=False, r2=False,  r3=False , dx=False):
 
-        self.pr1=ugol(h=h,b=b,t=t, s=s, r2=r2, r1=r1, r3=r3)
+        self.pr1=ugol(h=h,b=b,t=t, s=t, r2=r2, r1=r1, r3=r3)
         self.pr2=self.pr1
         
-        self.__a1=float(pi/2)
-        self.__a2=float(-pi/2)
+        self.__alpha1=float(pi/2)
+        self.__alpha2=float(-pi/2)
         self.__dx=float(dx)
         self.__dy=float(0)
         
-        self.__x1=self.__dx/2+self.pr1.yi()-self.pr1.xi()
-        self.__x2=-self.__dx/2-self.pr2.yi()+self.pr2.xi()
+        self.__x1=self.__dx/2+self.pr1.dy()-self.pr1.dx()
+        self.__x2=-self.__dx/2-self.pr2.dy()+self.pr2.dx()
         
-        self.__y1=-self.pr1.yi()+self.pr1.xi()
-        self.__y2=-self.pr2.yi()+self.pr2.xi()
+        self.__y1=-self.pr1.dy()+self.pr1.dx()
+        self.__y2=-self.pr2.dy()+self.pr2.dx()
         
         self.__mir1=float(0)
         self.__mir2=float(1)
@@ -1602,7 +1621,12 @@ class sost_ugol_tavr_st_right(profiles_sostav):
         
         self.__title='ugol_tavr_st_right'
         self.__title0='sostav'
-        self.solve()
+        
+
+        self.sostav=profiles_sostav( pr1=self.pr1, alpha1=self.__alpha1, x1=self.__x1, y1=self.__y1, mir1=self.__mir1  , pr2=self.pr2, x2=self.__x2, y2=self.__y2, alpha2=self.__alpha2, mir2=self.__mir2, title=self.__title)
+        
+        self.def_char()
+        
         
 class sost_ugol_tavr_st_krest(profiles_sostav):   
     #r1 +
