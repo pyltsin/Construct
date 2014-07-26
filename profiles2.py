@@ -108,7 +108,7 @@ class  profiles_simple(object):
         return False   
     def p(self):
         if self.a()!=False:
-            return p/100/100*7850
+            return self.a()/100/100*7850
         else:
             return False
     def get_tau(self):

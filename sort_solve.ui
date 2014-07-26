@@ -10,6 +10,18 @@
     <height>351</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>859</width>
+    <height>351</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>859</width>
+    <height>351</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>Sort</string>
   </property>
@@ -83,6 +95,19 @@
    </property>
    <property name="readOnly">
     <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="picture">
+   <property name="geometry">
+    <rect>
+     <x>275</x>
+     <y>22</y>
+     <width>371</width>
+     <height>151</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
    </property>
   </widget>
  </widget>

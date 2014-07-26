@@ -22,6 +22,9 @@ class BasaSort():
         ,6:[u"h, см",u"b, см",u"t, см",u"r1, см",u"r2, см",u"r3, см", u"dx, см"]
         ,7:[u"h, см",u"b, см",u"t, см",u"r1, см",u"r2, см",u"r3, см", u"dx, см", u"dy, см"]}
         
+        self.pictures_list={0:'SortamentPicture/dvut.png'
+        , 1:'SortamentPicture/shvel.png'}
+        
 
     def key_sortament(self):
         return self.list_sort.keys()
@@ -45,7 +48,11 @@ class BasaSort():
         else:
             False
         return pr
-    
+    def pict(self, i):
+        for label in self.list_sort:
+            if str(i)==str(label):
+                x=self.list_sort[label]
+        return self.pictures_list[x]
 
 
 class MyWindow(QtGui.QWidget):
@@ -70,9 +77,19 @@ def solve():
         basa=BasaSort()
         pr=basa.output_data(lab, input_list)
         window.outputtable.setColumnCount(len(pr.output_list()))
-        window.outputtable.setHorizontalHeaderLabels(pr.output_list())    
+        window.outputtable.setHorizontalHeaderLabels(pr.output_list())   
+        j=0
+        for i in pr.output_list():
+            txt="%.2f"%(pr.output_dict()[i])
+            window.outputtable.setItem(0,j,QtGui.QTableWidgetItem(txt))
+            print window.outputtable.item(0,j).setFlags(QtCore.Qt.ItemFlags(1+2+4+8+6+12+64))
+            j=j+1            
     except:
+        table_clear_output()
         window.messege.insert(u"Ошибка исходных данных")
+
+    else:
+        window.messege.insert(u"Расчет выполнен успешно")        
 
         
     
@@ -96,7 +113,9 @@ def table_head():
         input_data=basa.input_data(lab)
         window.inputtable.setColumnCount(len(input_data))
         window.inputtable.setHorizontalHeaderLabels(input_data)
-    
+        pict=basa.pict(lab)
+        window.picture.setPixmap(QtGui.QPixmap(pict))
+        
 if __name__=="__main__":
     import sys
     app=QtGui.QApplication(sys.argv)
