@@ -345,7 +345,7 @@ class Test_profile(unittest.TestCase):
         print 18     ,       "test_ugol"
 
 
-        pr1=ugol(h=18,b=18,t=1.5, s=1.5, r2=0, r1=1.6, r3=0.53)
+        pr1=ugol(h=18,b=18,t=1.5, s=1.5, r2=0., r1=1.6, r3=0.53)
 
 #        print pr1.ix0()
 #        print pr1.iy0()

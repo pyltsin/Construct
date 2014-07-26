@@ -38,6 +38,7 @@ class  profiles_simple(object):
     def __init__(self, h=False, b=False\
     , s=False, t=False, r1=False, r2=False, a1=False, a2=False, x1=False\
     , x2=False, y1=False, y2=False, r=False, r3=False, title2=''):
+       
         self.__h=float(h)       
         self.__b=float(b)        
         self.__s=float(s)
@@ -105,6 +106,11 @@ class  profiles_simple(object):
         return False   
     def a(self):
         return False   
+    def p(self):
+        if self.a()!=False:
+            return p/100/100*7850
+        else:
+            return False
     def get_tau(self):
         return False   
     def get_sigma(self):
@@ -438,10 +444,44 @@ class dvut(profiles_simple):
 #    '8 - отнимаемый круговой уголок
 #    '12 - прибавляем круговой уголок
     def __init__(self, h=False, b=False\
-    , s=False, t=False, r1=False, r2=False, a1=False, a2=False, x1=False\
-    , x2=False, y1=False, y2=False, r=False, title2='svar', r3=False):
-        super(dvut, self).__init__(h,b,s,t,r1,r2,a1,a2,x1,x2,y1,y2,r,r3, title2)
+    , s=False, t=False, r1=False, r2=False, a1=False, title2='svar'):
+        super(dvut, self).__init__(h=h,b=b,s=s,t=t,r1=r1,r2=r2,a1=a1, title2=title2)
         self.solve()
+    def input_data(self):
+        return [u"h, см",u"b, см",u"s, см",u"t, см",u"r1, см",u"r2, см",u"a, %"]
+    def output_dict(self):
+        out={u'P, кг/м': self.p()
+        ,u'A, см2': self.a()
+        ,u'Jx, см4': self.jx()        
+        ,u'Wx, см3': self.wx()
+        ,u'Sx, см3': self.s2x()        
+        ,u'ix, см': self.ix()        
+        ,u'Jy, см4': self.jy()        
+        ,u'Wy, см3': self.wy()
+        ,u'Sy, см3': self.s2y()        
+        ,u'iy, см': self.iy()        
+        ,u'Jw, см6': self.jw()
+        ,u'Jt, см4': self.jt()
+        ,u'Jt_sp2013, см4': self.jt_sp() 
+        }
+        return out
+
+    def output_list(self):
+        out=[u'P, кг/м'
+        ,u'A, см2'
+        ,u'Jx, см4'     
+        ,u'Wx, см3'
+        ,u'Sx, см3'       
+        ,u'ix, см'     
+        ,u'Jy, см4'     
+        ,u'Wy, см3'
+        ,u'Sy, см3'        
+        ,u'iy, см'       
+        ,u'Jw, см6'
+        ,u'Jt, см4'
+        ,u'Jt_sp2013, см4']  
+        return out
+        
     def solve(self):
         t1 = (self.t() - (self.b() - self.s()) / 4 * tan(self.a1()))
         t2 = (self.b() - self.s()) / 2 * tan(self.a1())        
@@ -988,11 +1028,43 @@ class shvel(profiles_simple):
 ##  '  6 - отнимаемая часть у гнутого швеллера
 ##  '  r3 - только для гнутого швеллера"""   
     def __init__(self, h=False, b=False\
-    , s=False, t=False, r1=False, r2=False, a1=False, a2=False, x1=False\
-    , x2=False, y1=False, y2=False, r=False, title2=False, r3=False):
-        super( shvel, self).__init__(h,b,s,t,r1,r2,a1,a2,x1,x2,y1,y2,r,r3, title2)
+    , s=False, t=False, r1=False, r2=False, a1=False, r3=False, title2='shvel'):
+        super( shvel, self).__init__(h=h,b=b,s=s,t=t,r1=r1,r2=r2,a1=a1,r3=r3, title2=title2)
         self.solve()
-
+    def input_data(self):
+        return [u"h, см",u"b, см",u"s, см",u"t, см",u"r1, см",u"r2, см",u"r3, см",u"a, %"]
+    def output_dict(self):
+        out={u'P, кг/м': self.p()
+        ,u'A, см2': self.a()
+        ,u'Jx, см4': self.jx()        
+        ,u'Wx, см3': self.wx()
+        ,u'Sx, см3': self.s2x()        
+        ,u'ix, см': self.ix()        
+        ,u'Jy, см4': self.jy()        
+        ,u'Wy, см3': self.wy()
+        ,u'Sy, см3': self.s2y()        
+        ,u'iy, см': self.iy()        
+        ,u'Jw, см6': self.jw()
+        ,u'Jt, см4': self.jt()
+        ,u'Jt_sp2013, см4': self.jt_sp() 
+        }
+        return out
+    def output_list(self):
+        out=[u'P, кг/м'
+        ,u'A, см2'
+        ,u'Jx, см4'     
+        ,u'Wx, см3'
+        ,u'Sx, см3'       
+        ,u'ix, см'     
+        ,u'Jy, см4'     
+        ,u'Wy, см3'
+        ,u'Sy, см3'        
+        ,u'iy, см'       
+        ,u'Jw, см6'
+        ,u'Jt, см4'
+        ,u'Jt_sp2013, см4']  
+        return out
+        
     def solve(self):
         h=self.h()
         b=self.b()
