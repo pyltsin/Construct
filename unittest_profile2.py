@@ -147,6 +147,7 @@ class Test_profile(unittest.TestCase):
         print 13       ,       " test_rotkrug"
     def test_dvut(self):
         el=dvut(h=60, b=19, t=1.78, s=1.2, r1=2, r2=0.8, a1=atan(12./100))
+        
         self.assertLess(abs(el.a()- 137.5384332)/abs(el.a()), 0.0000001)
         self.assertLess(abs(el.jy()- 1724.838581)/abs(el.jy()),0.0000001)
         self.assertLess(abs(el.jx()-76805.76144)/abs(el.jx()),0.0000001)
@@ -156,6 +157,20 @@ class Test_profile(unittest.TestCase):
 
         self.assertLess(abs(el.wx()-2560.19204793)/abs(el.wx()),0.0000001)
         self.assertLess(abs(el.wy()-181.56195592)/abs(el.wy()),0.0000001)
+        self.assertLess(abs(el.output_dict()[u'P, кг/м']- 137.5384332/100/100*7850)/abs(el.a()), 0.0000001)
+
+        self.assertLess(abs(el.output_dict()[u'A, см2']- 137.5384332)/abs(el.a()), 0.0000001)
+        self.assertLess(abs(el.output_dict()[u'Jy, см4']- 1724.838581)/abs(el.jy()),0.0000001)
+        self.assertLess(abs(el.output_dict()[u'Jx, см4']-76805.76144)/abs(el.jx()),0.0000001)
+        self.assertLess(abs(el.output_dict()[u'Sx, см3']-1490.827914)/abs(el.s2x()),0.0000001)
+        self.assertLess(abs(el.output_dict()[u'Sy, см3']-156.051)/abs(el.s2y()),0.00002)
+
+        self.assertLess(abs(el.output_dict()[u'ix, см']-23.6311503)/abs(el.ix()),0.0000001)
+        self.assertLess(abs(el.output_dict()[u'iy, см']-3.5412957)/abs(el.iy()),0.0000001)
+
+        self.assertLess(abs(el.output_dict()[u'Wx, см3']-2560.19204793)/abs(el.wx()),0.0000001)
+        self.assertLess(abs(el.output_dict()[u'Wy, см3']-181.56195592)/abs(el.wy()),0.0000001)
+
 
         self.assertLess(abs(el.t1()-1.246)/abs(el.t1()),0.0000001)
         self.assertLess(abs(el.t2()-1.068)/abs(el.t2()),0.0000001)
@@ -277,6 +292,7 @@ class Test_profile(unittest.TestCase):
         self.assertLess(abs(el.jx()- 15339.998*10**4)/abs(el.jx()),0.001)
 #        print(el.jw()/10**6)
         self.assertLess(abs(el.jw()- 146500*10**6)/abs(el.jw()),0.001)
+        self.assertLess(abs(el.output_dict()[u"Jw, см6"]- 146500*10**6)/abs(el.jw()),0.001)
 
         self.assertLess(abs(el.w(1)- 110.63*100)/abs(el.w(1)),0.021)
         self.assertLess(abs(el.w(1)- 112.9748*100)/abs(el.w(1)),0.000001)
@@ -302,6 +318,9 @@ class Test_profile(unittest.TestCase):
 
 #        print el3.jt()
         self.assertLess(abs(el3.jt()-31.22*10**4)/abs(el3.jt()),0.005)
+        self.assertLess(abs(el3.output_dict()[u"Jt, см4"]-31.22*10**4)/abs(el3.jt()),0.005)
+        self.assertLess(abs(el3.output_dict()[u"Jt_sp2013, см4"]-31.22*10**4/1.3)/abs(el3.jt()),0.005)
+
 
         print 15  ,       " test_dvut2"
     def test_function(self):
@@ -419,17 +438,40 @@ class Test_profile(unittest.TestCase):
     def test_shvel(self):
         print 19    , "test_shvel"
 
+
         pr1=shvel(h=27,b=9.5,t=1.05, s=0.6, r2=0.45, r1=1.1, r3=0.0, a1=atan(0.1))
 
 #        print pr1.jy()
 #        print pr1.jx()
 #        print pr1.w2()
+        self.assertLess(abs(pr1.output_dict()[u'P, кг/м']/7850*100*100-35.2313888)/35.2313888,0.0001)
+   
+        self.assertLess(abs(pr1.output_dict()[u'A, см2']-35.2313888)/35.2313888,0.0001)
+        self.assertLess(abs(pr1.output_dict()[u'Jx, см4']-4163.337068)/4163.337068,0.0001)
+        self.assertLess(abs(pr1.output_dict()[u'Jy, см4']-261.7465238)/261.7465238,0.0001)
+
+
+        self.assertLess(abs(pr1.output_dict()[u'ix, см']**2*35.231-4163.337068)/4163.337068,0.0001)
+        self.assertLess(abs(pr1.output_dict()[u'iy, см']**2*35.231-261.7465238)/261.7465238,0.0001)
+
+
+
+        self.assertLess(abs(pr1.output_dict()[u'Wx, см3']*13.5-4163.337068)/4163.337068,0.0001)
+        self.assertLess(abs(pr1.output_dict()[u'Wy, см3']*(9.5-2.474374)-261.7465238)/261.7465238,0.0001)
+
+        self.assertLess(abs(pr1.output_dict()[u'Wy, см3']-37.27)/37.27,0.001)
+        
+        self.assertLess(abs(pr1.output_dict()[u'Sx, см3' ]-177.608)/177.608,0.0001)
+        self.assertLess(abs(pr1.output_dict()[u'Sy, см3' ]-40.9452)/40.9452,0.0001)
+
 
         self.assertLess(abs(pr1.a()-35.2313888)/35.2313888,0.0001)
         self.assertLess(abs(pr1.jx()-4163.337068)/4163.337068,0.0001)
         self.assertLess(abs(pr1.jy()-261.7465238)/261.7465238,0.0001)
 
         self.assertLess(abs(pr1.dx()-2.474374)/2.47,0.0001)
+        self.assertLess(abs(pr1.output_dict()[u'dx, см' ]-2.474374)/2.47,0.0001)
+
 
         self.assertLess(abs(pr1.s2x()-177.608)/177.608,0.0001)
         self.assertLess(abs(pr1.s2y()-40.9452)/40.9452,0.0001)
@@ -490,6 +532,15 @@ class Test_profile(unittest.TestCase):
 
         self.assertLess(abs(pr1.jt_sp()-12.8/1.12)/12.8,0.03)
 
+
+        self.assertLess(abs(pr1.output_dict()[u'Jw, см6']-45640)/45640,0.03)
+
+        self.assertLess(abs(pr1.output_dict()[u'Jt, см4']-12.8)/12.8,0.03)
+
+        self.assertLess(abs(pr1.output_dict()[u'Jt_sp2013, см4']-12.8/1.12)/12.8,0.03)
+        
+        
+        
         pr1=shvel(h=30,b=10,t=1.1, s=0.65, r2=0.7, r1=1.2, r3=0.0, a1=atan(0.0))
 
 #        print pr1.jw()

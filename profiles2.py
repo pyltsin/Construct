@@ -1043,7 +1043,8 @@ class shvel(profiles_simple):
         ,u'Jy, см4': self.jy()        
         ,u'Wy, см3': self.wy()
         ,u'Sy, см3': self.s2y()        
-        ,u'iy, см': self.iy()        
+        ,u'iy, см': self.iy()
+        ,u'dx, см':self.dx()
         ,u'Jw, см6': self.jw()
         ,u'Jt, см4': self.jt()
         ,u'Jt_sp2013, см4': self.jt_sp() 
@@ -1059,7 +1060,8 @@ class shvel(profiles_simple):
         ,u'Jy, см4'     
         ,u'Wy, см3'
         ,u'Sy, см3'        
-        ,u'iy, см'       
+        ,u'iy, см'  
+        ,u'dx, см'
         ,u'Jw, см6'
         ,u'Jt, см4'
         ,u'Jt_sp2013, см4']  
@@ -1261,7 +1263,13 @@ class shvel(profiles_simple):
         
         self.__s2x=s2x        
         self.__s2y=s2y  
-        
+    def wy(self):
+        w1=self.jy()/self.dx()
+        w2=self.jy()/(self.b()-self.dx())
+        if w1<w2:
+            return w1
+        else:
+            return w2
     def a(self):
 
         return self.__a
@@ -1449,7 +1457,7 @@ class  profiles_sostav(object):
         self.__alpha = massiv6[0]
         self.__jx0 = massiv6[1]
         self.__jy0 = massiv6[2]
-         
+    
     def xi(self):
         return self.__xi 
 
