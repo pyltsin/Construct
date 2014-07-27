@@ -67,6 +67,7 @@ class MyWindow(QtGui.QWidget):
         self.solvebutton.clicked.connect(solve)
 
 def solve():
+    window.messege.clear()
     try:
         lab=window.listWidget.currentItem().text()
         countcolumn=window.inputtable.columnCount()
@@ -84,7 +85,7 @@ def solve():
             window.outputtable.setItem(0,j,QtGui.QTableWidgetItem(txt))
             print window.outputtable.item(0,j).setFlags(QtCore.Qt.ItemFlags(1+2+4+8+6+12+64))
             j=j+1
-    except (ValueError):
+    except (ValueError, AttributeError):
         table_clear_output()
         window.messege.insert(u"Ошибка исходных данных")
 
@@ -108,7 +109,6 @@ def table_clear_output():
 def table_head():
     table_clear()
     lab=window.listWidget.currentItem().text()
-    print lab
     basa=BasaSort()
     input_data=basa.input_data(lab)
     window.inputtable.setColumnCount(len(input_data))
