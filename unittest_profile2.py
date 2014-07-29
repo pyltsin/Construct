@@ -332,7 +332,7 @@ class Test_profile(unittest.TestCase):
 #         self.assertLess(abs(el.get_sigma_e()-3.5412957)/abs(el.get_sigma_e()),0.0000001)
 
     def test_korob(self):
-        pr1=truba_pryam(h=12,b=8,t=0.6, s=0.6, r2=1.2, r1=0.6)
+        pr1=truba_pryam(h=12,b=8,t=0.6, r2=1.2, r1=0.6)
 #        print pr1.a()
         self.assertLess(abs(pr1.a()-21.63)/21.63,0.001)
 #        print pr1.jx()
@@ -364,7 +364,7 @@ class Test_profile(unittest.TestCase):
         print 18     ,       "test_ugol"
 
 
-        pr1=ugol(h=18,b=18,t=1.5, s=1.5, r2=0., r1=1.6, r3=0.53)
+        pr1=ugol(h=18,b=18,t=1.5, r2=0., r1=1.6, r3=0.53)
 
 #        print pr1.ix0()
 #        print pr1.iy0()
@@ -387,7 +387,7 @@ class Test_profile(unittest.TestCase):
         self.assertLess(abs(pr1.dy()-5.01)/5.01,0.0001)
 
 
-        pr1=ugol(h=11,b=7,t=0.65, s=0.65, r2=0, r1=1.0, r3=0.33)
+        pr1=ugol(h=11,b=7,t=0.65, r2=0, r1=1.0, r3=0.33)
 
 #        print pr1.ix0()
 #        print pr1.dy()
@@ -410,7 +410,7 @@ class Test_profile(unittest.TestCase):
         self.assertLess(abs(pr1.dy()-3.545982)/3.55,0.0001)
 
 
-        pr1=ugol(h=12,b=12,t=0.6, s=0.6, r2=0.9+0.6, r1=0.9, r3=0.0)
+        pr1=ugol(h=12,b=12,t=0.6, r2=0.9+0.6, r1=0.9, r3=0.0)
 
 #        print pr1.dx()
 #        print pr1.jxy()
@@ -556,8 +556,8 @@ class Test_profile(unittest.TestCase):
     def test_sostav(self):
         print 20  , "test_sostav"
 
-        pr1=ugol(h=18,b=18,t=1.5, s=1.5, r2=0, r1=1.6, r3=0.53)
-        pr2=ugol(h=18,b=18,t=1.5, s=1.5, r2=0, r1=1.6, r3=0.53)
+        pr1=ugol(h=18,b=18,t=1.5, r2=0, r1=1.6, r3=0.53)
+        pr2=ugol(h=18,b=18,t=1.5, r2=0, r1=1.6, r3=0.53)
 
         pr=profiles_sostav(pr1=pr1, alpha1=0, x1=0.3, y1=0, mir1=0, pr2=pr2, alpha2=0, x2=-0.3,y2=0,mir2=1)
         pr.solve()
@@ -579,7 +579,7 @@ class Test_profile(unittest.TestCase):
         self.assertLess(abs(pr.xi()-0)/0.001,0.0001)
         self.assertLess(abs(pr.yi()-5.01)/5.01,0.0001)
 
-        pr1=ugol(h=16,b=10,t=1.0, s=1.0, r2=0.0, r1=1.3, r3=0.43)
+        pr1=ugol(h=16,b=10,t=1.0, r2=0.0, r1=1.3, r3=0.43)
 
 
         pr=profiles_sostav(pr1=pr1, alpha1=pi, x1=0.3, y1=0.3, mir1=0, pr2=pr1, alpha2=0, x2=-0.3-2.28*2,y2=-0.3-5.23*2,mir2=0)
@@ -661,6 +661,8 @@ class Test_profile(unittest.TestCase):
         self.assertLess(abs(pr.jx0()-2596951.0526)/2596951.0526,0.0002)      
         self.assertLess(abs(pr.jy0()-475821.0692)/475821.0692,0.0002)
         
+        
+# """Сделать проверку уголка, прямоугольной трубы и обычной трубы по полному списку"""
 if __name__ == "__main__":
     unittest.main()
 

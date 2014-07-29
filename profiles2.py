@@ -250,6 +250,34 @@ class ring(profiles_simple):
     """'кольцо оно и есть кольцо
     ' r - большой радиус
     ' r1 - малый радиус  """
+    def __init__(self,r=False, r1=False):
+        super(ring, self).__init__(r=r,r1=r1)
+        self.solve()
+    def input_data(self):
+        return [u"r, см",u"r1, см"]
+    def output_dict(self):
+        out={u'P, кг/м': self.p()
+        ,u'A, см2': self.a()
+        ,u'Jx, см4': self.jx()
+        ,u'Wx, см3': self.wx()
+        ,u'ix, см': self.ix()
+        ,u'Jy, см4': self.jy()
+        ,u'Wy, см3': self.wy()
+        ,u'iy, см': self.iy()
+        }
+        return out
+
+    def output_list(self):
+        out=[u'P, кг/м'
+        ,u'A, см2'
+        ,u'Jx, см4'
+        ,u'Wx, см3'
+        ,u'ix, см'
+        ,u'Jy, см4'
+        ,u'Wy, см3'
+        ,u'iy, см'
+        ]
+        return out
 
     def a(self):
         d = self.r() * 2
@@ -268,6 +296,10 @@ class ring(profiles_simple):
         return self.Pi * d ** 4 / 64 * (1 - a1 ** 4)
     def jy(self):
         return self.jx()
+    def wx(self):
+        return self.jx()/self.r()
+    def wy(self):
+        return self.wx()
     def jxy(self):
         return 0
 
@@ -774,18 +806,46 @@ class truba_pryam(profiles_simple):
 #    '4 - треуголник
 #    '8 - отнимаемый круговой уголок
 #    '12 - прибавляем круговой уголок
-    def __init__(self, h=False, b=False\
-    , s=False, t=False, r1=False, r2=False, a1=False, a2=False, x1=False\
-    , x2=False, y1=False, y2=False, r=False, title2=False, r3=False):
-        super(truba_pryam, self).__init__(h,b,s,t,r1,r2,a1,a2,x1,x2,y1,y2,r,r3, title2)
+    def __init__(self, h=False, b=False, t=False, r1=False, r2=False):
+        super(truba_pryam, self).__init__(h=h,b=b,t=t,r1=r1,r2=r2)
         self.solve()
+    def input_data(self):
+        return [u"h, см",u"b, см",u"t, см",u"r1, см",u"r2, см"]
+    def output_dict(self):
+        out={u'P, кг/м': self.p()
+        ,u'A, см2': self.a()
+        ,u'Jx, см4': self.jx()
+        ,u'Wx, см3': self.wx()
+        ,u'Sx, см3': self.s2x()
+        ,u'ix, см': self.ix()
+        ,u'Jy, см4': self.jy()
+        ,u'Wy, см3': self.wy()
+        ,u'Sy, см3': self.s2y()
+        ,u'iy, см': self.iy()
+        }
+        return out
+
+    def output_list(self):
+        out=[u'P, кг/м'
+        ,u'A, см2'
+        ,u'Jx, см4'
+        ,u'Wx, см3'
+        ,u'Sx, см3'
+        ,u'ix, см'
+        ,u'Jy, см4'
+        ,u'Wy, см3'
+        ,u'Sy, см3'
+        ,u'iy, см'
+        ]
+        return out
+
     def solve(self):
         b=self.b()
         h=self.h()
         t=self.t()
         r1=self.r1()
         r2=self.r2()
-#        print 'r2', r2
+#        print h,b,t,r1,r2
 
         #полка
         massiv1 = rectangle(b=b - t * 2, h=t)
@@ -892,11 +952,50 @@ class ugol(profiles_simple):
      r3 - для края
     """
 
-    def __init__(self, h=False, b=False\
-    , s=False, t=False, r1=False, r2=False, a1=False, a2=False, x1=False\
-    , x2=False, y1=False, y2=False, r=False, title2=False, r3=False):
-        super(ugol, self).__init__(h,b,s,t,r1,r2,a1,a2,x1,x2,y1,y2,r,r3, title2)
+    def __init__(self, h=False, b=False, t=False, r1=False, r2=False, r3=False):
+        super(ugol, self).__init__(h=h,b=b,t=t,r1=r1,r2=r2,r3=r3)
         self.solve()
+    def input_data(self):
+        return [u"h, см",u"b, см",u"t, см",u"r1, см",u"r2, см",u"r3, см"]
+    def output_dict(self):
+        out={u'P, кг/м': self.p()
+        ,u'A, см2': self.a()
+        ,u'Jx, см4': self.jx()
+        ,u'Wx, см3': self.wx()
+        ,u'ix, см': self.ix()
+        ,u'Jy, см4': self.jy()
+        ,u'Wy, см3': self.wy()
+        ,u'iy, см': self.iy()
+        ,u'Jxy, см4': self.jxy()
+        ,u'Jx0, см4': self.jx0()
+        ,u'ix0, см4': self.ix0()
+        ,u'Jy0, см4': self.jy0()
+        ,u'iy0, см4': self.iy0()
+        ,u'alpha': self.alpha()
+        ,u'dx, см': self.dx()
+        ,u'dy, см': self.dx()
+        }
+        return out
+
+    def output_list(self):
+        out=[u'P, кг/м'
+        ,u'A, см2'
+        ,u'Jx, см4'
+        ,u'Wx, см3'
+        ,u'ix, см'
+        ,u'Jy, см4'
+        ,u'Wy, см3'
+        ,u'iy, см'
+        ,u'Jxy, см4'
+        ,u'Jx0, см4'
+        ,u'ix0, см4'
+        ,u'Jy0, см4'
+        ,u'iy0, см4'
+        ,u'alpha'
+        ,u'dx, см'
+        ,u'dy, см'
+        ]
+        return out
     def solve(self):
         h=self.h()
         b=self.b()
@@ -906,6 +1005,7 @@ class ugol(profiles_simple):
         r2=self.r2()
         r3=self.r3()
 
+#        print h,b,s,t,r1,r2,r3
         massiv1 = rectangle(b=t, h=h)
         a1 = massiv1.a()
         xi1 = t/2
@@ -995,6 +1095,22 @@ class ugol(profiles_simple):
         return self.__jx
     def jy(self):
         return self.__jy
+    def wy(self):
+        w1=self.jy()/self.dx()
+        w2=self.jy()/(self.b()-self.dx())
+        if w1<w2:
+            return w1
+        else:
+            return w2
+
+    def wx(self):
+        w1=self.jx()/self.dy()
+        w2=self.jx()/(self.h()-self.dy())
+        if w1<w2:
+            return w1
+        else:
+            return w2
+            
     def jxy(self):
         return self.__jxy
     def jx0(self):
@@ -1017,7 +1133,9 @@ class ugol(profiles_simple):
         return self.__dx
     def dy(self):
         return self.__dy
-
+    def title(self):
+        return 'ugol'
+        
 class shvel(profiles_simple):
 ##'"""универсальный расчет швеллеров, r2 - отнимаем, r3 - для гнутого
 ## '   1 - расчет стенки
@@ -1028,8 +1146,8 @@ class shvel(profiles_simple):
 ##  '  6 - отнимаемая часть у гнутого швеллера
 ##  '  r3 - только для гнутого швеллера"""
     def __init__(self, h=False, b=False\
-    , s=False, t=False, r1=False, r2=False, a1=False, r3=False, title2='shvel'):
-        super( shvel, self).__init__(h=h,b=b,s=s,t=t,r1=r1,r2=r2,a1=a1,r3=r3, title2=title2)
+    , s=False, t=False, r1=False, r2=False, a1=False, r3=False):
+        super( shvel, self).__init__(h=h,b=b,s=s,t=t,r1=r1,r2=r2,a1=a1,r3=r3)
         self.solve()
     def input_data(self):
         return [u"h, см",u"b, см",u"s, см",u"t, см",u"r1, см",u"r2, см",u"r3, см",u"a, %"]
@@ -1320,7 +1438,8 @@ class shvel(profiles_simple):
 
     def dx(self):
         return self.__dx
-
+    def title(self):
+        return 'shvel'
 
 
 class  profiles_sostav(object):
@@ -1705,7 +1824,7 @@ class sost_ugol_tavr_st_right(profiles_blank_sostav):
     def __init__(self     , h=False, b=False\
     , t=False, r1=False, r2=False,  r3=False , dx=False):
 
-        self.pr1=ugol(h=h,b=b,t=t, s=t, r2=r2, r1=r1, r3=r3)
+        self.pr1=ugol(h=h,b=b,t=t, r2=r2, r1=r1, r3=r3)
         self.pr2=self.pr1
 
         self.__alpha1=float(pi/2)
@@ -1751,7 +1870,7 @@ class sost_ugol_tavr_st_krest(profiles_blank_sostav):
     def __init__(self     , h=False, b=False\
     , t=False, r1=False, r2=False,  r3=False , dx=False, dy=False):
 
-        self.pr1=ugol(h=h,b=b,t=t, s=t, r2=r2, r1=r1, r3=r3)
+        self.pr1=ugol(h=h,b=b,t=t, r2=r2, r1=r1, r3=r3)
         self.pr2=self.pr1
 
         self.__alpha1=float()
