@@ -17,6 +17,6 @@ objDoc.ActiveWindow.Selection.InsertAfter("Чувачёк.")
 objDoc.ActiveWindow.Selection.InsertParagraphAfter
 objDoc.ActiveWindow.Selection.Font.Bold = True
 objDoc.ActiveWindow.Selection.EndOf
-objDoc.SaveAs("C:/Test.doc")
-del objDoc
+#objDoc.SaveAs("C:/Test.doc")
+del objDocs
 objWord.Quit()

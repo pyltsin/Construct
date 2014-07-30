@@ -27,5 +27,8 @@ table.ApplyStyleHeadingRows = 1
 table.AutoFormat(16)
 table.Cell(1,1).Range.InsertAfter("Teacher1")
 worddoc.Content.MoveEnd
-worddoc.Close() # Close the Word Document (a save-Dialog pops up)
-wordapp.Quit() # Close the Word Application
+
+worddoc.ActiveWindow.Selection.InlineShapes.AddPicture('D:\python_my\Construct\SortamentPicture/shvel.png')
+#worddoc.Close() # Close the Word Document (a save-Dialog pops up)
+#wordapp.Quit() # Close the Word Application
+del wordapp

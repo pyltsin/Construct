@@ -7,6 +7,7 @@ Created on Sat Jul 26 18:15:04 2014
 
 from  PyQt4 import QtCore, QtGui, uic
 import profiles2 as profiles
+import win32com.client
 
 class BasaSort(object):
     def __init__(self):
@@ -75,9 +76,81 @@ class MyWindow(QtGui.QWidget):
         for text in basa.key_sortament():
             self.listWidget.addItem(text)
         self.listWidget.currentItemChanged.connect(table_head)
-        self.inputtable.currentItemChanged.connect(table_clear_output)
+        self.inputtable.currentItemChanged.connect(table_clear_output,)
         self.solvebutton.clicked.connect(solve)
+        self.wordbutton.clicked.connect(toword)
+        self.wordbutton.setEnabled(True)
 
+        self.clip = QtGui.QApplication.clipboard()
+
+    def keyPressEvent(self, e):
+        if (window.focusWidget()==window.inputtable):
+            self.table=window.inputtable
+        elif (window.focusWidget()==window.outputtable):
+            self.table=window.outputtable            
+        
+
+        if (e.modifiers() & QtCore.Qt.ControlModifier):
+            selected = self.table.selectedRanges()
+                 
+            if e.key() == QtCore.Qt.Key_V:#past
+                first_row = selected[0].topRow()
+                first_col = selected[0].leftColumn()
+                 
+                #copied text is split by '\n' and '\t' to paste to the cells
+                for r, row in enumerate(self.clip.text().split('\n')):
+                    for c, text in enumerate(row.split('\t')):
+                        self.table.setItem(first_row+r, first_col+c, QtGui.QTableWidgetItem(text))
+ 
+            elif e.key() == QtCore.Qt.Key_C: #copy
+                s = ""
+                for r in xrange(selected[0].topRow(),selected[0].bottomRow()+1):
+                    for c in xrange(selected[0].leftColumn(),selected[0].rightColumn()+1):
+                        try:
+                            s += str(self.table.item(r,c).text()) + "\t"
+                        except AttributeError:
+                            s += "\t"
+                    s = s[:-1] + "\n" #eliminate last '\t'
+                self.clip.setText(s)
+
+def toword():
+    wordapp = win32com.client.Dispatch("Word.Application") 
+    wordapp.Visible = 1 
+    worddoc = wordapp.Documents.Add()
+    worddoc.PageSetup.Orientation = 1 
+    worddoc.PageSetup.BookFoldPrinting = 1 
+    worddoc.Content.Font.Size = 12
+    worddoc.Content.Font.Name="Times New Roman"
+    worddoc.Content.Font.Bold=True
+
+#    worddoc.Content.Paragraphs.TabStops.Add (100)
+    worddoc.Content.Text = u"Расчет сечения"
+    worddoc.Content.Text = u"Расчет сечения"
+
+#    location = worddoc.Range()
+#    location.Paragraphs.Add()
+#    location.Collapse(0)
+#    location.Paragraphs.Add()
+#    location.Collapse(1)
+#    table = location.Tables.Add (location, 3, 4)
+#    table.ApplyStyleHeadingRows = 1
+#    table.AutoFormat(16)
+#    table.Cell(1,1).Range.InsertAfter("Teacher")
+#    
+#    location1 = worddoc.Range()
+#    location1.Paragraphs.Add()
+#    location1.Collapse(1)
+#    table = location1.Tables.Add (location1, 3, 4)
+#    table.ApplyStyleHeadingRows = 1
+#    table.AutoFormat(16)
+#    table.Cell(1,1).Range.InsertAfter("Teacher1")
+#    worddoc.Content.MoveEnd
+#    
+#    worddoc.ActiveWindow.Selection.InlineShapes.AddPicture('D:\python_my\Construct\SortamentPicture/shvel.png')
+    #worddoc.Close() # Close the Word Document (a save-Dialog pops up)
+    #wordapp.Quit() # Close the Word Application
+    del wordapp
+    
 def solve():
     window.messege.clear()
     try:
@@ -85,10 +158,10 @@ def solve():
         countcolumn=window.inputtable.columnCount()
         input_list=[]
         for i in range(0, countcolumn):
-#            print type(window.inputtable.item(0, i))
+
             if window.inputtable.item(0, i).text()=="":
                 window.inputtable.item(0, i).setText("0")
-#            print window.inputtable.item(0, i).text()
+
             input_list.append(float(window.inputtable.item(0, i).text()))
         basa=BasaSort()
         pr=basa.output_data(lab, input_list)
@@ -98,7 +171,7 @@ def solve():
         for i in pr.output_list():
             txt="%.2f"%(pr.output_dict()[i])
             window.outputtable.setItem(0,j,QtGui.QTableWidgetItem(txt))
-#            print window.outputtable.item(0,j).setFlags(QtCore.Qt.ItemFlags(1+2+4+8+6+12+64))
+            window.outputtable.item(0,j).setFlags(QtCore.Qt.ItemFlags(1+2+4+8+6+12+64))
             j=j+1
     except (ValueError, AttributeError, ZeroDivisionError):
         window.messege.clear()
@@ -106,6 +179,7 @@ def solve():
 
     else:
         window.messege.insert(u"Расчет выполнен успешно")
+    window.wordbutton.setEnabled(True)
 
 
 
@@ -116,10 +190,12 @@ def table_clear():
     window.outputtable.setRowCount (1)
     window.messege.clear()
     window.outputtable.setColumnCount(0)
+    window.wordbutton.setEnabled(False)
+
 def table_clear_output():
     window.messege.clear()
     window.messege.insert(u"Расчет НЕ выполнен")
-
+    window.wordbutton.setEnabled(False)
 def table_head():
     table_clear()
     lab=window.listWidget.currentItem().text()
@@ -131,6 +207,9 @@ def table_head():
     window.picture.setPixmap(QtGui.QPixmap(pict))
     for i in range(0, window.inputtable.columnCount()):
         window.inputtable.setItem(0, i, QtGui.QTableWidgetItem(""))
+
+
+
 
 if __name__=="__main__":
     import sys
