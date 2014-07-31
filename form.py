@@ -41,14 +41,16 @@ class BasaSort(object):
     def input_data(self, i):
 
         for label in self.dict_sort:
-            if str(i)==str(label):
+#            print type(i)
+#            print label
+            if i==QtCore.QString(label):
                 x=self.dict_sort[label]
 
         y=self.list_input[x]
         return y
     def output_data(self, i, inp):
         for label in self.dict_sort:
-            if str(i)==str(label):
+            if i==QtCore.QString(label):
                 x=self.dict_sort[label]
         if x==0:
             pr=profiles.dvut(inp[0],inp[1],inp[2],inp[3],inp[4],inp[5],inp[6])
@@ -63,7 +65,7 @@ class BasaSort(object):
         return pr
     def pict(self, i):
         for label in self.dict_sort:
-            if str(i)==str(label):
+            if i==QtCore.QString(label):
                 x=self.dict_sort[label]
         return self.pictures_list[x]
 
@@ -93,7 +95,7 @@ class MyWindow(QtGui.QWidget):
         if (e.modifiers() & QtCore.Qt.ControlModifier):
             selected = self.table.selectedRanges()
                  
-            if e.key() == QtCore.Qt.Key_V:#past
+            if e.key() == QtCore.Qt.Key_V and (window.focusWidget()==window.inputtable):#past
                 first_row = selected[0].topRow()
                 first_col = selected[0].leftColumn()
                  
@@ -161,6 +163,10 @@ def solve():
 
             if window.inputtable.item(0, i).text()=="":
                 window.inputtable.item(0, i).setText("0")
+            if "," in window.inputtable.item(0, i).text():
+                text=window.inputtable.item(0, i).text()
+                text=text.replace(',','.')
+                window.inputtable.item(0, i).setText(text)                
 
             input_list.append(float(window.inputtable.item(0, i).text().replace(',','.')))
         basa=BasaSort()
