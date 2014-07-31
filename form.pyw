@@ -162,7 +162,7 @@ def solve():
             if window.inputtable.item(0, i).text()=="":
                 window.inputtable.item(0, i).setText("0")
 
-            input_list.append(float(window.inputtable.item(0, i).text().replace(',','.')))
+            input_list.append(float(window.inputtable.item(0, i).text()))
         basa=BasaSort()
         pr=basa.output_data(lab, input_list)
         window.outputtable.setColumnCount(len(pr.output_list()))
