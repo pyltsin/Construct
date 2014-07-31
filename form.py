@@ -121,14 +121,14 @@ def toword():
     worddoc = wordapp.Documents.Add()
     worddoc.PageSetup.Orientation = 1 
     worddoc.PageSetup.BookFoldPrinting = 1 
-    worddoc.Content.Font.Size = 12
-    worddoc.Content.Font.Name="Times New Roman"
-    worddoc.Content.Font.Bold=True
+    worddoc.ActiveWindow.Selection.Font.Size = 12
+    worddoc.ActiveWindow.Selection.Font.Name="Times New Roman"
+    worddoc.ActiveWindow.Selection.BoldRun()
 
-#    worddoc.Content.Paragraphs.TabStops.Add (100)
-    worddoc.Content.Text = u"Расчет сечения"
-    worddoc.Content.Text = u"Расчет сечения"
-
+    worddoc.ActiveWindow.Selection.TypeText(u"Расчет сечения")
+    worddoc.ActiveWindow.Selection.TypeParagraph()
+    worddoc.ActiveWindow.Selection.BoldRun()
+    worddoc.ActiveWindow.Selection.TypeText(u"Сечение")    
 #    location = worddoc.Range()
 #    location.Paragraphs.Add()
 #    location.Collapse(0)
