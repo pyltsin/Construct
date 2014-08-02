@@ -148,6 +148,45 @@ class  profiles_simple(object):
 
 class rectangle(profiles_simple):
     """Прямоугольник, входные - h и b"""
+    def __init__(self, h=False, b=False):
+        super(rectangle, self).__init__(h=h,b=b)
+
+    def input_data(self):
+        return [u"h, см",u"b, см"]
+    def output_dict(self):
+        out={u'P, кг/м': self.p()
+        ,u'A, см2': self.a()
+        ,u'Jx, см4': self.jx()
+        ,u'Wx, см3': self.wx()
+        ,u'Sx, см3': self.s2x()
+        ,u'ix, см': self.ix()
+        ,u'Jy, см4': self.jy()
+        ,u'Wy, см3': self.wy()
+        ,u'Sy, см3': self.s2y()
+        ,u'iy, см': self.iy()
+        ,u'title': self.title()   
+        ,u'title0': self.title0()  
+        }
+        return out
+    def title(self):
+        return 'rectangle'
+
+    def output_list(self):
+        out=[u'P, кг/м'
+        ,u'A, см2'
+        ,u'Jx, см4'
+        ,u'Wx, см3'
+        ,u'Sx, см3'
+        ,u'ix, см'
+        ,u'Jy, см4'
+        ,u'Wy, см3'
+        ,u'Sy, см3'
+        ,u'iy, см'
+        ,u'title'
+        ,u'title0'  
+        ]
+        return out
+
     def a(self):
         return self.h()*self.b()
     def jx(self):
@@ -264,9 +303,12 @@ class ring(profiles_simple):
         ,u'Jy, см4': self.jy()
         ,u'Wy, см3': self.wy()
         ,u'iy, см': self.iy()
+        ,u'title': self.title()   
+        ,u'title0': self.title0()  
         }
         return out
-
+    def title(self):
+        return 'ring'
     def output_list(self):
         out=[u'P, кг/м'
         ,u'A, см2'
@@ -276,6 +318,8 @@ class ring(profiles_simple):
         ,u'Jy, см4'
         ,u'Wy, см3'
         ,u'iy, см'
+        ,u'title'
+        ,u'title0'  
         ]
         return out
 
@@ -495,6 +539,8 @@ class dvut(profiles_simple):
         ,u'Jw, см6': self.jw()
         ,u'Jt, см4': self.jt()
         ,u'Jt_sp2013, см4': self.jt_sp()
+        ,u'title': self.title()   
+        ,u'title0': self.title0()  
         }
         return out
 
@@ -511,7 +557,10 @@ class dvut(profiles_simple):
         ,u'iy, см'
         ,u'Jw, см6'
         ,u'Jt, см4'
-        ,u'Jt_sp2013, см4']
+        ,u'Jt_sp2013, см4'
+        ,u'title'
+        ,u'title0'  
+        ]
         return out
 
     def solve(self):
@@ -822,6 +871,8 @@ class truba_pryam(profiles_simple):
         ,u'Wy, см3': self.wy()
         ,u'Sy, см3': self.s2y()
         ,u'iy, см': self.iy()
+        ,u'title': self.title()   
+        ,u'title0': self.title0()  
         }
         return out
 
@@ -836,6 +887,8 @@ class truba_pryam(profiles_simple):
         ,u'Wy, см3'
         ,u'Sy, см3'
         ,u'iy, см'
+        ,u'title'
+        ,u'title0'  
         ]
         return out
 
@@ -974,6 +1027,8 @@ class ugol(profiles_simple):
         ,u'alpha': self.alpha()
         ,u'dx, см': self.dx()
         ,u'dy, см': self.dx()
+        ,u'title': self.title()   
+        ,u'title0': self.title0()  
         }
         return out
 
@@ -994,6 +1049,8 @@ class ugol(profiles_simple):
         ,u'alpha'
         ,u'dx, см'
         ,u'dy, см'
+        ,u'title'
+        ,u'title0'  
         ]
         return out
     def solve(self):
@@ -1166,6 +1223,8 @@ class shvel(profiles_simple):
         ,u'Jw, см6': self.jw()
         ,u'Jt, см4': self.jt()
         ,u'Jt_sp2013, см4': self.jt_sp()
+        ,u'title': self.title()   
+        ,u'title0': self.title0()  
         }
         return out
     def output_list(self):
@@ -1182,7 +1241,10 @@ class shvel(profiles_simple):
         ,u'dx, см'
         ,u'Jw, см6'
         ,u'Jt, см4'
-        ,u'Jt_sp2013, см4']
+        ,u'Jt_sp2013, см4'        
+        ,u'title'
+        ,u'title0'  
+        ]
         return out
 
     def solve(self):
@@ -1648,7 +1710,8 @@ class  profiles_sostav(object):
 
 
 class  profiles_blank_sostav(object):
-
+    def p(self):
+        return self.__p
     def h(self):
         return self.__h
     def b(self):
@@ -1742,10 +1805,11 @@ class  profiles_blank_sostav(object):
 #        return self.__alpha
 
     def title0(self):
-        return self.__title0
+        return 'sostav'
 
     def title(self):
         return self.__title
+        
     def def_char(self):
         self.__a=self.sostav.a()
         self.__jx=self.sostav.jx()
@@ -1758,7 +1822,7 @@ class  profiles_blank_sostav(object):
         self.__alpha=self.sostav.alpha()
         self.__jx0=self.sostav.jx0()
         self.__jy0=self.sostav.jy0()
-
+        self.__p=self.sostav.a()*7850/100/100
 class sost_ugol_tavr_st_up(profiles_blank_sostav):
     """Расчет сечения сдвоенных уголков. Для неравнополочных - длинная сторона направлена вверх
     Входные данные - h, b, t,
@@ -1798,13 +1862,49 @@ class sost_ugol_tavr_st_up(profiles_blank_sostav):
 
 
         self.__title='ugol_tavr_st_up'
-        self.__title0='sostav'
 
 
         self.sostav=profiles_sostav( pr1=self.pr1, alpha1=self.__alpha1, x1=self.__x1, y1=self.__y1, mir1=self.__mir1  , pr2=self.pr2, x2=self.__x2, y2=self.__y2, alpha2=self.__alpha2, mir2=self.__mir2, title=self.__title)
 
         self.def_char()
 
+    def title(self):
+        return self.__title
+    def input_data(self):
+        return [u"h, см",u"b, см",u"t, см",u"r1, см",u"r2, см",u"r3, см",u"dx, см"]
+    def output_dict(self):
+        out={u'P, кг/м': self.p()
+        ,u'A, см2': self.a()
+        ,u'Jx, см4': self.jx()
+        ,u'ix, см': self.ix()
+        ,u'Jy, см4': self.jy()
+        ,u'iy, см': self.iy()
+        ,u'xi, см': self.xi()
+        ,u'yi, см4': self.yi()
+        ,u'Jx0, см4': self.jx0()
+        ,u'Jy0, см4': self.jy0()
+        ,u'alpha': self.alpha()
+        ,u'title': self.title()   
+        ,u'title0': self.title0()  
+        }
+        return out
+
+    def output_list(self):
+        out=[u'P, кг/м'
+        ,u'A, см2'
+        ,u'Jx, см4'
+        ,u'ix, см'
+        ,u'Jy, см4'
+        ,u'iy, см'
+        ,u'xi, см'
+        ,u'yi, см4'
+        ,u'Jx0, см4'
+        ,u'Jy0, см4'
+        ,u'alpha'        
+        ,u'title'
+        ,u'title0'  
+        ]
+        return out
 
 
 
@@ -1844,12 +1944,48 @@ class sost_ugol_tavr_st_right(profiles_blank_sostav):
 
 
         self.__title='ugol_tavr_st_right'
-        self.__title0='sostav'
 
 
         self.sostav=profiles_sostav( pr1=self.pr1, alpha1=self.__alpha1, x1=self.__x1, y1=self.__y1, mir1=self.__mir1  , pr2=self.pr2, x2=self.__x2, y2=self.__y2, alpha2=self.__alpha2, mir2=self.__mir2, title=self.__title)
 
         self.def_char()
+    def title(self):
+        return self.__title
+    def input_data(self):
+        return [u"h, см",u"b, см",u"t, см",u"r1, см",u"r2, см",u"r3, см",u"dx, см"]
+    def output_dict(self):
+        out={u'P, кг/м': self.p()
+        ,u'A, см2': self.a()
+        ,u'Jx, см4': self.jx()
+        ,u'ix, см': self.ix()
+        ,u'Jy, см4': self.jy()
+        ,u'iy, см': self.iy()
+        ,u'xi, см': self.xi()
+        ,u'yi, см4': self.yi()
+        ,u'Jx0, см4': self.jx0()
+        ,u'Jy0, см4': self.jy0()
+        ,u'alpha': self.alpha()
+        ,u'title': self.title()   
+        ,u'title0': self.title0()  
+        }
+        return out
+
+    def output_list(self):
+        out=[u'P, кг/м'
+        ,u'A, см2'
+        ,u'Jx, см4'
+        ,u'ix, см'
+        ,u'Jy, см4'
+        ,u'iy, см'
+        ,u'xi, см'
+        ,u'yi, см4'
+        ,u'Jx0, см4'
+        ,u'Jy0, см4'
+        ,u'alpha'
+        ,u'title'
+        ,u'title0'  
+        ]
+        return out
 
 
 class sost_ugol_tavr_st_krest(profiles_blank_sostav):
@@ -1890,8 +2026,44 @@ class sost_ugol_tavr_st_krest(profiles_blank_sostav):
 
 
         self.__title='ugol_tavr_st_krest'
-        self.__title0='sostav'
 
         self.sostav=profiles_sostav( pr1=self.pr1, alpha1=self.__alpha1, x1=self.__x1, y1=self.__y1, mir1=self.__mir1  , pr2=self.pr2, x2=self.__x2, y2=self.__y2, alpha2=self.__alpha2, mir2=self.__mir2, title=self.__title)
 
         self.def_char()
+    def input_data(self):
+        return [u"h, см",u"b, см",u"t, см",u"r1, см",u"r2, см",u"r3, см",u"dx, см",u"dy, см"]
+    def output_dict(self):
+        out={u'P, кг/м': self.p()
+        ,u'A, см2': self.a()
+        ,u'Jx, см4': self.jx()
+        ,u'ix, см': self.ix()
+        ,u'Jy, см4': self.jy()
+        ,u'iy, см': self.iy()
+        ,u'xi, см': self.xi()
+        ,u'yi, см4': self.yi()
+        ,u'Jx0, см4': self.jx0()
+        ,u'Jy0, см4': self.jy0()
+        ,u'alpha': self.alpha()
+        ,u'title': self.title()   
+        ,u'title0': self.title0()  
+        }
+        return out
+
+    def output_list(self):
+        out=[u'P, кг/м'
+        ,u'A, см2'
+        ,u'Jx, см4'
+        ,u'ix, см'
+        ,u'Jy, см4'
+        ,u'iy, см'
+        ,u'xi, см'
+        ,u'yi, см4'
+        ,u'Jx0, см4'
+        ,u'Jy0, см4'
+        ,u'alpha'
+        ,u'title'
+        ,u'title0'  
+        ]
+        return out
+    def title(self):
+        return self.__title
