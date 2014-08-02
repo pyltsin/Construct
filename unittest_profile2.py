@@ -54,6 +54,38 @@ class Test_profile(unittest.TestCase):
         self.assertLess(abs(el.jxdy(5)-35000)/abs(el.jxdy(5)),0.0000001)
         self.assertLess(abs(el.jydx(5)-60000)/abs(el.jydx(5)),0.0000001)
 #        self.assertLess(abs(el.jxydxdy(5,6)-18000)/abs(el.jxydxdy(5,6)),0.0000001)
+
+
+        self.assertEquals(el.input_data(),[u"h, см",u"b, см"])
+        self.assertEquals(el.output_list(),[u'P, кг/м'
+        ,u'A, см2'
+        ,u'Jx, см4'
+        ,u'Wx, см3'
+        ,u'Sx, см3'
+        ,u'ix, см'
+        ,u'Jy, см4'
+        ,u'Wy, см3'
+        ,u'Sy, см3'
+        ,u'iy, см'
+        ,u'title'
+        ,u'title0'  
+        ])
+
+        self.assertEquals(el.output_dict()[u'A, см2'],20*30)
+        self.assertEquals(el.output_dict()[u'Jx, см4'],20**3*30/12)
+        self.assertEquals(el.output_dict()[u'Wx, см3'],30*20*20/6)
+        self.assertEquals(el.output_dict()[u'ix, см'],(20**3*30./12/20/30)**0.5)
+        self.assertEquals(el.output_dict()[u'Sx, см3'],10*5*30)
+
+        self.assertEquals(el.output_dict()[u'Jy, см4'],20*30**3/12)
+        self.assertEquals(el.output_dict()[u'Wy, см3'],30*30*20/6)
+        self.assertEquals(el.output_dict()[u'iy, см'],(20*30.**3/12/20/30)**0.5)
+        self.assertEquals(el.output_dict()[u'Sy, см3'],15*7.5*20)
+        self.assertEquals(el.output_dict()[u'P, кг/м'],20*30*7850/100/100)
+        self.assertEquals(el.output_dict()[u'title'], 'rectangle')
+        self.assertEquals(el.output_dict()[u'title0'], 'simple')
+
+
         print 3         , "test_rectangle"
     def test_quartercircle(self):
         el=quartercircle(r=15)
@@ -108,6 +140,37 @@ class Test_profile(unittest.TestCase):
         self.assertLess(abs(el.jx()-pi*30**4/64*(1-(10./15)**4))/abs(el.jx()),0.001)
         self.assertLess(abs(el.jy()-pi*30**4/64*(1-(10./15)**4))/abs(el.jx()),0.001)
         self.assertEqual(el.jxy(),0)
+
+        self.assertEqual(el.input_data(),[u"r, см",u"r1, см"])
+        self.assertEqual(el.output_list(),[u'P, кг/м'
+        ,u'A, см2'
+        ,u'Jx, см4'
+        ,u'Wx, см3'
+        ,u'ix, см'
+        ,u'Jy, см4'
+        ,u'Wy, см3'
+        ,u'iy, см'
+        ,u'title'
+        ,u'title0'  
+        ])
+
+        self.assertLess(abs(el.output_dict()[u'A, см2']-15**2*pi+10**2*pi)/abs(el.output_dict()[u'A, см2']), 0.00001)
+        
+        self.assertLess(abs(el.output_dict()[u'Jx, см4']-pi*30**4/64*(1-(10./15)**4)), 0.00001)
+        self.assertLess(abs(el.output_dict()[u'Wx, см3']-pi*30**4/64*(1-(10./15)**4)/15.), 0.00001)
+        self.assertLess(abs(el.output_dict()[u'ix, см']**2-pi*30**4/64*(1-(10./15)**4)/(15**2*pi-10**2*pi)), 0.00001)
+
+        self.assertLess(abs(el.output_dict()[u'Jy, см4']-pi*30**4/64*(1-(10./15)**4)), 0.00001)
+        self.assertLess(abs(el.output_dict()[u'Wy, см3']-pi*30**4/64*(1-(10./15)**4)/15.), 0.00001)
+        self.assertLess(abs(el.output_dict()[u'iy, см']**2-pi*30**4/64*(1-(10./15)**4)/(15**2*pi-10**2*pi)), 0.00001)
+
+        self.assertLess(abs(el.output_dict()[u'P, кг/м']-15**2*pi*7850/10000+10**2*pi*7850./100/100), 0.00001)
+
+
+        self.assertEqual(el.output_dict()[u'title0'],'simple')
+        self.assertEqual(el.output_dict()[u'title'],'ring')
+
+
         print 9        ,       "test_ring"
     def test_angle(self):
         el=angle(b=10, h=12, x1=3)
@@ -177,7 +240,6 @@ class Test_profile(unittest.TestCase):
 
 
         self.assertEqual(el.title(),'dvut')
-        self.assertEqual(el.get_nsigma(),17)
 
         self.assertLess(abs(el.s2y()-156.051)/abs(el.s2y()),0.00002)
 
@@ -191,87 +253,6 @@ class Test_profile(unittest.TestCase):
 
         self.assertLess(abs(el.sx2()-1001.057)/abs(el.sx2()),0.01)
 
-        for i in range(1,18):
-#            print i
-            self.assertLess(abs((el. get_sigma(nn=i, n=10)-0.07270695))/abs(el. get_sigma(nn=i, n=10)),0.00002)
-        for i in range(1, 4):
-#            print i
-            self.assertLess(abs((el. get_sigma(nn=i, m_x=1000)-0.390595698))/abs(el. get_sigma(nn=i, m_x=1000)),0.00002)
-
-        for i in range(4, 8, 3):
-#            print i
-#            print el. get_sigma(nn=i, m_x=1000)
-            self.assertLess(abs((el. get_sigma(nn=i, m_x=1000)-0.374372957))/abs(el. get_sigma(nn=i, m_x=1000)),0.00002)
-
-        for i in range(5,7):
-#            print i
-
-            self.assertLess(abs((el. get_sigma(nn=i, m_x=1000)-0.36046775))/abs(el. get_sigma(nn=i, m_x=1000)),0.00002)
-
-
-        for i in range(8, 11):
-#            print i
-            self.assertEqual(abs(el. get_sigma(nn=i, m_x=1000)),0.0000)
-
-        for i in range(11, 15, 3):
-#            print i
-#            print el. get_sigma(nn=i, m_x=1000)
-            self.assertLess(abs((el. get_sigma(nn=i, m_x=1000)+0.374372957))/abs(el. get_sigma(nn=i, m_x=1000)),0.00002)
-
-        for i in range(12,14):
-#            print i
-
-            self.assertLess(abs((el. get_sigma(nn=i, m_x=1000)+0.36046775))/abs(el. get_sigma(nn=i, m_x=1000)),0.00002)
-
-
-        for i in range(15, 18):
-#            print i
-            self.assertLess(abs((el. get_sigma(nn=i, m_x=1000)+0.390595698))/abs(el. get_sigma(nn=i, m_x=1000)),0.00002)
-
-        for i in (1, 4, 11, 15):
-#            print i
-            self.assertLess(abs((el. get_sigma(nn=i, m_y=1000)-5.50776177))/abs(el. get_sigma(nn=i, m_y=1000)),0.00002)
-
-        for i in (5,8,12):
-#            print i
-            self.assertLess(abs((el. get_sigma(nn=i, m_y=1000)-0.347858655))/abs(el. get_sigma(nn=i, m_y=1000)),0.00002)
-
-
-        for i in (2,9,16):
-#            print i
-            self.assertEqual(el. get_sigma(nn=i, m_y=1000),0.0000)
-
-        for i in (6,10,13):
-#            print i
-            self.assertLess(abs((el. get_sigma(nn=i, m_y=1000)+0.347858655))/abs(el. get_sigma(nn=i, m_y=1000)),0.00002)
-
-
-        for i in (3,7,14,17):
-#            print i
-            self.assertLess(abs((el. get_sigma(nn=i, m_y=1000)+5.50776177))/abs(el. get_sigma(nn=i, m_y=1000)),0.00002)
-
-        for i in (1,2,3,15,16,17):
-            self.assertEqual(el.get_tau(nn=i, q_y=1000),0.0000)
-
-        for i in (8,9,10):
-            self.assertLess(abs((el. get_tau(nn=i, q_y=1000)-16.1753047))/abs(el. get_tau(nn=i, q_y=1000)),0.00002)
-
-        for i in (4,7,11,14):
-            self.assertLess(abs((el. get_tau(nn=i, q_y=1000)-0.476575405))/abs(el. get_tau(nn=i, q_y=1000)),0.00002)
-
-        for i in (5,6,12,13):
-            self.assertLess(abs((el. get_tau(nn=i, q_y=1000)-10.80209))/abs(el. get_tau(nn=i, q_y=1000)),0.00002)
-
-        for i in (1,4,11,15,3,7,14,17):
-            self.assertEqual(el.get_tau(nn=i, q_x=1000),0.0000)
-
-        for i in (2,9,16):
-            self.assertLess(abs((el. get_tau(nn=i, q_x=1000)-1.50788023))/abs(el. get_tau(nn=i, q_x=1000)),0.00002)
-
-        for i in (5,8,12,6,10,13):
-            self.assertLess(abs((el. get_tau(nn=i, q_x=1000)-18.1959332))/abs(el. get_tau(nn=i, q_x=1000)),0.00002)
-
-        self.assertLess(abs((el.get_sigma_e(nn=i, n=1000, q_x=1000)-32.3436779))/abs(el.get_sigma_e(nn=i, n=1000, q_x=1000)),0.00002)
 
 
         self.assertLess(abs(el.wxmin()-2560.19204793)/abs(el.wx()),0.0000001)
@@ -294,18 +275,6 @@ class Test_profile(unittest.TestCase):
         self.assertLess(abs(el.jw()- 146500*10**6)/abs(el.jw()),0.001)
         self.assertLess(abs(el.output_dict()[u"Jw, см6"]- 146500*10**6)/abs(el.jw()),0.001)
 
-        self.assertLess(abs(el.w(1)- 110.63*100)/abs(el.w(1)),0.021)
-        self.assertLess(abs(el.w(1)- 112.9748*100)/abs(el.w(1)),0.000001)
-        self.assertLess(abs(el.w(3)+ 112.9748*100)/abs(el.w(3)),0.000001)
-#        print(el.w(6), el.t2())
-        self.assertLess(abs(el.w(5)- 808.41675)/abs(el.w(5)),0.00002)
-        self.assertLess(abs(el.w(6)+808.41675)/abs(el.w(6)),0.00002)
-
-
-
-        self.assertLess(abs((el.get_sigma(nn=1, w=10**10)-771.245))/abs(el. get_sigma(nn=1, w=10**10)),0.00002)
-
-        self.assertLess(abs((el.get_sigma(nn=1, w=10**10, n=100000)-771.245-100000/7380))/abs(el.get_sigma(nn=1, w=10**10, n=100000)),0.001)
 
 
         el2=dvut(h=450, b=150, t=18, s=10.5, r1=16, r2=7, a1=atan(12./100))
@@ -321,6 +290,37 @@ class Test_profile(unittest.TestCase):
         self.assertLess(abs(el3.output_dict()[u"Jt, см4"]-31.22*10**4)/abs(el3.jt()),0.005)
         self.assertLess(abs(el3.output_dict()[u"Jt_sp2013, см4"]-31.22*10**4/1.3)/abs(el3.jt()),0.005)
 
+        e14=dvut(h=60.0, b=19.0, t=1.78, s=1.2, r1=2, r2=0.8, a1=atan(12./100))
+        self.assertEqual(e14.input_data(), [u"h, см",u"b, см",u"s, см",u"t, см",u"r1, см",u"r2, см",u"a, %"])
+        self.assertEqual(e14.output_list(), [u'P, кг/м',u'A, см2',u'Jx, см4',u'Wx, см3',u'Sx, см3',u'ix, см'
+        ,u'Jy, см4',u'Wy, см3',u'Sy, см3',u'iy, см',u'Jw, см6',u'Jt, см4',u'Jt_sp2013, см4',u'w1, см2',u'Ww, см4',u'title',u'title0'])
+        self.assertLess(abs(e14.output_dict()[u"A, см2"]-137.53)/abs(137.53),0.001)
+        self.assertLess(abs(e14.output_dict()[u"P, кг/м"]-137.53*7850/100/100)/abs(137.53*7850/100/100),0.001)
+        self.assertLess(abs(e14.output_dict()[u"Jx, см4"]-76805.)/abs(76805),0.001)
+        self.assertLess(abs(e14.output_dict()[u"Wx, см3"]-76805./30.)/abs(76805./30),0.001)
+        self.assertLess(abs(e14.output_dict()[u"Sx, см3"]-68.77*21.6787)/abs(68.77*21.6787),0.001)
+        self.assertLess(abs(e14.output_dict()[u"ix, см"]-(76805./137.53)**0.5)/abs((76805./137.53)**0.5),0.001)
+
+
+        self.assertLess(abs(e14.output_dict()[u"Jy, см4"]-1724.8386)/abs(1724.8386),0.001)
+        self.assertLess(abs(e14.output_dict()[u"Wy, см3"]-1724.8386/9.5)/abs(1724.8386/9.5),0.001)
+        self.assertLess(abs(e14.output_dict()[u"Sy, см3"]-68.77*2.2692)/abs(68.77*2.2692),0.001)
+        self.assertLess(abs(e14.output_dict()[u"iy, см"]-(1724.8386/137.53)**0.5)/abs((1724.8386/137.53)**0.5),0.001)
+
+
+
+        e14=dvut(h=18, b=9.0, t=0.81, s=0.51, r1=0.9, r2=0.35, a1=atan(12./100))
+        self.assertLess(abs(e14.output_dict()[u"Jw, см6"]-(5780))/abs(5780),0.005)
+        self.assertLess(abs(e14.output_dict()[u"Jt, см4"]-(5.09))/abs(5.09),0.007)
+        self.assertLess(abs(e14.output_dict()[u"Jt_sp2013, см4"]-(5.09/1.3))/abs(5.09/1.3),0.007)
+
+        self.assertLess(abs(e14.output_dict()[u"w1, см2"]-(38.07))/abs(38.07),0.001)
+        self.assertLess(abs(e14.output_dict()[u"Ww, см4"]-(151.82))/abs(151.82),0.001)
+
+
+        self.assertEqual(e14.output_dict()[u"title"],'dvut')
+        self.assertEqual(e14.output_dict()[u"title0"],'simple')
+
 
         print 15  ,       " test_dvut2"
     def test_function(self):
@@ -329,6 +329,7 @@ class Test_profile(unittest.TestCase):
         self.assertLess((jda(11.25, 31.25, 0, 45./180*pi)[1]-21.25)/21.25,0.00002)
         self.assertLess((jda(11.25, 31.25, 0, 45./180*pi)[2]-10.)/10.,0.00002)
         print 16      ,       "test_function"
+        
 #         self.assertLess(abs(el.get_sigma_e()-3.5412957)/abs(el.get_sigma_e()),0.0000001)
 
     def test_korob(self):
@@ -441,9 +442,32 @@ class Test_profile(unittest.TestCase):
 
         pr1=shvel(h=27,b=9.5,t=1.05, s=0.6, r2=0.45, r1=1.1, r3=0.0, a1=atan(0.1))
 
-#        print pr1.jy()
-#        print pr1.jx()
-#        print pr1.w2()
+        
+        self.assertEquals(pr1.input_data(),[u"h, см",u"b, см",u"s, см",u"t, см",u"r1, см",u"r2, см",u"r3, см",u"a, %"])
+
+        self.assertEquals(pr1.output_list(),[u'P, кг/м'
+        ,u'A, см2'
+        ,u'Jx, см4'
+        ,u'Wx, см3'
+        ,u'Sx, см3'
+        ,u'ix, см'
+        ,u'Jy, см4'
+        ,u'Wy, см3'
+        ,u'Sy, см3'
+        ,u'iy, см'
+        ,u'dx, см'
+        ,u'Jw, см6'
+        ,u'Jt, см4'
+        ,u'Jt_sp2013, см4'        
+        ,u'xa, см' 
+        ,u'w1, см'
+        ,u'w2, см'
+        ,u'Ww1, см4'
+        ,u'Ww2, см4'
+        ,u'title'
+        ,u'title0'   
+        ])
+        
         self.assertLess(abs(pr1.output_dict()[u'P, кг/м']/7850*100*100-35.2313888)/35.2313888,0.0001)
    
         self.assertLess(abs(pr1.output_dict()[u'A, см2']-35.2313888)/35.2313888,0.0001)
@@ -461,16 +485,30 @@ class Test_profile(unittest.TestCase):
 
         self.assertLess(abs(pr1.output_dict()[u'Wy, см3']-37.27)/37.27,0.001)
         
-        self.assertLess(abs(pr1.output_dict()[u'Sx, см3' ]-177.608)/177.608,0.0001)
-        self.assertLess(abs(pr1.output_dict()[u'Sy, см3' ]-40.9452)/40.9452,0.0001)
+        self.assertLess(abs(pr1.output_dict()[u'Sx, см3' ]-17.6157*10.0824)/177.608,0.0001)
+        self.assertLess(abs(pr1.output_dict()[u'Sy, см3' ]-21.8614*1.8719)/40.922,0.001)
+        self.assertLess(abs(pr1.output_dict()[u'Sy, см3' ]-6.685*2*3.0632)/40.922,0.001)
 
+        self.assertLess(abs(pr1.output_dict()[u'dx, см' ]-2.474374)/2.47,0.0001)
+
+        self.assertLess(abs(pr1.output_dict()[u'Jw, см6' ]-30070)/30070,0.02)
+        self.assertLess(abs(pr1.output_dict()[u'Jt, см4' ]-10.2)/10.2,0.002)
+        self.assertLess(abs(pr1.output_dict()[u'Jt_sp2013, см4' ]-10.2/1.12)/10.2*1.12,0.002)
+
+        self.assertLess(abs(pr1.output_dict()[u'w1, см' ]-37.8)/37.8,0.04)
+        self.assertLess(abs(pr1.output_dict()[u'w2, см' ]-78.2)/78.2,0.04)
+
+        self.assertLess(abs(pr1.output_dict()[u'Ww1, см4']-796.1)/796.1,0.02)
+        self.assertLess(abs(pr1.output_dict()[u'Ww2, см4']-384.6)/384.6,0.04)
+
+        self.assertEquals(pr1.output_dict()[u'title'],'shvel')
+        self.assertEquals(pr1.output_dict()[u'title0'],'simple')
 
         self.assertLess(abs(pr1.a()-35.2313888)/35.2313888,0.0001)
         self.assertLess(abs(pr1.jx()-4163.337068)/4163.337068,0.0001)
         self.assertLess(abs(pr1.jy()-261.7465238)/261.7465238,0.0001)
 
         self.assertLess(abs(pr1.dx()-2.474374)/2.47,0.0001)
-        self.assertLess(abs(pr1.output_dict()[u'dx, см' ]-2.474374)/2.47,0.0001)
 
 
         self.assertLess(abs(pr1.s2x()-177.608)/177.608,0.0001)

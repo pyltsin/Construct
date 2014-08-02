@@ -539,6 +539,8 @@ class dvut(profiles_simple):
         ,u'Jw, см6': self.jw()
         ,u'Jt, см4': self.jt()
         ,u'Jt_sp2013, см4': self.jt_sp()
+        ,u'w1, см2': self.w1()
+        ,u'Ww, см4': self.ww()
         ,u'title': self.title()   
         ,u'title0': self.title0()  
         }
@@ -558,6 +560,8 @@ class dvut(profiles_simple):
         ,u'Jw, см6'
         ,u'Jt, см4'
         ,u'Jt_sp2013, см4'
+        ,u'w1, см2'
+        ,u'Ww, см4'
         ,u'title'
         ,u'title0'  
         ]
@@ -699,130 +703,16 @@ class dvut(profiles_simple):
 
 
 
-    def get_sigma(self, nn, n=0, m_x=0, m_y=0, w=0):
-   # """Положительное n - растяжение, m_y - растягивается левые волокна, m_x - верхние"""
-    #123
-    #4567
-    #789
-    #11 12 13 14
-   # 15 16 17
-        a=self.a()
-        jx=self.jx()
-        jy=self.jy()
-        h=self.h()
+    def w1(self):
         b=self.b()
-        s=self.s()
-        t1=self.t1()
-        t2=self.t2()
-        h1=h-t1*2
-        h2=h-t2*2-t1*2
+        k=tan(self.a1())
 
-        sigma= [x for x in range(1, self.get_nsigma()+2)]
-        sigma[1]=n/a+m_x/jx*(h/2)+m_y/jy*(b/2)
-        sigma[2]=n/a+m_x/jx*(h/2)+0*m_y/jy*(b/2)
-        sigma[3]=n/a+m_x/jx*(h/2)-m_y/jy*(b/2)
-
-        sigma[15]=n/a-m_x/jx*(h/2)+m_y/jy*(b/2)
-        sigma[16]=n/a-m_x/jx*(h/2)+0*m_y/jy*(b/2)
-        sigma[17]=n/a-m_x/jx*(h/2)-m_y/jy*(b/2)
-
-        sigma[8]=n/a+0*m_x/jx*(h/2)+m_y/jy*(s/2)
-        sigma[9]=n/a+0*m_x/jx*(h/2)+0*m_y/jy*(s/2)
-        sigma[10]=n/a+0*m_x/jx*(h/2)-m_y/jy*(s/2)
-
-        sigma[5]=n/a+m_x/jx*(h2/2)+m_y/jy*(s/2)
-        sigma[6]=n/a+m_x/jx*(h2/2)-m_y/jy*(s/2)
-
-        sigma[12]=n/a-m_x/jx*(h2/2)+m_y/jy*(s/2)
-        sigma[13]=n/a-m_x/jx*(h2/2)-m_y/jy*(s/2)
-
-        sigma[4]=n/a+m_x/jx*(h1/2)+m_y/jy*(b/2)
-        sigma[7]=n/a+m_x/jx*(h1/2)-m_y/jy*(b/2)
-
-        sigma[11]=n/a-m_x/jx*(h1/2)+m_y/jy*(b/2)
-        sigma[14]=n/a-m_x/jx*(h1/2)-m_y/jy*(b/2)
-
-        ds_w=w*self.w(nn)/self.jw()
-
-        for i in range(1,18):
-            sigma[i]=sigma[i]+ds_w
-
-        if nn==18:
-            return sigma
-
-        return sigma[nn]
-
-    def w(self, nn):
-
-        w= [x for x in range(1, self.get_nsigma()+2)]
-        for i in (1,4,14,17):
-            w[i]=self.b()/2*(self.h()-self.t1())/2
-        for i in (3,7,11,15):
-            w[i]=-self.b()/2*(self.h()-self.t1())/2
-        for i in (2,8,9,10,16):
-            w[i]=0
-        for i in (5,13):
-            w[i]=self.s()/2*(self.h()-(self.t1()+self.t2()))/2
-        for i in (6,12):
-            w[i]=-self.s()/2*(self.h()-(self.t1()+self.t2()))/2
-        return w[nn]
-
-    def get_tau(self, nn=1, q_x=0, q_y=0, t=0, sr=0):
-        """q_y - вниз, q_x - вбок"""
-    #123
-    #4567
-    #789
-    #11 12 13 14
-   # 15 16 17
-        a=self.a()
-        jx=self.jx()
-        jy=self.jy()
-        h=self.h()
-        b=self.b()
-        s=self.s()
-        t1=self.t1()
-        t2=self.t2()
-        h1=h-t1*2
-        h2=h-t2*2-t1*2
-
-        s2x=self.s2x()
-        sx1=self.sx1()
-        sx2=self.sx2()
-        s2y=self.s2y()
-        sy1=self.sy1()
-
-        tau= [x for x in range(1, self.get_nsigma()+2)]
-        tau[1]=0
-        tau[2]=q_x*s2y/(jy*h)
-        tau[3]=0
-
-        tau[15]=0
-        tau[16]=tau[2]
-        tau[17]=0
-
-        tau[8]=q_y*s2x/(jx*s)+q_x*sy1/(jy*(h-h2))
-        tau[9]=q_y*s2x/(jx*s)+q_x*s2y/(jy*h)
-        tau[10]=tau[8]
-
-        tau[5]=q_y*sx2/(jx*s)+q_x*sy1/(jy*(h-h2))
-        tau[6]=tau[5]
-
-        tau[12]=tau[5]
-        tau[13]=tau[5]
-
-        tau[4]=q_y*sx1/(jx*b)
-        tau[7]=tau[4]
-
-        tau[11]=tau[4]
-        tau[14]=tau[4]
-
-        if nn==18:
-            return tau
-
-        return tau[nn]
-    def get_nsigma(self):
-        return 17
-#не покрыто тестами
+        t1=self.t()+k*b/4
+        w1=self.b()/2*(self.h()-t1)/2
+        return w1
+    def ww(self):
+        return self.jw()/self.w1()
+        
     def wxmin(self):
         return self.wx()
     def wymin(self):
@@ -1223,6 +1113,12 @@ class shvel(profiles_simple):
         ,u'Jw, см6': self.jw()
         ,u'Jt, см4': self.jt()
         ,u'Jt_sp2013, см4': self.jt_sp()
+        ,u'xa, см': self.xa()
+        ,u'w1, см': self.w1()
+        ,u'w2, см': self.w2()
+        ,u'Ww1, см4': self.ww1()
+        ,u'Ww2, см4': self.ww2()
+
         ,u'title': self.title()   
         ,u'title0': self.title0()  
         }
@@ -1241,7 +1137,12 @@ class shvel(profiles_simple):
         ,u'dx, см'
         ,u'Jw, см6'
         ,u'Jt, см4'
-        ,u'Jt_sp2013, см4'        
+        ,u'Jt_sp2013, см4'  
+        ,u'xa, см' 
+        ,u'w1, см'
+        ,u'w2, см'
+        ,u'Ww1, см4'
+        ,u'Ww2, см4'
         ,u'title'
         ,u'title0'  
         ]
@@ -1450,6 +1351,18 @@ class shvel(profiles_simple):
             return w1
         else:
             return w2
+    def w1(self):
+        return self.__w1
+
+    def w2(self):
+        return self.__w2
+
+    def ww1(self):
+        return self.jw()/self.w1()
+
+    def ww2(self):
+        return self.jw()/self.w2()
+
     def a(self):
 
         return self.__a
