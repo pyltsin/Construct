@@ -41,20 +41,6 @@ class BasaSort(object):
         , 7:'SortamentPicture\sost_ugol_tavr_st_krest.png'
         , 8:'SortamentPicture\rectangle.png'}
 
-
-    def key_sortament(self):
-        return self.list_sort
-
-    def input_data(self, i):
-
-        for label in self.dict_sort:
-#            print type(i)
-#            print label
-            if i==QtCore.QString(label):
-                x=self.dict_sort[label]
-
-        y=self.list_input[x]
-        return y
     def output_data(self, i, inp):
         for label in self.dict_sort:
             if i==QtCore.QString(label):
@@ -83,6 +69,20 @@ class BasaSort(object):
             if i==QtCore.QString(label):
                 x=self.dict_sort[label]
         return self.pictures_list[x]
+    def input_data(self, i):
+
+        for label in self.dict_sort:
+#            print type(i)
+#            print label
+            if i==QtCore.QString(label):
+                x=self.dict_sort[label]
+
+        y=self.list_input[x]
+        return y
+
+
+    def key_sortament(self):
+        return self.list_sort
 
 
 class MyWindow(QtGui.QWidget):
@@ -131,72 +131,77 @@ class MyWindow(QtGui.QWidget):
                 self.clip.setText(s)
 
 def toword():
-    basa=BasaSort()
-    lab=window.listWidget.currentItem().text()
-    wordapp = win32com.client.Dispatch("Word.Application")
-    wordapp.Visible = 1
-    worddoc = wordapp.Documents.Add()
-    worddoc.PageSetup.Orientation = 1
-    worddoc.PageSetup.BookFoldPrinting = 1
-    worddoc.ActiveWindow.Selection.Font.Size = 12
-    worddoc.ActiveWindow.Selection.Font.Name="Times New Roman"
-    worddoc.ActiveWindow.Selection.BoldRun()
-
-    worddoc.ActiveWindow.Selection.TypeText(u"Расчет сечения")
-    worddoc.ActiveWindow.Selection.TypeParagraph()
-    worddoc.ActiveWindow.Selection.BoldRun()
-    worddoc.ActiveWindow.Selection.TypeText(u"Сечение: "+lab)
-    worddoc.ActiveWindow.Selection.TypeParagraph()
-    for i in sys.path:
-#        print i
-#        print os.listdir(i)
-        if 'SortamentPicture' in os.listdir(i):
-            home=i
-            break
-    dir_pict=str(home+'\\'+basa.pict(lab))
-#    print (dir_pict)
-#    dir_pict2='D:\python_my\Construct\SortamentPicture\shvel.png'
-    worddoc.ActiveWindow.Selection.InlineShapes.AddPicture(dir_pict)
-    worddoc.ActiveWindow.Selection.TypeParagraph()
-    worddoc.ActiveWindow.Selection.TypeText(u"Исходные характеристики:")
-    worddoc.ActiveWindow.Selection.TypeParagraph()
-
- 
-    location = worddoc.ActiveWindow.Selection.Range
-    table = location.Tables.Add (location, 2, len(basa.input_data(lab)))
-    table.ApplyStyleHeadingRows = 1
-    table.AutoFormat(16)
-    x=1
-    for i in basa.input_data(lab):    
-        table.Cell(1,x).Range.InsertAfter(i)
-        table.Cell(2,x).Range.InsertAfter(window.inputtable.item(0, x-1).text())
-        x=x+1
-
-
-    worddoc.ActiveWindow.Selection.MoveDown()
-    worddoc.ActiveWindow.Selection.MoveDown()
-    worddoc.ActiveWindow.Selection.TypeParagraph()  
-    worddoc.ActiveWindow.Selection.TypeText(u"Расчетные характеристики:")
-    worddoc.ActiveWindow.Selection.TypeParagraph() 
-    worddoc.ActiveWindow.Selection.Font.Size = 10
-    location2 = worddoc.ActiveWindow.Selection.Range    
+    try:
+        basa=BasaSort()
+        lab=window.listWidget.currentItem().text()
+        wordapp = win32com.client.Dispatch("Word.Application")
+        wordapp.Visible = 1
+        worddoc = wordapp.Documents.Add()
+        worddoc.PageSetup.Orientation = 1
+        worddoc.PageSetup.BookFoldPrinting = 1
+        worddoc.ActiveWindow.Selection.Font.Size = 12
+        worddoc.ActiveWindow.Selection.Font.Name="Times New Roman"
+        worddoc.ActiveWindow.Selection.BoldRun()
     
-    output_table=window.outputtable
-    lenght_table=output_table.columnCount()
-    count_table=(lenght_table-0.5)//7+1
-
-    table = location2.Tables.Add (location2, 2*count_table, 7)
-    table.ApplyStyleHeadingRows = 1
-    table.AutoFormat(16)
-
-    for i in range(lenght_table):
-        j=(i)//7+1
-        z=(i+1)-(j-1)*7
-        print j, z
-        table.Cell((j-1)*2+1,z).Range.InsertAfter(output_table.horizontalHeaderItem(i).text())
-        table.Cell((j-1)*2+2,z).Range.InsertAfter(output_table.item(0, i).text())        
-
-    del wordapp
+        worddoc.ActiveWindow.Selection.TypeText(u"Расчет сечения")
+        worddoc.ActiveWindow.Selection.TypeParagraph()
+        worddoc.ActiveWindow.Selection.BoldRun()
+        worddoc.ActiveWindow.Selection.TypeText(u"Сечение: "+lab)
+        worddoc.ActiveWindow.Selection.TypeParagraph()
+        for i in sys.path:
+    #        print i
+    #        print os.listdir(i)
+            if 'SortamentPicture' in os.listdir(i):
+                home=i
+                break
+        dir_pict=str(home+'\\'+basa.pict(lab))
+    #    print (dir_pict)
+    #    dir_pict2='D:\python_my\Construct\SortamentPicture\shvel.png'
+        worddoc.ActiveWindow.Selection.InlineShapes.AddPicture(dir_pict)
+        worddoc.ActiveWindow.Selection.TypeParagraph()
+        worddoc.ActiveWindow.Selection.TypeText(u"Исходные характеристики:")
+        worddoc.ActiveWindow.Selection.TypeParagraph()
+    
+     
+        location = worddoc.ActiveWindow.Selection.Range
+        table = location.Tables.Add (location, 2, len(basa.input_data(lab)))
+        table.ApplyStyleHeadingRows = 1
+        table.AutoFormat(16)
+        x=1
+        for i in basa.input_data(lab):    
+            table.Cell(1,x).Range.InsertAfter(i)
+            table.Cell(2,x).Range.InsertAfter(window.inputtable.item(0, x-1).text())
+            x=x+1
+    
+    
+        worddoc.ActiveWindow.Selection.MoveDown()
+        worddoc.ActiveWindow.Selection.MoveDown()
+        worddoc.ActiveWindow.Selection.TypeParagraph()  
+        worddoc.ActiveWindow.Selection.TypeText(u"Расчетные характеристики:")
+        worddoc.ActiveWindow.Selection.TypeParagraph() 
+        worddoc.ActiveWindow.Selection.Font.Size = 10
+        location2 = worddoc.ActiveWindow.Selection.Range    
+        
+        output_table=window.outputtable
+        lenght_table=output_table.columnCount()
+        count_table=(lenght_table-0.5)//7+1
+    
+        table = location2.Tables.Add (location2, 2*count_table, 7)
+        table.ApplyStyleHeadingRows = 1
+        table.AutoFormat(16)
+    
+        for i in range(lenght_table):
+            j=(i)//7+1
+            z=(i+1)-(j-1)*7
+            print j, z
+            table.Cell((j-1)*2+1,z).Range.InsertAfter(output_table.horizontalHeaderItem(i).text())
+            table.Cell((j-1)*2+2,z).Range.InsertAfter(output_table.item(0, i).text())        
+    
+        del wordapp
+    except:
+        window.messege.clear()
+        window.messege.insert(u"Ошибка экспорта")
+        
 
 def solve():
     window.messege.clear()
@@ -261,6 +266,7 @@ def table_head():
     try:
         window.picture.setPixmap(QtGui.QPixmap(pict))
     except():
+        window.messege.clear()
         window.messege.insert(u"Ошибка исходных данных")
         
     for i in range(0, window.inputtable.columnCount()):
