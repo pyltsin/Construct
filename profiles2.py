@@ -911,12 +911,12 @@ class ugol(profiles_simple):
         ,u'iy, см': self.iy()
         ,u'Jxy, см4': self.jxy()
         ,u'Jx0, см4': self.jx0()
-        ,u'ix0, см4': self.ix0()
+        ,u'ix0, см': self.ix0()
         ,u'Jy0, см4': self.jy0()
-        ,u'iy0, см4': self.iy0()
+        ,u'iy0, см': self.iy0()
         ,u'alpha': self.alpha()
         ,u'dx, см': self.dx()
-        ,u'dy, см': self.dx()
+        ,u'dy, см': self.dy()
         ,u'title': self.title()   
         ,u'title0': self.title0()  
         }
@@ -933,9 +933,9 @@ class ugol(profiles_simple):
         ,u'iy, см'
         ,u'Jxy, см4'
         ,u'Jx0, см4'
-        ,u'ix0, см4'
+        ,u'ix0, см'
         ,u'Jy0, см4'
-        ,u'iy0, см4'
+        ,u'iy0, см'
         ,u'alpha'
         ,u'dx, см'
         ,u'dy, см'

@@ -333,6 +333,7 @@ class Test_profile(unittest.TestCase):
 #         self.assertLess(abs(el.get_sigma_e()-3.5412957)/abs(el.get_sigma_e()),0.0000001)
 
     def test_korob(self):
+        
         pr1=truba_pryam(h=12,b=8,t=0.6, r2=1.2, r1=0.6)
 #        print pr1.a()
         self.assertLess(abs(pr1.a()-21.63)/21.63,0.001)
@@ -360,6 +361,35 @@ class Test_profile(unittest.TestCase):
         self.assertLess(abs(pr1.bef()-5.6)/5.6,0.001)
 
         self.assertEqual(pr1.title(),'korob')
+        
+        pr1=truba_pryam(h=5,b=2.5,t=0.2, r2=0.4, r1=0.2)
+        self.assertEqual(pr1.input_data(), [u"h, см",u"b, см",u"t, см",u"r1, см",u"r2, см"])
+        self.assertEqual(pr1.output_list(), [u'P, кг/м',u'A, см2',u'Jx, см4',u'Wx, см3',u'Sx, см3' ,u'ix, см',u'Jy, см4'
+        ,u'Wy, см3'
+        ,u'Sy, см3'
+        ,u'iy, см'
+        ,u'title'
+        ,u'title0'  
+        ])
+
+        self.assertLess(abs(pr1.output_dict()[u'P, кг/м']-2.149)/2.149,0.001)
+        self.assertLess(abs(pr1.output_dict()[u'A, см2']-2.737)/2.737,0.001)
+
+        self.assertLess(abs(pr1.output_dict()[u'Jx, см4']-8.384)/8.384,0.001)
+        self.assertLess(abs(pr1.output_dict()[u'Wx, см3']-3.353)/3.353,0.001)
+        self.assertLess(abs(pr1.output_dict()[u'Sx, см3']-2.134)/2.134,0.002)
+        self.assertLess(abs(pr1.output_dict()[u'ix, см']-1.75)/1.75,0.001)
+
+        self.assertLess(abs(pr1.output_dict()[u'Jy, см4']-2.809)/2.809,0.001)
+        self.assertLess(abs(pr1.output_dict()[u'Wy, см3']-2.247)/2.247,0.001)
+        self.assertLess(abs(pr1.output_dict()[u'Sy, см3']-1.311)/1.311,0.003)
+        self.assertLess(abs(pr1.output_dict()[u'iy, см']-1.013)/1.013,0.001)
+
+        self.assertEqual(pr1.output_dict()['title'], 'korob')
+
+        self.assertEqual(pr1.output_dict()['title0'], 'simple')
+
+        
         print 17      ,       "test_korob"
     def test_ugol(self):
         print 18     ,       "test_ugol"
@@ -434,8 +464,61 @@ class Test_profile(unittest.TestCase):
         self.assertLess(abs(pr1.dy()-3.293973)/3.29,0.0001)
 
 
+        pr1=ugol(h=6.3,b=4,t=0.4, r2=0, r1=0.7, r3=0.23)
+
+    
+        self.assertEquals(pr1.input_data(),[u"h, см",u"b, см",u"t, см",u"r1, см",u"r2, см",u"r3, см"])
+
+        self.assertEquals(pr1.output_list(),[u'P, кг/м'
+        ,u'A, см2'
+        ,u'Jx, см4'
+        ,u'Wx, см3'
+        ,u'ix, см'
+        ,u'Jy, см4'
+        ,u'Wy, см3'
+        ,u'iy, см'
+        ,u'Jxy, см4'
+        ,u'Jx0, см4'
+        ,u'ix0, см'
+        ,u'Jy0, см4'
+        ,u'iy0, см'
+        ,u'alpha'
+        ,u'dx, см'
+        ,u'dy, см'
+        ,u'title'
+        ,u'title0'  
+        ])
+
+        self.assertLess(abs(pr1.output_dict()[u'P, кг/м']-3.173)/3.173,0.003)
+        self.assertLess(abs(pr1.output_dict()[u'A, см2']-4.042)/4.042,0.003)
+#        print pr1.output_dict()[u'Jx, см4']
+        self.assertLess(abs(pr1.output_dict()[u'Jx, см4']-16.33)/16.33,0.003)
+        self.assertLess(abs(pr1.output_dict()[u'Wx, см3']-3.83)/3.83,0.003)
+        self.assertLess(abs(pr1.output_dict()[u'ix, см']-2.01)/2.01,0.003)
+
+        self.assertLess(abs(pr1.output_dict()[u'Jy, см4']-5.16)/5.16,0.003)
+        self.assertLess(abs(pr1.output_dict()[u'Wy, см3']-1.67)/1.67,0.003)
+        self.assertLess(abs(pr1.output_dict()[u'iy, см']-1.13)/1.13,0.003)
+
+        self.assertLess(abs(pr1.output_dict()[u'Jxy, см4']+5.25)/5.25,0.003)
 
 
+        self.assertLess(abs(pr1.output_dict()[u'Jx0, см4']-18.42)/18.42,0.003)
+        self.assertLess(abs(pr1.output_dict()[u'ix0, см']-2.13)/2.13,0.003)
+
+        self.assertLess(abs(pr1.output_dict()[u'Jy0, см4']-3.07)/3.07,0.003)
+        self.assertLess(abs(pr1.output_dict()[u'iy0, см']-0.87)/0.87,0.003)
+
+        self.assertLess(abs(pr1.output_dict()[u'alpha']-0.37)/0.37,0.03)
+        
+        self.assertLess(abs(pr1.output_dict()[u'dx, см']-0.91)/0.91,0.003)
+        self.assertLess(abs(pr1.output_dict()[u'dy, см']-2.03)/2.03,0.003)
+
+        self.assertEquals(pr1.output_dict()[u'title'],u'ugol')
+
+        self.assertEquals(pr1.output_dict()[u'title0'],u'simple')
+        
+        
     def test_shvel(self):
         print 19    , "test_shvel"
 

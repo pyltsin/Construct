@@ -35,11 +35,11 @@ class BasaSort(object):
         , 1:'SortamentPicture\shvel.png'
         , 2:'SortamentPicture\ugol.png'
         , 3:'SortamentPicture\korob.png'
-        , 4:'SortamentPicture\ring.png'
+        , 4:'SortamentPicture/ring.png'
         , 5:'SortamentPicture\sost_ugol_tavr_st_up.png'
         , 6:'SortamentPicture\sost_ugol_tavr_st_right.png'
         , 7:'SortamentPicture\sost_ugol_tavr_st_krest.png'
-        , 8:'SortamentPicture\rectangle.png'}
+        , 8:'SortamentPicture/rectangle.png'}
 
     def output_data(self, i, inp):
         for label in self.dict_sort:
