@@ -749,6 +749,47 @@ class Test_profile(unittest.TestCase):
         self.assertLess(abs(pr.xi()-0)/0.001,0.0001)
         self.assertLess(abs(pr.yi()-26.0)/26.0,0.0001)
 
+        pr=sost_ugol_tavr_st_up(h=8, b=6, t=0.6, r1=0.8, r2=0, r3=0.27, dx=1)
+
+        self.assertEquals(pr.input_data(),[u"h, см",u"b, см",u"t, см",u"r1, см",u"r2, см",u"r3, см",u"dx, см"])
+        self.assertEquals(pr.output_list(),[u'P, кг/м'
+        ,u'A, см2'
+        ,u'Jx, см4'
+        ,u'ix, см'
+        ,u'Jy, см4'
+        ,u'iy, см'
+        ,u'xi, см'
+        ,u'yi, см'
+        ,u'Jx0, см4'
+        ,u'ix0, см'
+        ,u'Jy0, см4'
+        ,u'iy0, см'
+        ,u'alpha'        
+        ,u'title'
+        ,u'title0'  
+        ])
+        self.assertLess(abs(pr.output_dict()[u'P, кг/м']-6.395*2)/6.395/2,0.001)
+        self.assertLess(abs(pr.output_dict()[u'A, см2']-8.146*2)/8.146/2,0.001)
+        self.assertLess(abs(pr.output_dict()[u'Jx, см4']-52.06*2)/52.06/2,0.001)
+        self.assertLess(abs(pr.output_dict()[u'ix, см']**2*8.146*2-52.06*2)/52.06/2,0.001)
+        jy=25.18*2+(0.5+1.49)**2*2*8.146
+        self.assertLess(abs(pr.output_dict()[u'Jy, см4']-jy)/jy,0.001)
+        self.assertLess(abs(pr.output_dict()[u'iy, см']**2*8.146*2-jy)/jy,0.001)
+        
+        self.assertLess(abs(pr.output_dict()[u'xi, см']),0.001)
+
+        self.assertLess(abs(pr.output_dict()[u'yi, см']-2.47)/2.47,0.002)
+
+        self.assertLess(abs(pr.output_dict()[u'Jy0, см4']-52.06*2)/52.06/2,0.001)
+        self.assertLess(abs(pr.output_dict()[u'iy0, см']**2*8.146*2-52.06*2)/52.06/2,0.001)
+
+        self.assertLess(abs(pr.output_dict()[u'Jx0, см4']-jy)/jy,0.001)
+        self.assertLess(abs(pr.output_dict()[u'ix0, см']**2*8.146*2-jy)/jy,0.001)
+
+        self.assertEquals(pr.output_dict()[u'alpha'],0.00)
+        self.assertEquals(pr.output_dict()[u'title'],'ugol_tavr_st_up')
+        self.assertEquals(pr.output_dict()[u'title0'],'sostav')
+
     def test_sost_ugol_tavr_st_right(self):
         print 22  , "test_sost_ugol_tavr_st_right"
  
@@ -763,7 +804,51 @@ class Test_profile(unittest.TestCase):
         self.assertLess(abs(pr.xi()-0)/0.0001,0.0001)
         
         self.assertLess(abs(pr.yi()-11.322)/11.322,0.0001)
-    
+
+        pr=sost_ugol_tavr_st_right(h=8, b=6, t=0.6, r1=0.8, r2=0, r3=0.27, dx=1)
+
+        self.assertEquals(pr.input_data(),[u"h, см",u"b, см",u"t, см",u"r1, см",u"r2, см",u"r3, см",u"dx, см"])
+        self.assertEquals(pr.output_list(),[u'P, кг/м'
+        ,u'A, см2'
+        ,u'Jx, см4'
+        ,u'ix, см'
+        ,u'Jy, см4'
+        ,u'iy, см'
+        ,u'xi, см'
+        ,u'yi, см'
+        ,u'Jx0, см4'
+        ,u'ix0, см'
+        ,u'Jy0, см4'
+        ,u'iy0, см'
+        ,u'alpha'        
+        ,u'title'
+        ,u'title0'  
+        ])
+
+        self.assertLess(abs(pr.output_dict()[u'P, кг/м']-6.395*2)/6.395/2,0.001)
+        self.assertLess(abs(pr.output_dict()[u'A, см2']-8.146*2)/8.146/2,0.001)
+        
+        self.assertLess(abs(pr.output_dict()[u'Jx, см4']-25.18*2)/25.18/2,0.001)
+        self.assertLess(abs(pr.output_dict()[u'ix, см']**2*8.146*2-25.18*2)/25.18/2,0.001)
+
+        jy=52.06*2+(0.5+2.47)**2*2*8.146
+        self.assertLess(abs(pr.output_dict()[u'Jy, см4']-jy)/jy,0.002)
+        self.assertLess(abs(pr.output_dict()[u'iy, см']**2*8.146*2-jy)/jy,0.002)
+
+        self.assertLess(abs(pr.output_dict()[u'xi, см']),0.001)
+
+        self.assertLess(abs(pr.output_dict()[u'yi, см']-1.49)/1.49,0.002)
+
+        self.assertLess(abs(pr.output_dict()[u'Jy0, см4']-25.18*2)/25.18/2,0.001)
+        self.assertLess(abs(pr.output_dict()[u'iy0, см']**2*8.146*2-25.18*2)/25.18/2,0.001)
+
+        self.assertLess(abs(pr.output_dict()[u'Jx0, см4']-jy)/jy,0.002)
+        self.assertLess(abs(pr.output_dict()[u'ix0, см']**2*8.146*2-jy)/jy,0.002)
+
+        self.assertEquals(pr.output_dict()[u'alpha'],0.00)
+        self.assertEquals(pr.output_dict()[u'title'],'ugol_tavr_st_right')
+        self.assertEquals(pr.output_dict()[u'title0'],'sostav')
+        
     def test_sost_ugol_tavr_st_krest(self):
         pr=sost_ugol_tavr_st_krest(h=80, b=50, t=5, r1=8, r2=0, r3=2.7, dx=10, dy=20)
 
@@ -782,6 +867,47 @@ class Test_profile(unittest.TestCase):
         self.assertLess(abs(pr.jx0()-2596951.0526)/2596951.0526,0.0002)      
         self.assertLess(abs(pr.jy0()-475821.0692)/475821.0692,0.0002)
         
+
+        self.assertEquals(pr.input_data(),[u"h, см",u"b, см",u"t, см",u"r1, см",u"r2, см",u"r3, см",u"dx, см",u"dy, см"])
+        self.assertEquals(pr.output_list(),[u'P, кг/м'
+        ,u'A, см2'
+        ,u'Jx, см4'
+        ,u'ix, см'
+        ,u'Jy, см4'
+        ,u'iy, см'
+        ,u'xi, см'
+        ,u'yi, см'
+        ,u'Jx0, см4'
+        ,u'ix0, см'
+        ,u'Jy0, см4'
+        ,u'iy0, см'
+        ,u'alpha'        
+        ,u'title'
+        ,u'title0'  
+        ])
+
+        self.assertLess(abs(pr.output_dict()[u'P, кг/м']-1272./100/100*7850)/(1272./100/100*7850),0.001)
+        self.assertLess(abs(pr.output_dict()[u'A, см2']-1272)/1272,0.001)
+
+        self.assertLess(abs(pr.output_dict()[u'Jx, см4']-2480100)/2480100,0.001)
+        self.assertLess(abs(pr.output_dict()[u'ix, см']**2*1272-2480100)/2480100,0.001)
+
+        self.assertLess(abs(pr.output_dict()[u'Jy, см4']-592300)/592300,0.001)
+        self.assertLess(abs(pr.output_dict()[u'iy, см']**2*1272-592300)/592300,0.001)
+
+        self.assertLess(abs(pr.output_dict()[u'xi, см']-0)/0.0001,0.0001)      
+        self.assertLess(abs(pr.output_dict()[u'yi, см']-0)/0.0001,0.0001)
+
+        self.assertLess(abs(pr.output_dict()[u'Jx0, см4']-2596951.0526)/2596951.0526,0.001)
+        self.assertLess(abs(pr.output_dict()[u'ix0, см']**2*1272-2596951.0526)/2596951.0526,0.001)
+
+        self.assertLess(abs(pr.output_dict()[u'Jy0, см4']-475821.0692)/475821.0692,0.001)
+        self.assertLess(abs(pr.output_dict()[u'iy0, см']**2*1272-475821.0692)/475821.0692,0.001)
+
+        self.assertLess(abs(pr.output_dict()[u'alpha']+0.24)/0.24,0.02)
+
+        self.assertEquals(pr.output_dict()[u'title'],'ugol_tavr_st_krest')
+        self.assertEquals(pr.output_dict()[u'title0'],'sostav')
         
 # """Сделать проверку уголка, прямоугольной трубы и обычной трубы по полному списку"""
 if __name__ == "__main__":
