@@ -1710,6 +1710,14 @@ class  profiles_blank_sostav(object):
     def jy0(self):
         return self.__jy0
 
+    def ix0(self):
+        return self.__ix0
+
+    def iy0(self):
+        return self.__iy0
+
+
+
     def alpha(self):
         return self.__alpha
 
@@ -1735,6 +1743,11 @@ class  profiles_blank_sostav(object):
         self.__alpha=self.sostav.alpha()
         self.__jx0=self.sostav.jx0()
         self.__jy0=self.sostav.jy0()
+
+        self.__ix0=(self.sostav.jx0()/self.__a)**0.5
+        self.__iy0=(self.sostav.jy0()/self.__a)**0.5
+
+
         self.__p=self.sostav.a()*7850/100/100
 class sost_ugol_tavr_st_up(profiles_blank_sostav):
     """Расчет сечения сдвоенных уголков. Для неравнополочных - длинная сторона направлена вверх
@@ -1793,9 +1806,11 @@ class sost_ugol_tavr_st_up(profiles_blank_sostav):
         ,u'Jy, см4': self.jy()
         ,u'iy, см': self.iy()
         ,u'xi, см': self.xi()
-        ,u'yi, см4': self.yi()
+        ,u'yi, см': self.yi()
         ,u'Jx0, см4': self.jx0()
+        ,u'ix0, см': self.ix0()
         ,u'Jy0, см4': self.jy0()
+        ,u'iy0, см': self.iy0()
         ,u'alpha': self.alpha()
         ,u'title': self.title()   
         ,u'title0': self.title0()  
@@ -1810,9 +1825,11 @@ class sost_ugol_tavr_st_up(profiles_blank_sostav):
         ,u'Jy, см4'
         ,u'iy, см'
         ,u'xi, см'
-        ,u'yi, см4'
+        ,u'yi, см'
         ,u'Jx0, см4'
+        ,u'ix0, см'
         ,u'Jy0, см4'
+        ,u'iy0, см'
         ,u'alpha'        
         ,u'title'
         ,u'title0'  
@@ -1874,9 +1891,11 @@ class sost_ugol_tavr_st_right(profiles_blank_sostav):
         ,u'Jy, см4': self.jy()
         ,u'iy, см': self.iy()
         ,u'xi, см': self.xi()
-        ,u'yi, см4': self.yi()
+        ,u'yi, см': self.yi()
         ,u'Jx0, см4': self.jx0()
+        ,u'ix0, см': self.ix0()
         ,u'Jy0, см4': self.jy0()
+        ,u'iy0, см': self.iy0()
         ,u'alpha': self.alpha()
         ,u'title': self.title()   
         ,u'title0': self.title0()  
@@ -1891,9 +1910,11 @@ class sost_ugol_tavr_st_right(profiles_blank_sostav):
         ,u'Jy, см4'
         ,u'iy, см'
         ,u'xi, см'
-        ,u'yi, см4'
+        ,u'yi, см'
         ,u'Jx0, см4'
+        ,u'ix0, см'
         ,u'Jy0, см4'
+        ,u'iy0, см'
         ,u'alpha'
         ,u'title'
         ,u'title0'  
@@ -1953,9 +1974,11 @@ class sost_ugol_tavr_st_krest(profiles_blank_sostav):
         ,u'Jy, см4': self.jy()
         ,u'iy, см': self.iy()
         ,u'xi, см': self.xi()
-        ,u'yi, см4': self.yi()
+        ,u'yi, см': self.yi()
         ,u'Jx0, см4': self.jx0()
+        ,u'ix0, см': self.ix0()
         ,u'Jy0, см4': self.jy0()
+        ,u'iy0, см': self.iy0()
         ,u'alpha': self.alpha()
         ,u'title': self.title()   
         ,u'title0': self.title0()  
@@ -1970,9 +1993,11 @@ class sost_ugol_tavr_st_krest(profiles_blank_sostav):
         ,u'Jy, см4'
         ,u'iy, см'
         ,u'xi, см'
-        ,u'yi, см4'
+        ,u'yi, см'
         ,u'Jx0, см4'
+        ,u'ix0, см'
         ,u'Jy0, см4'
+        ,u'iy0, см'
         ,u'alpha'
         ,u'title'
         ,u'title0'  

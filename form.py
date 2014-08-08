@@ -235,10 +235,11 @@ def solve():
     except (ValueError, AttributeError, ZeroDivisionError):
         window.messege.clear()
         window.messege.insert(u"Ошибка исходных данных")
+        window.wordbutton.setEnabled(False)
 
     else:
         window.messege.insert(u"Расчет выполнен успешно")
-    window.wordbutton.setEnabled(True)
+        window.wordbutton.setEnabled(True)
 
 
 
