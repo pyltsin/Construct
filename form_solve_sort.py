@@ -14,7 +14,7 @@ from basa_sort import *
 class MyWindow(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
-        uic.loadUi("sort_solve.ui", self)
+        uic.loadUi("gui\sort_solve.ui", self)
         basa=BasaSort()
         for text in basa.key_sortament():
             self.listWidget.addItem(text)

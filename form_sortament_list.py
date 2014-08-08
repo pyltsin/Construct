@@ -33,7 +33,7 @@ sort_list=[
 class MyWindow(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
-        uic.loadUi("sortament_list.ui", self)
+        uic.loadUi("gui\sortament_list.ui", self)
         load_sort_list(self)
 def load_sort_list(window):
 
