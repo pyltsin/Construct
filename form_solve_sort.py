@@ -72,11 +72,12 @@ def toword():
         worddoc.ActiveWindow.Selection.TypeText(u"Расчет сечения")
         worddoc.ActiveWindow.Selection.TypeParagraph()
         worddoc.ActiveWindow.Selection.BoldRun()
-        worddoc.ActiveWindow.Selection.TypeText(u"Сечение: "+lab)
+#        print lab
+        worddoc.ActiveWindow.Selection.TypeText(u"Сечение: "+unicode(lab))
         worddoc.ActiveWindow.Selection.TypeParagraph()
         for i in sys.path:
-    #        print i
-    #        print os.listdir(i)
+#            print i
+#            print os.listdir(i)
             if 'SortamentPicture' in os.listdir(i):
                 home=i
                 break
@@ -119,15 +120,15 @@ def toword():
         for i in range(lenght_table):
             j=(i)//7+1
             z=(i+1)-(j-1)*7
-            print j, z
-            table.Cell((j-1)*2+1,z).Range.InsertAfter(output_table.horizontalHeaderItem(i).text())
-            table.Cell((j-1)*2+2,z).Range.InsertAfter(output_table.item(0, i).text())        
+#            print j, z
+            table.Cell((j-1)*2+1,z).Range.InsertAfter(unicode(output_table.horizontalHeaderItem(i).text()))
+            table.Cell((j-1)*2+2,z).Range.InsertAfter(unicode(output_table.item(0, i).text()))        
     
         del wordapp
     except:
         window.messege.clear()
         window.messege.insert(u"Ошибка экспорта")
-        
+        del wordapp        
 
 def solve():
     window.messege.clear()
