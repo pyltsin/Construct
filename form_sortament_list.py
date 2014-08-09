@@ -119,7 +119,7 @@ def solve_load_table(path, frame, num_sort):
 
     x=-1
     for i in output_table:
-        x=x+1
+        x=x+1 
         y=-1
         for j in i:
             y=y+1
