@@ -10,7 +10,7 @@ from  PyQt4 import QtCore, QtGui, uic
 import win32com.client
 import os
 from basa_sort import BasaSort
-
+from key_press_event import copy_past
 class MyWindow(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
@@ -24,37 +24,9 @@ class MyWindow(QtGui.QWidget):
         self.wordbutton.clicked.connect(toword)
         self.wordbutton.setEnabled(False)
 
-        self.clip = QtGui.QApplication.clipboard()
 
     def keyPressEvent(self, e):
-        if (window.focusWidget()==window.inputtable):
-            self.table=window.inputtable
-        elif (window.focusWidget()==window.outputtable):
-            self.table=window.outputtable
-
-
-        if (e.modifiers() & QtCore.Qt.ControlModifier):
-            selected = self.table.selectedRanges()
-
-            if e.key() == QtCore.Qt.Key_V and (window.focusWidget()==window.inputtable):#past
-                first_row = selected[0].topRow()
-                first_col = selected[0].leftColumn()
-
-                #copied text is split by '\n' and '\t' to paste to the cells
-                for r, row in enumerate(self.clip.text().split('\n')):
-                    for c, text in enumerate(row.split('\t')):
-                        self.table.setItem(first_row+r, first_col+c, QtGui.QTableWidgetItem(text))
-
-            elif e.key() == QtCore.Qt.Key_C: #copy
-                s = ""
-                for r in xrange(selected[0].topRow(),selected[0].bottomRow()+1):
-                    for c in xrange(selected[0].leftColumn(),selected[0].rightColumn()+1):
-                        try:
-                            s += str(self.table.item(r,c).text()) + "\t"
-                        except AttributeError:
-                            s += "\t"
-                    s = s[:-1] + "\n" #eliminate last '\t'
-                self.clip.setText(s)
+        copy_past(e, [window.inputtable], [window.outputtable], window)
 
 def toword():
     try:

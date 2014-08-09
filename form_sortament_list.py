@@ -10,6 +10,7 @@ from  PyQt4 import QtCore, QtGui, uic
 from basa_sort import BasaSort
 from table import tables_csv
 
+from key_press_event import copy_past
 
 
 class MyWindow(QtGui.QWidget):
@@ -17,6 +18,8 @@ class MyWindow(QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)
         uic.loadUi("gui/sortament_list.ui", self)
         load_sort_list(self)
+    def keyPressEvent(self, e):
+        copy_past(e, [], [window.view], window)
         
 def load_sort_list(window):
 
@@ -83,9 +86,7 @@ def solve_load_table(path, frame, num_sort):
     prof_first=basa.output_data(num_sort, table_data[1][0:len_input_data])
     header_horisontal=list(u"№")+header_horisontal+(prof_first.output_list())
 #ставим заголовок:
-    model = QtGui.QStandardItemModel()
 #    print header_horisontal
-    model.setHorizontalHeaderLabels(QtCore.QStringList(header_horisontal))
 
     
 #запонлняем таблицу    
@@ -98,7 +99,7 @@ def solve_load_table(path, frame, num_sort):
         p1=abs(prof_item.output_dict()[u'A, см2']-x[-3])/x[-3]
         p2=abs(prof_item.output_dict()[u'Jx, см4']-x[-2])/x[-2] 
         p3=abs(prof_item.output_dict()[u'Jy, см4']-x[-1])/x[-1]
-        print p1, p2, p3
+        print x[0], p1, p2, p3
         if p1<0.005 and p2<0.005 and p3<0.005:
             for y in prof_item.output_list():
                 if type(prof_item.output_dict()[y])==type(0.1):
@@ -111,17 +112,21 @@ def solve_load_table(path, frame, num_sort):
             for y in prof_item.output_list():
                 line.append("Error")   
         output_table.append(line)
+
+    frame.setColumnCount(len(output_table[0]))
+    frame.setRowCount(len(output_table))
+    frame.setHorizontalHeaderLabels(header_horisontal)
+
     x=-1
     for i in output_table:
         x=x+1
         y=-1
         for j in i:
             y=y+1
-            item = QtGui.QStandardItem(str(j))
-            item.setEditable(False)
-            model.setItem(x,y, item)
-        
-    frame.setModel(model)
+            item = QtGui.QTableWidgetItem(str(j))
+            frame.setItem(x,y,item)
+            frame.item(x,y).setFlags(QtCore.Qt.ItemFlags(1+2+4+8+6+12+64))
+      
     
     for i in range(0,len_input_data+1):
         frame.setColumnWidth(i, 40)    

@@ -40,7 +40,7 @@ class Test_profile(unittest.TestCase):
         print 2  , "test_simple_profiles"
 
     def test_rectangle(self):
-        el=rectangle(h=20, b=30)
+        el=rectangle(20, 30)
         self.assertEquals(el.h(),20)
         self.assertEquals(el.b(),30)
         self.assertEquals(el.a(),20*30)
@@ -133,7 +133,7 @@ class Test_profile(unittest.TestCase):
         self.assertEqual(el.jxy(),0)
         print 8       ,       "test_solid"
     def test_ring(self):
-        el=ring(r=15, r1=10)
+        el=ring(15, 10)
         self.assertLess(abs(el.a()-15**2*pi+10**2*pi)/abs(el.a()), 0.00001)
         self.assertLess(abs(el.xi()-15)/abs(el.xi()),0.00001)
         self.assertLess(abs(el.yi()-15)/abs(el.yi()),0.00001)
@@ -334,7 +334,7 @@ class Test_profile(unittest.TestCase):
 
     def test_korob(self):
         
-        pr1=truba_pryam(h=12,b=8,t=0.6, r2=1.2, r1=0.6)
+        pr1=truba_pryam(12,8,0.6, 0.6, 1.2)
 #        print pr1.a()
         self.assertLess(abs(pr1.a()-21.63)/21.63,0.001)
 #        print pr1.jx()
@@ -395,7 +395,7 @@ class Test_profile(unittest.TestCase):
         print 18     ,       "test_ugol"
 
 
-        pr1=ugol(h=18,b=18,t=1.5, r2=0., r1=1.6, r3=0.53)
+        pr1=ugol(18,18,1.5, 1.6,  0.,0.53)
 
 #        print pr1.ix0()
 #        print pr1.iy0()
@@ -742,7 +742,7 @@ class Test_profile(unittest.TestCase):
         print 21  , "test_sost_ugol_tavr_st_up"
  
 
-        pr=sost_ugol_tavr_st_up(h=80, b=50, t=5, r1=8, r2=0, r3=2.7, dx=10)
+        pr=sost_ugol_tavr_st_up(80, 50,5, 8, 0, 2.7, 10)
         self.assertLess(abs(pr.a()-1272)/1272,0.001)
         self.assertLess(abs(pr.jx()-832700)/832700,0.0001)
         self.assertLess(abs(pr.jy()-592266)/592266,0.0001)
@@ -794,7 +794,7 @@ class Test_profile(unittest.TestCase):
         print 22  , "test_sost_ugol_tavr_st_right"
  
      
-        pr=sost_ugol_tavr_st_right(h=80, b=50, t=5, r1=8, r2=0, r3=2.7, dx=10)
+        pr=sost_ugol_tavr_st_right(80,50, 5, 8, 0, 2.7, 10)
 #        print 'pr.yi()',pr.yi()
 
         
@@ -850,7 +850,9 @@ class Test_profile(unittest.TestCase):
         self.assertEquals(pr.output_dict()[u'title0'],'sostav')
         
     def test_sost_ugol_tavr_st_krest(self):
-        pr=sost_ugol_tavr_st_krest(h=80, b=50, t=5, r1=8, r2=0, r3=2.7, dx=10, dy=20)
+        print 23  , "test_sost_ugol_tavr_st_krest"
+
+        pr=sost_ugol_tavr_st_krest(80, 50, 5, 8, 0, 2.7, 10, 20)
 
 #        print 'pr.jx0()',pr.jx0()
 #        print 'pr.jy0()',pr.jy0()
@@ -908,7 +910,37 @@ class Test_profile(unittest.TestCase):
 
         self.assertEquals(pr.output_dict()[u'title'],'ugol_tavr_st_krest')
         self.assertEquals(pr.output_dict()[u'title0'],'sostav')
-        
+    
+    def test_basa(self):
+        print 24  , "test_basa"
+
+        inp=[5,4,3,2,1,0.5,0.2,0.1]
+        from basa_sort import BasaSort
+        for i in [0,1,2,3,4,5,6,7,8]:
+            b=BasaSort()
+            data=b.output_data(i, inp)
+            x=i
+            if x==0:
+                pr=dvut(inp[0],inp[1],inp[2],inp[3],inp[4],inp[5],inp[6])
+            elif x==1:
+                pr=shvel(inp[0],inp[1],inp[2],inp[3],inp[4],inp[5],inp[6],inp[7])
+            elif x==2:
+                pr=ugol(inp[0],inp[1],inp[2],inp[3],inp[4],inp[5])
+            elif x==3:
+                pr=truba_pryam(inp[0],inp[1],inp[2],inp[3],inp[4])
+            elif x==4:
+                pr=ring(inp[0],inp[1])
+            elif x==5:
+                pr=sost_ugol_tavr_st_up(inp[0],inp[1],inp[2],inp[3],inp[4],inp[5],inp[6])
+            elif x==6:
+                pr=sost_ugol_tavr_st_right(inp[0],inp[1],inp[2],inp[3],inp[4],inp[5],inp[6])
+            elif x==7:
+                pr=sost_ugol_tavr_st_krest(inp[0],inp[1],inp[2],inp[3],inp[4],inp[5],inp[6],inp[7])
+            elif x==8:
+                pr=rectangle(inp[0],inp[1])
+            self.assertEquals(data.output_dict(),pr.output_dict())
+            
+             
 # """Сделать проверку уголка, прямоугольной трубы и обычной трубы по полному списку"""
 if __name__ == "__main__":
     unittest.main()
