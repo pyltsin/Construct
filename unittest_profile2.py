@@ -15,8 +15,8 @@ from profiles2 import *
 
 class Test_profile(unittest.TestCase):
     def test_profiles_infile(self):
-        el=profiles_infile(files='gost8239_89.csv',number='10', typ='dvut')
-        self.assertEquals(el.h(),10.0)
+        el=profiles_infile(files='SortamentData/gost823989.csv',number='10', typ='dvut')
+        self.assertEquals(el.h(),1.00)
         print 1 , "test_profiles_infile"
 
     def test_simple_profiles(self):
@@ -209,7 +209,7 @@ class Test_profile(unittest.TestCase):
         self.assertLess(abs(el.jxy()+5.5811)/abs(el.jxy()),0.001)
         print 13       ,       " test_rotkrug"
     def test_dvut(self):
-        el=dvut(h=60, b=19, t=1.78, s=1.2, r1=2, r2=0.8, a1=atan(12./100))
+        el=dvut(60, 19,  1.2,1.78, 2, 0.8, atan(12./100))
         
         self.assertLess(abs(el.a()- 137.5384332)/abs(el.a()), 0.0000001)
         self.assertLess(abs(el.jy()- 1724.838581)/abs(el.jy()),0.0000001)
@@ -523,7 +523,7 @@ class Test_profile(unittest.TestCase):
         print 19    , "test_shvel"
 
 
-        pr1=shvel(h=27,b=9.5,t=1.05, s=0.6, r2=0.45, r1=1.1, r3=0.0, a1=atan(0.1))
+        pr1=shvel(27,9.5,0.6, 1.05, 1.1,  0.45,0.0, atan(0.1))
 
         
         self.assertEquals(pr1.input_data(),[u"h, см",u"b, см",u"s, см",u"t, см",u"r1, см",u"r2, см",u"r3, см",u"a, %"])

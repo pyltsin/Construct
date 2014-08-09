@@ -39,10 +39,19 @@ class BasaSort(object):
         , 7:'SortamentPicture\sost_ugol_tavr_st_krest.png'
         , 8:'SortamentPicture/rectangle.png'}
 
+        self.__list4sortament=[
+        [[u'Двутавры',0], [u'Швеллеры',1]]
+            ,[[u"ГОСТ 8239-89 Двутавры с уклоном полок",u'SortamentData/GOST823989.csv']]
+        
+            ,[[u"ГОСТ 8240-89 Швеллеры стальные горячекатанные",u'SortamentData/GOST824089.csv'] ]
+        ]
     def output_data(self, i, inp):
+        x=None
         for label in self.dict_sort:
             if i==QtCore.QString(label):
                 x=self.dict_sort[label]
+        if x==None:
+            x=i
         if x==0:
             pr=profiles.dvut(inp[0],inp[1],inp[2],inp[3],inp[4],inp[5],inp[6])
         elif x==1:
@@ -63,6 +72,7 @@ class BasaSort(object):
             pr=profiles.rectangle(inp[0],inp[1])
         return pr
     def pict(self, i):
+        
         for label in self.dict_sort:
             if i==QtCore.QString(label):
                 x=self.dict_sort[label]
@@ -81,3 +91,9 @@ class BasaSort(object):
 
     def key_sortament(self):
         return self.list_sort
+    def list4sortament(self):
+        return self.__list4sortament
+    def pict4sortament(self, i):
+        return self.pictures_list[i]
+    def input_data4sortament(self, i):
+        return self.list_input[i]

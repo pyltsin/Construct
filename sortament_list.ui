@@ -67,7 +67,7 @@
     <string>TextLabel</string>
    </property>
   </widget>
-  <widget class="QTableView" name="view">
+  <widget class="QColumnView" name="view">
    <property name="geometry">
     <rect>
      <x>10</x>

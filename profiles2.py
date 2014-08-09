@@ -1093,7 +1093,7 @@ class shvel(profiles_simple):
 ##  '  6 - отнимаемая часть у гнутого швеллера
 ##  '  r3 - только для гнутого швеллера"""
     def __init__(self, h=False, b=False\
-    , s=False, t=False, r1=False, r2=False, a1=False, r3=False):
+    , s=False, t=False, r1=False, r2=False,  r3=False, a1=False):
         super( shvel, self).__init__(h=h,b=b,s=s,t=t,r1=r1,r2=r2,a1=a1,r3=r3)
         self.solve()
     def input_data(self):

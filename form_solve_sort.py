@@ -9,12 +9,12 @@ from  PyQt4 import QtCore, QtGui, uic
 
 import win32com.client
 import os
-from basa_sort import *
+from basa_sort import BasaSort
 
 class MyWindow(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
-        uic.loadUi("gui\sort_solve.ui", self)
+        uic.loadUi("gui/sort_solve.ui", self)
         basa=BasaSort()
         for text in basa.key_sortament():
             self.listWidget.addItem(text)
@@ -68,7 +68,7 @@ def toword():
         worddoc.ActiveWindow.Selection.Font.Size = 12
         worddoc.ActiveWindow.Selection.Font.Name="Times New Roman"
         worddoc.ActiveWindow.Selection.BoldRun()
-    
+
         worddoc.ActiveWindow.Selection.TypeText(u"Расчет сечения")
         worddoc.ActiveWindow.Selection.TypeParagraph()
         worddoc.ActiveWindow.Selection.BoldRun()
@@ -88,47 +88,47 @@ def toword():
         worddoc.ActiveWindow.Selection.TypeParagraph()
         worddoc.ActiveWindow.Selection.TypeText(u"Исходные характеристики:")
         worddoc.ActiveWindow.Selection.TypeParagraph()
-    
-     
+
+
         location = worddoc.ActiveWindow.Selection.Range
         table = location.Tables.Add (location, 2, len(basa.input_data(lab)))
         table.ApplyStyleHeadingRows = 1
         table.AutoFormat(16)
         x=1
-        for i in basa.input_data(lab):    
+        for i in basa.input_data(lab):
             table.Cell(1,x).Range.InsertAfter(i)
             table.Cell(2,x).Range.InsertAfter(window.inputtable.item(0, x-1).text())
             x=x+1
-    
-    
+
+
         worddoc.ActiveWindow.Selection.MoveDown()
         worddoc.ActiveWindow.Selection.MoveDown()
-        worddoc.ActiveWindow.Selection.TypeParagraph()  
+        worddoc.ActiveWindow.Selection.TypeParagraph()
         worddoc.ActiveWindow.Selection.TypeText(u"Расчетные характеристики:")
-        worddoc.ActiveWindow.Selection.TypeParagraph() 
+        worddoc.ActiveWindow.Selection.TypeParagraph()
         worddoc.ActiveWindow.Selection.Font.Size = 10
-        location2 = worddoc.ActiveWindow.Selection.Range    
-        
+        location2 = worddoc.ActiveWindow.Selection.Range
+
         output_table=window.outputtable
         lenght_table=output_table.columnCount()
         count_table=(lenght_table-0.5)//7+1
-    
+
         table = location2.Tables.Add (location2, 2*count_table, 7)
         table.ApplyStyleHeadingRows = 1
         table.AutoFormat(16)
-    
+
         for i in range(lenght_table):
             j=(i)//7+1
             z=(i+1)-(j-1)*7
 #            print j, z
             table.Cell((j-1)*2+1,z).Range.InsertAfter(unicode(output_table.horizontalHeaderItem(i).text()))
-            table.Cell((j-1)*2+2,z).Range.InsertAfter(unicode(output_table.item(0, i).text()))        
-    
+            table.Cell((j-1)*2+2,z).Range.InsertAfter(unicode(output_table.item(0, i).text()))
+
         del wordapp
     except:
         window.messege.clear()
         window.messege.insert(u"Ошибка экспорта")
-        del wordapp        
+        del wordapp
 
 def solve():
     window.messege.clear()
@@ -196,7 +196,7 @@ def table_head():
     except():
         window.messege.clear()
         window.messege.insert(u"Ошибка исходных данных")
-        
+
     for i in range(0, window.inputtable.columnCount()):
         window.inputtable.setItem(0, i, QtGui.QTableWidgetItem(""))
 
