@@ -40,10 +40,14 @@ class BasaSort(object):
         , 8:'SortamentPicture/rectangle.png'}
 
         self.__list4sortament=[
-        [[u'Двутавры',0], [u'Швеллеры',1]]
+        [[u'Двутавры',0], [u'Швеллеры',1],[u'Уголки',2],[u'Прямоугольные трубы',3]]
             ,[[u"ГОСТ 8239-89 Двутавры с уклоном полок",u'SortamentData/GOST823989.csv']]
         
-            ,[[u"ГОСТ 8240-89 Швеллеры стальные горячекатанные",u'SortamentData/GOST824089.csv'] ]
+            ,[[u"ГОСТ 8240-89 (У) Швеллеры стальные горячекатанные",u'SortamentData/GOST824089.csv'] ]
+            ,[[u"ГОСТ 8240-89 (У) Швеллеры стальные горячекатанные",u'SortamentData/GOST824089.csv'] ]
+            ,[[u"ГОСТ 30245-2003 (Кв) Квадратные замкнутые сечения",u'SortamentData/gost302452003(k).csv'] ,
+               [u"ГОСТ 30245-2003 (Прям) Прямоугольные замкнутые сечения",u'SortamentData/gost302452003(pr).csv'] 
+               ]
         ]
     def output_data(self, i, inp):
         x=None
@@ -53,12 +57,15 @@ class BasaSort(object):
         if x==None:
             x=i
         if x==0:
+#            print inp
+
             pr=profiles.dvut(inp[0],inp[1],inp[2],inp[3],inp[4],inp[5],inp[6])
         elif x==1:
             pr=profiles.shvel(inp[0],inp[1],inp[2],inp[3],inp[4],inp[5],inp[6],inp[7])
         elif x==2:
             pr=profiles.ugol(inp[0],inp[1],inp[2],inp[3],inp[4],inp[5])
         elif x==3:
+#            print inp
             pr=profiles.truba_pryam(inp[0],inp[1],inp[2],inp[3],inp[4])
         elif x==4:
             pr=profiles.ring(inp[0],inp[1])

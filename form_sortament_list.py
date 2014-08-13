@@ -83,7 +83,7 @@ def solve_load_table(path, frame, num_sort):
 #формируем заголовок
     header_horisontal=input_data
 
-    prof_first=basa.output_data(num_sort, table_data[1][0:len_input_data])
+    prof_first=basa.output_data(num_sort, table_data[1][1:len_input_data+1])
     header_horisontal=list(u"№")+header_horisontal+(prof_first.output_list())
 #ставим заголовок:
 #    print header_horisontal
@@ -129,9 +129,9 @@ def solve_load_table(path, frame, num_sort):
       
     
     for i in range(0,len_input_data+1):
-        frame.setColumnWidth(i, 40)    
+        frame.setColumnWidth(i, 35)    
     for i in range(len_input_data+1,len(output_table[0])+1):
-        frame.setColumnWidth(i, 60)    
+        frame.setColumnWidth(i, 55)    
                             
     return 0   
     

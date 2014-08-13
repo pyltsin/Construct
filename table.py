@@ -38,6 +38,7 @@ class tables_csv():
         if self.typ=='float':
             for r in range(1,len(self.table)):
                 for c in range(1, len(self.table[0])):
+#                    print self.table[r][c]
                     self.table[r][c] =  float(self.table[r][c])
         if self.typ=='float_all':
             for r in range(0,len(self.table)):
