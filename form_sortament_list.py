@@ -109,6 +109,7 @@ def solve_load_table(path, frame, num_sort):
 
                 line.append(txt)
         else:
+            print "Error"
             for y in prof_item.output_list():
                 line.append("Error")   
         output_table.append(line)
@@ -127,12 +128,15 @@ def solve_load_table(path, frame, num_sort):
             frame.setItem(x,y,item)
             frame.item(x,y).setFlags(QtCore.Qt.ItemFlags(1+2+4+8+6+12+64))
       
+#    for i in range(0,0):
+#        frame.setColumnWidth(i, 40)    
     
     for i in range(0,len_input_data+1):
         frame.setColumnWidth(i, 35)    
     for i in range(len_input_data+1,len(output_table[0])+1):
         frame.setColumnWidth(i, 55)    
-                            
+
+    frame.setColumnWidth(0, 65)                            
     return 0   
     
         
