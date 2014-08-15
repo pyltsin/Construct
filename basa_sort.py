@@ -44,7 +44,15 @@ class BasaSort(object):
             ,[[u"ГОСТ 8239-89 Двутавры с уклоном полок",u'SortamentData/GOST823989.csv']]
         
             ,[[u"ГОСТ 8240-89 (У) Швеллеры стальные горячекатанные",u'SortamentData/GOST824089.csv'] ]
-            ,[[u"ГОСТ 8240-89 (У) Швеллеры стальные горячекатанные",u'SortamentData/GOST824089.csv'] ]
+            
+            ,[[u"ГОСТ 8509-93 Уголки равнополочные",u'SortamentData/GOST850993.csv'],
+              [u"ГОСТ 8510-86 Уголки неравнополочные",u'SortamentData/GOST851086.csv'],
+              [u"ГОСТ 19771-93 Уголки гнутые равнополочные (Run<460 Н/мм2)",u'SortamentData/GOST1977193(l460).csv'],
+              [u"ГОСТ 19771-93 Уголки гнутые равнополочные (Run>460 Н/мм2)",u'SortamentData/GOST1977193(r460).csv'],
+              [u"ГОСТ 19772-93 Уголки гнутые неравнополочные (Run<460 Н/мм2)",u'SortamentData/GOST1977293(l460).csv'],
+              [u"ГОСТ 19772-93 Уголки гнутые неравнополочные (Run>460 Н/мм2)",u'SortamentData/GOST1977293(r460).csv']
+              ]
+            
             ,[[u"ГОСТ 30245-2003 (Кв) Квадратные замкнутые сечения",u'SortamentData/gost302452003(k).csv'] ,
                [u"ГОСТ 30245-2003 (Прям) Прямоугольные замкнутые сечения",u'SortamentData/gost302452003(pr).csv'] 
                ]
@@ -63,6 +71,7 @@ class BasaSort(object):
         elif x==1:
             pr=profiles.shvel(inp[0],inp[1],inp[2],inp[3],inp[4],inp[5],inp[6],inp[7])
         elif x==2:
+#            print inp
             pr=profiles.ugol(inp[0],inp[1],inp[2],inp[3],inp[4],inp[5])
         elif x==3:
 #            print inp

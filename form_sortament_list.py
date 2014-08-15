@@ -98,8 +98,9 @@ def solve_load_table(path, frame, num_sort):
         line=x[0:len_input_data+1]
         p1=abs(prof_item.output_dict()[u'A, см2']-x[-3])/x[-3]
         p2=abs(prof_item.output_dict()[u'Jx, см4']-x[-2])/x[-2] 
+
         p3=abs(prof_item.output_dict()[u'Jy, см4']-x[-1])/x[-1]
-        print x[0], p1, p2, p3
+
         if p1<0.005 and p2<0.005 and p3<0.005:
             for y in prof_item.output_list():
                 if type(prof_item.output_dict()[y])==type(0.1):
@@ -109,7 +110,8 @@ def solve_load_table(path, frame, num_sort):
 
                 line.append(txt)
         else:
-            print "Error"
+            print x[0], p1, p2, p3
+            print "Error", prof_item.output_dict()[u'A, см2'],prof_item.output_dict()[u'Jx, см4'],prof_item.output_dict()[u'Jy, см4']
             for y in prof_item.output_list():
                 line.append("Error")   
         output_table.append(line)
