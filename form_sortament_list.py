@@ -13,6 +13,7 @@ from table import tables_csv
 from key_press_event import copy_past
 
 
+
 class MyWindow(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
@@ -96,6 +97,11 @@ def solve_load_table(path, frame, num_sort):
         #формируем строку:
         
         line=x[0:len_input_data+1]
+        
+#        line[0]=line[0].replace(u'II',u'П')
+#        window.setWindowTitle(line[0])
+
+#        print line[0]
         p1=abs(prof_item.output_dict()[u'A, см2']-x[-3])/x[-3]
         p2=abs(prof_item.output_dict()[u'Jx, см4']-x[-2])/x[-2] 
 
@@ -108,9 +114,11 @@ def solve_load_table(path, frame, num_sort):
                 else:
                     txt=prof_item.output_dict()[y]
 
+  
+
                 line.append(txt)
         else:
-            print x[0], p1, p2, p3
+            print line[0], p1, p2, p3
             print "Error", prof_item.output_dict()[u'A, см2'],prof_item.output_dict()[u'Jx, см4'],prof_item.output_dict()[u'Jy, см4']
             for y in prof_item.output_list():
                 line.append("Error")   
@@ -126,7 +134,7 @@ def solve_load_table(path, frame, num_sort):
         y=-1
         for j in i:
             y=y+1
-            item = QtGui.QTableWidgetItem(str(j))
+            item = QtGui.QTableWidgetItem(unicode(j))
             frame.setItem(x,y,item)
             frame.item(x,y).setFlags(QtCore.Qt.ItemFlags(1+2+4+8+6+12+64))
       

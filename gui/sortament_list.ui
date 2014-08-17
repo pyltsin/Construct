@@ -51,7 +51,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>TextLabel</string>
+    <string>Picture</string>
    </property>
   </widget>
   <widget class="QTableWidget" name="view">

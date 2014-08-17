@@ -32,6 +32,7 @@ class tables_csv():
         import csv
         self.table = []
         for row in csv.reader(self.infile):
+#            print row
             self.table.append(row)
         self.infile.close()
         self.typ=typ
@@ -46,6 +47,11 @@ class tables_csv():
 #                    print self.table[r][c]
                     self.table[r][c] =  float(self.table[r][c])
 #                    print self.table[r][c]
+        for x in self.table:
+
+            x[0]=unicode(x[0], 'utf-8')
+#            x[0]=x[0].replace('Y', u'У')
+#            x[0]=x[0].replace('II', u'П')
     def get_table(self):
         return self.table
     def get_lenght_column(self):
