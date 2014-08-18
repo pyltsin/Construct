@@ -21,5 +21,5 @@ setup(
         name = "simple_PyQt4",
         version = "0.1",
         options = {"build_exe" : {"includes" : "atexit" }},
-        executables = [Executable("C:\\Python27\\Lib\\site-packages\\cx_Freeze\\samples\\PyQt4\\Construct\\form_sortament_list.py", base = base)])
+        executables = [Executable("D:\\python_my\\Construct\\form_sortament_list.py", base = base)])
 
