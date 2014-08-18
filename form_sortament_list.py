@@ -17,7 +17,7 @@ from key_press_event import copy_past
 class MyWindow(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
-        uic.loadUi("gui/sortament_list.ui", self)
+        uic.loadUi("gui\\sortament_list.ui", self)
         load_sort_list(self)
     def keyPressEvent(self, e):
         copy_past(e, [], [window.view], window)
