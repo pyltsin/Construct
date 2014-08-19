@@ -6,10 +6,12 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+
 .Python
 env/
 bin/
 build/
+exe.win32-2.7/
 develop-eggs/
 dist/
 eggs/
