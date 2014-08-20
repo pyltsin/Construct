@@ -6,14 +6,16 @@ Created on Fri Aug 08 21:48:07 2014
 """
 import profiles2 as profiles
 from  PyQt4 import QtCore, QtGui, uic
-
+import table
 
 class BasaSort(object):
     def __init__(self):
+        self.__list_code=[u'СНиП II-23-81*', u'СП16.13330.2012']
         self.list_sort=[u'Прямоугольник',u'Двутавр', u'Швеллер',u'Уголок', u'Прямоугольная труба',
                         u'Труба', u'Уголки в тавр (длинные стор. - вверх)'
                         , u'Уголки в тавр (длинные стор. - в бок)'
                         ,u'Уголки в крест']
+        self.dict_sostav_sort={5:2, 6:2, 7:2}
         self.dict_sort={u'Двутавр':0, u'Швеллер':1,u'Уголок':2, u'Прямоугольная труба':3,
                         u'Труба':4, u'Уголки в тавр (длинные стор. - вверх)':5
                         , u'Уголки в тавр (длинные стор. - в бок)':6
@@ -71,10 +73,49 @@ class BasaSort(object):
                [u"ГОСТ 30245-2003 (Прям) Прямоугольные замкнутые сечения",u'SortamentData/gost302452003(pr).csv'] 
                ]
         ]
+    def list_code(self):
+        return self.__list_code
+    def output_list_sect_num(self, sortament, name):
+        if sortament!="" and name!="":
+            for x in self.dict_sort:
+                if name==QtCore.QString(x):
+                    number=self.dict_sort[x]
+                    break
+            if number in self.dict_sostav_sort:
+                number=self.dict_sostav_sort[number]
+
+            for x in self.__list4sortament[number+1]:
+                if QtCore.QString(x[0])==sortament:
+                    fil=x[1]
+            
+            table_sect=table.tables_csv(fil,'float')
+            list_sect=table_sect.get_title_column()
+            return list_sect
+        else:
+            return ['']
+    def output_list_sortament(self, name):
+        if name!="":
+            for x in self.dict_sort:
+                if name==QtCore.QString(x):
+                    number=self.dict_sort[x]
+                    break
+            if number in self.dict_sostav_sort:
+                number=self.dict_sostav_sort[number]
+            for x in self.__list4sortament[0]:
+                if x[1]==number:
+                    number_sort=x[1]
+                    break
+            lst=[]
+            for x in self.__list4sortament[number_sort+1]:
+                lst.append(x[0])
+            list_sortament=lst
+            return list_sortament
+        else:
+            return ['']
     def output_list_section(self, type_section):
         lst=[]
         for x in self.output_list_elements():
-            if type_section==x[0]:
+            if QtCore.QString(type_section)==QtCore.QString(x[0]):
                 numbers_element=self.output_list4elements()[x[1]]
                 break
 #        print numbers_element
