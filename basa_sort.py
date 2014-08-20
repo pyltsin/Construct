@@ -71,7 +71,18 @@ class BasaSort(object):
                [u"ГОСТ 30245-2003 (Прям) Прямоугольные замкнутые сечения",u'SortamentData/gost302452003(pr).csv'] 
                ]
         ]
-
+    def output_list_section(self, type_section):
+        lst=[]
+        for x in self.output_list_elements():
+            if type_section==x[0]:
+                numbers_element=self.output_list4elements()[x[1]]
+                break
+#        print numbers_element
+        for y in self.key_sortament():
+#            print y
+            if self.output_dict_sort()[y] in numbers_element:
+                lst.append(y)
+        return lst
     def output_list_elements(self):
         return self.__list_elements
     def output_list4elements(self):
@@ -109,7 +120,7 @@ class BasaSort(object):
             pr=profiles.rectangle(inp[0],inp[1])
         return pr
     def pict(self, i):
-        print i
+#        print i
         for label in self.dict_sort:
             if i==QtCore.QString(label):
                 x=self.dict_sort[label]
