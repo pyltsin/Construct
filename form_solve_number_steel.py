@@ -68,10 +68,10 @@ class MyWindow(QtGui.QWidget):
         fil=folder+str(u"\\")+fil_name
         print fil           
     def show_dia_folder(self):
-       folder_name = QtGui.QFileDialog.getExistingDirectory(self, 'Open Folfer', '/home')
-       self.text_folder.clear()
-       self.text_folder.insert(folder_name)
-       self.load_list_files(folder_name)
+        folder_name = QtGui.QFileDialog.getExistingDirectory(self, 'Open Folfer', '/home')
+        self.text_folder.clear()
+        self.text_folder.insert(folder_name)
+        self.load_list_files(folder_name)
        
     def load_list_files(self, folder_name):
         
@@ -104,6 +104,7 @@ class MyWindow(QtGui.QWidget):
             self.flag_new=False
             self.flag_current_code=current_code
             self.flag_current_type_element=  current_type_element 
+            self.flag_current_section=current_section
             add_data=self.basa.add_data_sostav(current_section)
             data=[u'Расчетная длина']
 #            data=self.snipn.solve_data(self.flag_current_type_element)# нет пока таког
@@ -148,31 +149,31 @@ class MyWindow(QtGui.QWidget):
                 
     def load_table_combobox(self, i):
 #сортаменты
-            self.combobox_sort.append(QtGui.QComboBox())
-            lst_sort=self.basa.output_list_sortament(self.type_section.currentText())
-            self.load_combobox(self.combobox_sort[i], lst_sort)
-            self.input_table.setCellWidget(1,i,self.combobox_sort[i])
-            
-            
-            
+        self.combobox_sort.append(QtGui.QComboBox())
+        lst_sort=self.basa.output_list_sortament(self.type_section.currentText())
+        self.load_combobox(self.combobox_sort[i], lst_sort)
+        self.input_table.setCellWidget(1,i,self.combobox_sort[i])
+        
+        
+        
 # сечения
-            self.combobox_num_sect.append(QtGui.QComboBox())
-            load=self.load_section_number(i, self)
-            load.start()
-            self.input_table.setCellWidget(2,i,self.combobox_num_sect[i])            
+        self.combobox_num_sect.append(QtGui.QComboBox())
+        load=self.load_section_number(i, self)
+        load.start()
+        self.input_table.setCellWidget(2,i,self.combobox_num_sect[i])            
 
-            self.combobox_sort[i].currentIndexChanged.connect(self.load_section_number(i, self))
+        self.combobox_sort[i].currentIndexChanged.connect(self.load_section_number(i, self))
 # сталь
 
 
-            self.combobox_steel.append(QtGui.QComboBox())
+        self.combobox_steel.append(QtGui.QComboBox())
 
-            code=self.type_code.currentText()
-            steel=list_steel(code=code,typ_steel='prokat')
-            lst_steel=steel.get_list()
-            self.load_combobox(self.combobox_steel[i], lst_steel)
+        code=self.type_code.currentText()
+        steel=list_steel(code=code,typ_steel='prokat')
+        lst_steel=steel.get_list()
+        self.load_combobox(self.combobox_steel[i], lst_steel)
 
-            self.input_table.setCellWidget(3,i,self.combobox_steel[i]) 
+        self.input_table.setCellWidget(3,i,self.combobox_steel[i]) 
                 
     def change_column_table(self, i):
         self.input_table.setColumnCount(i)

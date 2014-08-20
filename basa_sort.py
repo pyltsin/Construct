@@ -5,7 +5,7 @@ Created on Fri Aug 08 21:48:07 2014
 @author: Pyltsin
 """
 import profiles2 as profiles
-from  PyQt4 import QtCore, QtGui, uic
+from  PyQt4 import QtCore
 import table
 
 class BasaSort(object):
@@ -35,14 +35,14 @@ class BasaSort(object):
         self.__list_elements=[[u'Ферма',0],[u'Балка',1],[u'Колонна',2]]
         self.__list4elements=[[0,3,5,6,7],[0,1,3],[1,3]]
         
-        self.pictures_list={0:'SortamentPicture\dvut.png'
-        , 1:'SortamentPicture\shvel.png'
-        , 2:'SortamentPicture\ugol.png'
-        , 3:'SortamentPicture\korob.png'
+        self.pictures_list={0:'SortamentPicture/dvut.png'
+        , 1:'SortamentPicture/shvel.png'
+        , 2:'SortamentPicture/ugol.png'
+        , 3:'SortamentPicture/korob.png'
         , 4:'SortamentPicture/ring.png'
-        , 5:'SortamentPicture\sost_ugol_tavr_st_up.png'
-        , 6:'SortamentPicture\sost_ugol_tavr_st_right.png'
-        , 7:'SortamentPicture\sost_ugol_tavr_st_krest.png'
+        , 5:'SortamentPicture/sost_ugol_tavr_st_up.png'
+        , 6:'SortamentPicture/sost_ugol_tavr_st_right.png'
+        , 7:'SortamentPicture/sost_ugol_tavr_st_krest.png'
         , 8:'SortamentPicture/rectangle.png'}
 
         self.__list4sortament=[
@@ -77,13 +77,15 @@ class BasaSort(object):
     def list_code(self):
         return self.__list_code
     def add_data_sostav(self, name):
-        
-        for x in self.dict_sort:
-            if QtCore.QString(x)==name:
-                number=self.dict_sort[x]
-                break
-        if number in self.dict_sostav_sort:
-            return self.__add_data_sostav[number]
+        if name!='':
+            for x in self.dict_sort:
+                if QtCore.QString(x)==name:
+                    number=self.dict_sort[x]
+                    break
+            if number in self.dict_sostav_sort:
+                return self.__add_data_sostav[number]
+            else:
+                return []
         else:
             return []
     def output_list_sect_num(self, sortament, name):
