@@ -77,9 +77,7 @@ class MyWindow(QtGui.QWidget):
         
         raw_list_files=os.listdir(folder_name)
         list_files=[]
-#        print raw_list_files
         for x in raw_list_files:
-#            print x[-4:]
             if x[-4:]=='.txt':
                 list_files.append(unicode(x))
             
@@ -89,8 +87,6 @@ class MyWindow(QtGui.QWidget):
         
     def load_combobox(self, widget, lst):
         widget.clear()
-#        print lst
-#        print type(lst)
         widget.addItems(lst)
         
     def load_sect(self, type_section):
@@ -103,7 +99,6 @@ class MyWindow(QtGui.QWidget):
         current_type_element=self.type_element.currentText()
         current_section=self.type_section.currentText()
         add_data2=[u'Название', u'Сортамент', u'№ Сечения', u'Сталь']
-#        print 'in load',current_count,  self.flag_current_count
         
         if self.flag_new==True or current_code!=self.flag_current_code or current_type_element!=self.flag_current_type_element or current_section!=self.flag_current_section:
             self.flag_new=False
@@ -111,9 +106,9 @@ class MyWindow(QtGui.QWidget):
             self.flag_current_type_element=  current_type_element 
             add_data=self.basa.add_data_sostav(current_section)
             data=[u'Расчетная длина']
+#            data=self.snipn.solve_data(self.flag_current_type_element)# нет пока таког
             lst=add_data2+add_data+data
             
-#            print add_data2, add_data, data, lst
             self.input_table.clear()
             self.input_table.setRowCount(len(lst))
             self.input_table.setVerticalHeaderLabels(lst)
@@ -126,16 +121,12 @@ class MyWindow(QtGui.QWidget):
 
         if current_count>self.flag_current_count:
             for i in range(self.flag_current_count, current_count):
-#                print 'i+', i
-#                print 'i+', self.flag_current_count, current_count               
                 self.load_table_combobox(i)
             self.flag_current_count=current_count
         
         if current_count<self.flag_current_count:
             
             for i in range(self.flag_current_count,current_count,-1):
-#                print'i-', i
-#                print 'i-', self.flag_current_count, current_count 
                 self.combobox_sort.pop(i-1)
                 self.combobox_num_sect.pop(i-1)
                 self.combobox_steel.pop(i-1)               
@@ -153,9 +144,6 @@ class MyWindow(QtGui.QWidget):
             self.parent.load_combobox(self.parent.combobox_num_sect[i], lst_num_sect)
         def start(self):
             self.__call__()            
-#    def load_section_number(self, i):
-#            lst_num_sect=self.basa.output_list_sect_num(self.combobox_sort[i].currentText(), self.type_section.currentText())
-#            self.load_combobox(self.combobox_num_sect[i], lst_num_sect)
             
                 
     def load_table_combobox(self, i):
