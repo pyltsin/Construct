@@ -52,8 +52,8 @@
   <widget class="QTableWidget" name="input_table">
    <property name="geometry">
     <rect>
-     <x>210</x>
-     <y>160</y>
+     <x>220</x>
+     <y>159</y>
      <width>741</width>
      <height>231</height>
     </rect>
@@ -112,8 +112,8 @@
   <widget class="QTableWidget" name="output_table">
    <property name="geometry">
     <rect>
-     <x>210</x>
-     <y>400</y>
+     <x>219</x>
+     <y>396</y>
      <width>741</width>
      <height>271</height>
     </rect>
@@ -208,7 +208,10 @@
     <string>Сохранить</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit">
+  <widget class="QLineEdit" name="text_folder">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>210</x>
@@ -230,7 +233,7 @@
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_4">
+  <widget class="QPushButton" name="button_folder">
    <property name="geometry">
     <rect>
      <x>840</x>
@@ -319,6 +322,24 @@
    </property>
   </widget>
  </widget>
+ <layoutdefault spacing="6" margin="9"/>
  <resources/>
  <connections/>
+ <designerdata>
+  <property name="gridDeltaX">
+   <number>10</number>
+  </property>
+  <property name="gridDeltaY">
+   <number>10</number>
+  </property>
+  <property name="gridSnapX">
+   <bool>false</bool>
+  </property>
+  <property name="gridSnapY">
+   <bool>false</bool>
+  </property>
+  <property name="gridVisible">
+   <bool>true</bool>
+  </property>
+ </designerdata>
 </ui>

@@ -54,6 +54,36 @@ class MyWindow(QtGui.QWidget):
         self.number.setValue(1)
         self.number.valueChanged['int'].connect(self.change_column_table)
         self.change_column_table(1)    
+    
+#выбор рабочей папки
+        self.button_folder.clicked.connect(self.show_dia_folder)
+
+#направляем на открытие:
+        self.listWidget.itemDoubleClicked.connect(self.load_files)
+    def load_files(self):
+        folder=self.text_folder.text()
+        fil_name=self.listWidget.currentItem().text()
+        fil=folder+str(u"\\")+fil_name
+        print fil           
+    def show_dia_folder(self):
+       folder_name = QtGui.QFileDialog.getExistingDirectory(self, 'Open Folfer', '/home')
+       self.text_folder.clear()
+       self.text_folder.insert(folder_name)
+       self.load_list_files(folder_name)
+       
+    def load_list_files(self, folder_name):
+        
+        raw_list_files=os.listdir(folder_name)
+        list_files=[]
+#        print raw_list_files
+        for x in raw_list_files:
+#            print x[-4:]
+            if x[-4:]=='.txt':
+                list_files.append(unicode(x))
+            
+            
+        self.listWidget.clear()
+        self.listWidget.addItems(list_files)
         
     def load_combobox(self, widget, lst):
         widget.clear()
@@ -71,10 +101,10 @@ class MyWindow(QtGui.QWidget):
         current_type_element=self.type_element.currentText()
         current_section=self.type_section.currentText()
         add_data2=[u'Название', u'Сортамент', u'№ Сечения', u'Сталь']
-        print 'in load',current_count,  self.flag_current_count
+#        print 'in load',current_count,  self.flag_current_count
         
         if self.flag_new==True or current_code!=self.flag_current_code or current_type_element!=self.flag_current_type_element:
-            print 'hel'
+#            print 'hel'
             self.flag_new=False
             self.flag_current_code=current_code
             self.flag_current_type_element=  current_type_element          
@@ -84,7 +114,7 @@ class MyWindow(QtGui.QWidget):
 #            data=self.snipn.solve_data(self.flag_current_type_element)# нет пока таког
             lst=add_data2+add_data+data
             
-            print add_data2, add_data, data, lst
+#            print add_data2, add_data, data, lst
             self.input_table.clear()
             self.input_table.setRowCount(len(lst))
             self.input_table.setVerticalHeaderLabels(lst)
@@ -97,16 +127,16 @@ class MyWindow(QtGui.QWidget):
 
         if current_count>self.flag_current_count:
             for i in range(self.flag_current_count, current_count):
-                print 'i+', i
-                print 'i+', self.flag_current_count, current_count               
+#                print 'i+', i
+#                print 'i+', self.flag_current_count, current_count               
                 self.load_table_combobox(i)
             self.flag_current_count=current_count
         
         if current_count<self.flag_current_count:
             
             for i in range(self.flag_current_count,current_count,-1):
-                print'i-', i
-                print 'i-', self.flag_current_count, current_count 
+#                print'i-', i
+#                print 'i-', self.flag_current_count, current_count 
                 self.combobox_sort.pop(i-1)
                 self.combobox_num_sect.pop(i-1)
                 self.combobox_steel.pop(i-1)               
@@ -116,10 +146,11 @@ class MyWindow(QtGui.QWidget):
         if current_section!=self.flag_current_section:
             self.flag_current_section=current_section
             for i in range(current_count):
+                #загрузить сортаменты
                 lst_sort=[u'13',u'23',u'33']
                 self.load_combobox(self.combobox_sort[i], lst_sort)
                 
-                #загрузить сортаменты
+
             
     def load_table_combobox(self, i):
 #            print i1
