@@ -105,15 +105,12 @@ class MyWindow(QtGui.QWidget):
         add_data2=[u'Название', u'Сортамент', u'№ Сечения', u'Сталь']
 #        print 'in load',current_count,  self.flag_current_count
         
-        if self.flag_new==True or current_code!=self.flag_current_code or current_type_element!=self.flag_current_type_element:
-#            print 'hel'
+        if self.flag_new==True or current_code!=self.flag_current_code or current_type_element!=self.flag_current_type_element or current_section!=self.flag_current_section:
             self.flag_new=False
             self.flag_current_code=current_code
-            self.flag_current_type_element=  current_type_element          
-            add_data=['3']
+            self.flag_current_type_element=  current_type_element 
+            add_data=self.basa.add_data_sostav(current_section)
             data=[u'Расчетная длина']
-#            add_data=self.basa.get_add_data() # нет пока такого
-#            data=self.snipn.solve_data(self.flag_current_type_element)# нет пока таког
             lst=add_data2+add_data+data
             
 #            print add_data2, add_data, data, lst
@@ -145,15 +142,6 @@ class MyWindow(QtGui.QWidget):
             self.flag_current_count=current_count            
 
 
-        if current_section!=self.flag_current_section:
-            self.flag_current_section=current_section
-            for i in range(current_count):
-                #загрузить сортаменты
-                lst_sort=self.basa.output_list_sortament(self.type_section.currentText())
-                self.load_combobox(self.combobox_sort[i], lst_sort)
-                
-                load_sect=self.load_section_number(i, self)
-                load_sect.start()
                 
     class load_section_number():
         def __init__(self, i, parent):

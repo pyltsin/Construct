@@ -31,6 +31,7 @@ class BasaSort(object):
         ,8:profiles.rectangle(1,1).input_data()
         }
 
+        self.__add_data_sostav={5:[u'dx, см'],6:[u'dx, см'],7:[u'dx, см', u'dy, см']}
         self.__list_elements=[[u'Ферма',0],[u'Балка',1],[u'Колонна',2]]
         self.__list4elements=[[0,3,5,6,7],[0,1,3],[1,3]]
         
@@ -75,6 +76,16 @@ class BasaSort(object):
         ]
     def list_code(self):
         return self.__list_code
+    def add_data_sostav(self, name):
+        
+        for x in self.dict_sort:
+            if QtCore.QString(x)==name:
+                number=self.dict_sort[x]
+                break
+        if number in self.dict_sostav_sort:
+            return self.__add_data_sostav[number]
+        else:
+            return []
     def output_list_sect_num(self, sortament, name):
         if sortament!="" and name!="":
             for x in self.dict_sort:

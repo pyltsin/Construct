@@ -20,11 +20,11 @@ class list_steel(mat):
         self.basa=BasaSort()
         list_code=self.basa.list_code()
         if code==list_code[0] and typ_steel=='prokat':
-            fil='mat_steel1987.csv'
+            fil='SteelData/mat_steel1987.csv'
         if code==list_code[0] and typ_steel=='list':
-            fil='mat_steel1987l.csv'
+            fil='SteelData/mat_steel1987l.csv'
         if code==list_code[1] :
-            fil='mat_steel.csv'
+            fil='SteelData/mat_steel.csv'
         table=tables_csv(fil,'float')
         list_table=table.get_title_column()
         
@@ -47,7 +47,7 @@ class steel_snip20107n(mat):
         else:
             t=el.t()*10
 #        print el.t()
-        table=tables_csv('mat_steel.csv','float')
+        table=tables_csv('SteelData/mat_steel.csv','float')
         list_table=table.get_title_column()
         i=0
         ryn=0
@@ -106,9 +106,9 @@ class steel_snip1987(mat):
             t=el.t()*10
 #        print el.t()
         if typ_steel=='list':
-            table=tables_csv('mat_steel1987l.csv','float')
+            table=tables_csv('SteelData/mat_steel1987l.csv','float')
         if typ_steel=='prokat':
-            table=tables_csv('mat_steel1987.csv','float')
+            table=tables_csv('SteelData/mat_steel1987.csv','float')
         list_table=table.get_title_column()
         i=0
         ryn=0
