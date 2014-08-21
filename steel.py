@@ -37,7 +37,34 @@ class list_steel(mat):
         return self.lst
         
         
-        
+class steel_general(mat):
+    def __init__(self, ry, ryn, ru, run):
+        #значения в МПа
+        self.__ryn=ryn/9.81*100
+        self.__run=run/9.81*100
+        self.__ry=ry/9.81*100
+        self.__ru=ru/9.81*100
+        self.__rs=0.58*self.__ry
+        self.__rth=0.5*self.__ru
+        self.__rthf=0.5*self.__ry        
+    def ryn(self):
+        return self.__ryn
+    def ry(self):
+        return self.__ry
+    def ru(self):
+        return self.__ru
+    def run(self):
+        return self.__run
+    def rs(self):
+        return self.__rs
+    def rth(self):
+        return self.__rth
+    def rthf(self):
+        return self.__rthf
+    def mu(self):
+        return 0.3
+    def e(self):
+        return 2.06*10**5/9.81*100
             
 class steel_snip20107n(mat):
     def __init__(self, typ, el, dim=0, typ_steel='prokat'):
@@ -95,7 +122,6 @@ class steel_snip20107n(mat):
         return 0.3
     def e(self):
         return 2.06*10**5/9.81*100
-
 
 class steel_snip1987(mat):
     def __init__(self, typ, el, dim=0, typ_steel='prokat'):

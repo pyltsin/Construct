@@ -10,14 +10,17 @@ from table import tables_csv
 
 #from steel import *
 
+
+
+           
 class elements(object):
-    def __init__(self, steel, profile, lx=0, ly=0, lb=0, lr=0, br=0, hr=0):
+    def __init__(self, steel, profile, mux=0, muy=0, mub=0, lfact=0, br=0, hr=0):
         self.steel=steel
         self.profile=profile
-        self.__lx=float(lx)
-        self.__ly=float(ly)
-        self.__lb=float(lb)
-        self.__lr=float(lr)
+        self.__lx=float(lfact)*float(mux)
+        self.__ly=float(lfact)*float(muy)
+        self.__lb=float(lfact)*float(mub)
+        self.__lfact=float(lfact)
         self.__br=float(br)
         self.__hr=float(hr)
         self.__lambdax=self.__lx/self.profile.ix()
@@ -33,8 +36,8 @@ class elements(object):
         return self.__ly
     def lb(self):
         return self.__lb
-    def lr(self):
-        return self.__lr
+    def lfact(self):
+        return self.__lfact
     def br(self):
         return self.__br
     def hr(self):
@@ -77,8 +80,112 @@ class normes(object):
     def yc(self):
         return self.__yc
 
+
 class snipn(normes):
-    
+    def yu(self):
+        return 1.3
+    def phi_n(self, lambda_, typ=0):
+        #typ = 1 - в плоскости стенки
+        if self.pr.title()=='korob' or self.pr.title()=='truba':       
+            typ_sec='a'
+        if self.pr.title()=='dvut' or self.pr.title()=='ugol_tavr_st_krest' or self.pr.title()=='shvel_korob' or self.pr.title()=='shvel_dvut':
+            typ_sec='b'
+        if self.pr.title()=='dvut' and    self.pr.h()>500 and typ==1:
+            typ_sec='a'
+        if self.pr.title()=='ugol_tavr_st_right' or self.pr.title()=='ugol_tavr_st_up':               
+            typ_sec='c'
+
+           
+        if typ_sec=='a':
+            a=0.03
+            b=0.06 
+            c=3.8
+#            print self.pr.h()
+        if typ_sec=='b':
+            a=0.04
+            b=0.09
+            c=4.4
+        if typ_sec=='c':
+            a=0.04
+            b=0.14 
+            c=5.8
+#        print a, b
+        delta=9.87*(1-a+b*lambda_)+lambda_**2
+        phi_n=0.5*(delta-(delta**2-39.48*lambda_**2)**0.5)/lambda_**2
+        
+        if lambda_>c:
+            if phi_n>7.6/lambda_**2:
+                phi_n=7.6/lambda_**2
+               
+        if phi_n>1 or lambda_<0.4:
+            phi_n=1
+        
+        return phi_n, typ_sec
+
+#нет тестов 
+
+    def phi_n_old(self, lambda_, typ=0):
+        ry=self.element.steel.ry()
+        e=self.element.steel.e() 
+        if 0<lambda_ and lambda_<=2.5:
+            phi=1-(0.073-5.53*ry/e)*lambda_*lambda_**0.5
+        if 2.5<lambda_ and lambda_<=4.5:
+            phi=1.47-13*ry/e-(0.371-27.3*ry/e)*lambda_+(0.0275-5.53*ry/e)*lambda_**2
+        if lambda_>4.5:
+            phi=332/(lambda_**2*(51-lambda_))
+        return phi
+            
+    def phix(self):
+        return self.phi_n(self.element.lambdax_(), typ=1)
+    def phiy(self):
+        return self.phi_n(self.element.lambday_(), typ=0)
+        
+    def phi(self):
+        phix=self.phix()[0]
+        phiy=self.phiy()[0]
+        if phix<phiy:
+            return phix
+        else:
+            return phiy
+
+#нет тестов 
+    def phix_old(self):
+        return self.phi_n_old(self.element.lambdax_(), typ=1)
+    def phiy_old(self):
+        return self.phi_n_old(self.element.lambday_(), typ=0)
+
+    def phi_old(self):
+        phix=self.phix()
+        phiy=self.phiy() 
+        if phix<phiy:
+            return phix
+        else:
+            return phiy     
+            
+
+    def q_fic(self, n, phi):
+        ry=self.element.steel.ry()
+        e=self.element.steel.e() 
+        q_fic=7.15*10**(-6)*(2330-e/ry)*n/phi
+        return q_fic
+    def q_fic_old(self, n, phi):
+        return self.q_fic(n, phi)
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
     def local_buckl_h_n(self, typ=3):
 
         if typ==3:
@@ -352,84 +459,11 @@ class snipn(normes):
         
      
 #нет тестов на все элементы        
-    def phi_n(self, lambda_, typ=0):
-        #typ = 1 - в плоскости стенки
-        if self.pr.title()=='korob' or self.pr.title()=='truba':       
-            typ_sec='a'
-        if self.pr.title()=='dvut' or self.pr.title()=='ugol_tavr_st_krest' or self.pr.title()=='shvel_korob' or self.pr.title()=='shvel_dvut':
-            typ_sec='b'
-        if self.pr.title()=='dvut' and    self.pr.h()>500 and typ==1:
-            typ_sec='a'
-        if self.pr.title()=='ugol_tavr_st_right' or self.pr.title()=='ugol_tavr_st_up':               
-            typ_sec='c'
+   
 
-           
-        if typ_sec=='a':
-            a=0.03
-            b=0.06 
-            c=3.8
-#            print self.pr.h()
-        if typ_sec=='b':
-            a=0.04
-            b=0.09
-            c=4.4
-        if typ_sec=='c':
-            a=0.04
-            b=0.14 
-            c=5.8
-#        print a, b
-        delta=9.87*(1-a+b*lambda_)+lambda_**2
-        phi_n=0.5*(delta-(delta**2-39.48*lambda_**2)**0.5)/lambda_**2
-        
-        if lambda_>c:
-            if phi_n>7.6/lambda_**2:
-                phi_n=7.6/lambda_**2
-               
-        if phi_n>1:
-            phi_n=1
-        return phi_n
-
-#нет тестов 
-
-    def phi_n_old(self, lambda_, typ=0):
-        ry=self.element.steel.ry()
-        e=self.element.steel.e() 
-        
-        if 0<lambda_ and lambda_<=2.5:
-            phi=1-(0.073-5.53*ry/e)*lambda_*lambda_**0.5
-        if 2.5<lambda_ and lambda_<=4.5:
-            phi=1.47-13*ry/e-(0.371-27.3*ry/e)*lambda_+(0.0275-5.53*ry/e)*lambda_**2
-        if lambda_>4.5:
-            phi=332/(lambda__**2*(51-lambbda_))
-        return phi
-            
-    def phix(self):
-        return self.phi_n(self.element.lambdax_(), typ=1)
-    def phiy(self):
-        return self.phi_n(self.element.lambday_(), typ=0)
-    def phi(self):
-        lambda_=self.element.lambda_()[0]
-        typ=self.element.lambda_()[1]        
-        return self.phi_n(lambda_, typ)   
-
-#нет тестов 
-    def phix_old(self):
-        return self.phi_n_old(self.element.lambdax_(), typ=1)
-    def phiy_old(self):
-        return self.phi_n_old(self.element.lambday_(), typ=0)
-    def phi_old(self):
-        lambda_=self.element.lambda_()[0]
-        typ=self.element.lambda_()[1]        
-        return self.phi_n_old(lambda_, typ) 
 
 #нет тестов     
-    def q_fic(self, n, phi):
-        ry=self.element.steel.ry()
-        e=self.element.steel.e() 
-        q_fic=7.15*10**(-6)*(2330-e/ry)*n/phi
-        return q_fic
-    def q_fic_old(self, n, phi):
-        return self.q_fic(n, phi)
+
         
     def cxcyn(self):
         if self.pr.title()=='truba':
@@ -1261,52 +1295,237 @@ class snipn(normes):
             
         return check, lambda_uf, lambda_f
         
-        def el_ferm_simple(self):
-#нет тестов
-            n=self.force.n
-            phi_nx=self.phix()
-            phi_ny=self.phiy()
-            if n>=0:
-                messege_general="Центральное расстяжение"
-                if self.elem.steel.ryn<=440:
-                    n_ultx=self.pr.a()*self.elem.steel.ry()*self.yc()
-                else:
-                    n_ultx=self.pr.a()*self.elem.steel.ru()*self.yc() /self.elem.steel.yu()                  
-                n_ulty=n_ultx
-                phi_nx=1
-                phi_ny=1
-            if n<0:
-                messege_general="Центральное сжатие"
-                n_ultx=self.pr.a()*self.elem.steel.ry()*self.yc()*phi_nx
-                n_ultx=self.pr.a()*self.elem.steel.ry()*self.yc()*phi_nx
+class simple_ferma(snipn):
+    def add_data(self):
+        lst=[u'yc', u'lx, м', u'ly, м']
+        return  lst   
+    def output_data(self):
+        lst=[]
+        #Исходные данные:
+        yu=self.yu()
+        commentyu=u'п.4'
+        
+        a=self.pr.a()
+        commenta=u'A, см2'
+        
+        ix=self.pr.ix()
+        commentix=u'ix, см'
+
+        iy=self.pr.iy()
+        commentiy=u'iy, см'
+
+        lambdax=self.element.lambdax()
+        commentlx=u'lambdax'
+        
+        lambday=self.element.lambdax()
+        commently=u'lambday'
+
+        ry=self.element.steel.ry()
+        commentry=u'Ry, кг/см2'        
+        lst=[[yu, commentyu],
+             [ry, commentry],
+             [a, commenta],
+             [ix, commentix],
+             [iy, commentiy],
+             [lambdax, commentlx],
+             [lambday, commently]]
+        return lst
+        
+    def output_data_snip_old_global(self):
+        lst=[]        
+        #Расчет на расстяжение
+        n1=self.pr.a()*self.element.steel.ry()*self.yc()
+        comment1=u'N=An*Ry*yc (п.5.1. (5))'         
+
+        n2=self.pr.a()*self.element.steel.ru()*self.yc()/self.yu()
+        comment2=u'N=A*Ru*yc/yu (п.5.2. (6))'         
+
+        if n1<n2:
+            nmin=n1
+        else:
+            nmin=n2
+        commentnmin='min(п.5.1,п.5.2)'
+        #сжатие:
+        phix_old=self.phix_old()
+        commentpx=u'phix (п.5.3.)'
+
+        phiy_old=self.phiy_old()
+        commentpy=u'phiy (п.5.3.)'
+
+        n3=self.nminus_old
+        comment3=u'N=An*Ry*yc*phi (п.5.3. (7))'
+
+        lst=[[n3, comment3],
+             [nmin,commentnmin],
+             [phix_old, commentpx],
+             [phix_old, commentpy],
+             [n1, comment1],
+             [n2, comment2]]
+             
+        if self.element.lx()!=self.element.lfact() :
+            q_ficmaxx=self.q_fic_old(n3,phix_old)
+            commentqx=u'п.5.8. (23)'
+            lst.append(list(q_ficmaxx, commentqx))
+        if self.element.ly()!=self.element.lfact() :
+            q_ficmaxy=self.q_fic_old(n3,phiy_old)
+            commentqy=u'п.5.8. (23)'
+            lst.append(list(q_ficmaxy, commentqy))
             
-            local_buckl_h_n=self.local_buckl_h_n()
-            local_buckl_b_n=self.local_buckl_b_n()            
+        if self.pr.title0()=='sostav':
+            if self.pr.title()=='ugol_tavr_st_up' or self.pr.title()=='ugol_tavr_st_right':
+                ix=self.pr.pr1.ix()
+                ixplus=80*ix
+                ixminus=40*ix
+                
+                lst.append(list(ixplus,u'Шаг планкок (+) (п.5.7.), см'))
+                lst.append(list(ixminus,u'Шаг планкок (-) (п.5.7.), см'))
+
+            if self.pr.title()=='ugol_tavr_st_krest':
+                iy0=self.pr.pr1.iy0()
+                ixplus=80*iy0
+                ixminus=40*iy0
+                
+                lst.append(list(ixplus,u'Шаг планкок (+) (п.5.7.), см'))
+                lst.append(list(ixminus,u'Шаг планкок (-) (п.5.7.), см'))
+        return lst
+
+    def output_data_snip_n_global(self):
+        lst=[]        
+        #Расчет на расстяжение
+        n1=self.pr.a()*self.element.steel.ry()*self.yc()
+        comment1=u'N=An*Ry*yc (п.7.1.1 (5))'         
+
+        n2=self.pr.a()*self.element.steel.ru()*self.yc()/self.yu()
+        comment2=u'N=A*Ru*yc/yu (п.7.1.1 )'         
+
+        if n1<n2:
+            nmin=n1
+        else:
+            nmin=n2
+        commentnmin='min(п.7.1.1)'
+        #сжатие:
+        
+        phix, typx=self.phix()
+        commentpx=u'phix (п.7.1.3)'
+        comment_typx=u'Тип сечения Х'
+        
+        phiy, typy=self.phiy()
+        commentpy=u'phiy (п.7.1.3)'
+        comment_typy=u'Тип сечения Y'
+
+        n3=self.nminus
+        comment3=u'N=An*Ry*yc*phi (п.п.7.1.3 (7))'
+
+        lst=[[n3, comment3],
+             [nmin,commentnmin],
+             [phix, commentpx],
+             [phix, commentpy],
+             [typx, comment_typx],
+             [typy, comment_typy],
+             [n1, comment1],
+             [n2, comment2]]
+             
+        if self.element.lx()!=self.element.lfact() :
+            q_ficmaxx=self.q_fic(n3,phix)
+            commentqx=u'п.7.2.7 (18)'
+            lst.append(list(q_ficmaxx, commentqx))
+        if self.element.ly()!=self.element.lfact() :
+            q_ficmaxy=self.q_ficd(n3,phiy)
+            commentqy=u'п.7.2.7 (18)'
+            lst.append(list(q_ficmaxy, commentqy))
             
-            kx_general=n/n_ultx
-            ky_general=n/n_ulty            
-            if kx_general<1 and  ky_general<1 and local_buckl_h_n[0]==0 and local_buckl_b_n[0]==0:
-                check=0
-            else:
-                check=1               
-            
-            return check, messege_general, kx_general, ky_general, n, n_ultx, n_ulty, phi_nx, phi_ny,  local_buckl_h_n[0], local_buckl_h_n[1], local_buckl_h_n[2],  local_buckl_b_n[0], local_buckl_b_n[1], local_buckl_b_n[2]
-            
-        def el_beam_simple(self, clas):
-            mx=self.force.mx
-            my=self.force.my
-            qx=self.force.qx
-            qy=self.force.qy
-            w=self.force.w            
-            if clas==1:
-                return 0
-            if clas==2:
-                return 0
-            return 0
-        def el_column_simple(self):
-            return 0
-        def el_beam_cran(self):
-            return 0
-        def el_ferm_sostav(self):
-            return 0
-            
+        if self.pr.title0()=='sostav':
+            if self.pr.title()=='ugol_tavr_st_up' or self.pr.title()=='ugol_tavr_st_right':
+                ix=self.pr.pr1.ix()
+                ixplus=80*ix
+                ixminus=40*ix
+                
+                lst.append(list(ixplus,u'Шаг планкок (+) (п.7.2.6), см'))
+                lst.append(list(ixminus,u'Шаг планкок (-) (п.7.2.6), см'))
+
+            if self.pr.title()=='ugol_tavr_st_krest':
+                iy0=self.pr.pr1.iy0()
+                ixplus=80*iy0
+                ixminus=40*iy0
+                
+                lst.append(list(ixplus,u'Шаг планкок (+) (п.7.2.6), см'))
+                lst.append(list(ixminus,u'Шаг планкок (-) (п.7.2.6), см'))
+        return lst
+                
+
+                
+    def output_data_snip_old_local(self):
+        return 0
+    def output_data_snip_n_local(self):
+        return 0
+
+    def nminus(self):
+        n=self.pr.a()*self.element.steel.ry()*self.yc()*self.phi()
+        return n
+
+    def nplus(self):
+        return self.nplus_old
+        
+    def nminus_old(self):
+        n=self.pr.a()*self.element.steel.ry()*self.yc()*self.phi_old()
+        return n
+        
+    def nplus_old(self):
+        n1=self.pr.a()*self.element.steel.ry()*self.yc()
+
+        n2=self.pr.a()*self.element.steel.ru()*self.yc()/self.yu()
+
+        if n1<n2:
+            nmin=n1
+        else:
+            nmin=n2
+        return nmin                            
+        
+#        def el_ferm_simple(self):
+##нет тестов
+#            n=self.force.n
+#            phi_nx=self.phix()
+#            phi_ny=self.phiy()
+#            if n>=0:
+#                messege_general="Центральное расстяжение"
+#                if self.elem.steel.ryn<=440:
+#                    n_ultx=self.pr.a()*self.elem.steel.ry()*self.yc()
+#                else:
+#                    n_ultx=self.pr.a()*self.elem.steel.ru()*self.yc() /self.elem.steel.yu()                  
+#                n_ulty=n_ultx
+#                phi_nx=1
+#                phi_ny=1
+#            if n<0:
+#                messege_general="Центральное сжатие"
+#                n_ultx=self.pr.a()*self.elem.steel.ry()*self.yc()*phi_nx
+#                n_ultx=self.pr.a()*self.elem.steel.ry()*self.yc()*phi_nx
+#            
+#            local_buckl_h_n=self.local_buckl_h_n()
+#            local_buckl_b_n=self.local_buckl_b_n()            
+#            
+#            kx_general=n/n_ultx
+#            ky_general=n/n_ulty            
+#            if kx_general<1 and  ky_general<1 and local_buckl_h_n[0]==0 and local_buckl_b_n[0]==0:
+#                check=0
+#            else:
+#                check=1               
+#            
+#            return check, messege_general, kx_general, ky_general, n, n_ultx, n_ulty, phi_nx, phi_ny,  local_buckl_h_n[0], local_buckl_h_n[1], local_buckl_h_n[2],  local_buckl_b_n[0], local_buckl_b_n[1], local_buckl_b_n[2]
+#            
+#        def el_beam_simple(self, clas):
+#            mx=self.force.mx
+#            my=self.force.my
+#            qx=self.force.qx
+#            qy=self.force.qy
+#            w=self.force.w            
+#            if clas==1:
+#                return 0
+#            if clas==2:
+#                return 0
+#            return 0
+#        def el_column_simple(self):
+#            return 0
+#        def el_beam_cran(self):
+#            return 0
+#        def el_ferm_sostav(self):
+#            return 0
