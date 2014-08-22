@@ -15,14 +15,101 @@ pi=3.14159265358979
 
 from steel import *
 
+class Test_mat(unittest.TestCase):
+    def test_mat_steel(self):
+        el=dvut(h=400., b=130., t=11., s=9.5, r1=14., r2=6., a1=atan(12./100))
+        s=steel_snip20107n('C245',el)
+        self.assertLess(abs(s.ry()-2446.5)/2446.5,0.00002)          
+        self.assertLess(abs(s.ryn()-2497.45)/2497.45,0.00002)
+        self.assertLess(abs(s.ru()-3669.72)/3669.72,0.00002)          
+        self.assertLess(abs(s.run()-3771.66)/3771.66,0.00002) 
+        self.assertLess(abs(s.rs()-1418.97)/1418.97,0.00002) 
+        self.assertLess(abs(s.rth()-1834.86)/1834.86,0.00002)
+        self.assertLess(abs(s.rthf()-1223.25)/1223.25,0.00002) 
+        self.assertLess(abs(s.mu()-0.3)/0.3,0.00002) 
+        self.assertLess(abs(s.e()-2.0999*10**6)/(2.0999*10**6),0.00002)  
+        print 18       
+from snipn import *
 
 class test_snipn(unittest.TestCase):
+    def test_elements(self):    
+        pr=dvut(h=600, b=190, t=17.8, s=12., r1=20., r2=08., a1=atan(12./100))
+        s=steel_snip20107n('C245',pr)
+        el=elements(s, pr, lx=1000, ly=2000, lb=3000, lr=10, br=1, hr=2) 
+        
+        self.assertEqual(el.lx(),1000)
+        self.assertEqual(el.ly(),2000)
+        self.assertEqual(el.lb(),3000)
+        self.assertEqual(el.lr(),10)
+        self.assertEqual(el.br(),1)
+        self.assertEqual(el.hr(),2)
+#        print el.profile.ix()
+
+        self.assertLess(abs(el.lambdax()-4.23170259)/4.23170259,0.00002) 
+        self.assertLess(abs(el.lambday()-56.4765)/56.4765,0.00002) 
+#        print (el.lambdax_())
+        self.assertLess(abs(el.lambdax_()-0.14454)/0.14454,0.001) 
+        self.assertLess(abs(el.lambday_()-1.9291)/1.9291,0.001)
+        print 19       
+    def test_force(self):
+        forc=force(n=10, mx=20, my=30, w=40, qx=50, qy=60, t=70, sr=80, floc=90)
+        self.assertEqual(forc.n,10)
+        self.assertEqual(forc.mx,20)
+        self.assertEqual(forc.my,30)
+        self.assertEqual(forc.w,40)
+        self.assertEqual(forc.qx,50)
+        self.assertEqual(forc.qy,60)
+        self.assertEqual(forc.t,70)
+        self.assertEqual(forc.sr,80)
+        self.assertEqual(forc.floc,90)  
+        print 20               
     def test_snipn(self):
 #только двутавр
 #    def snipn1(self):
         #том 
 #        print(1)
+        pr=dvut(h=420, b=400, t=20, s=9, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C245',pr)
+        el=elements(s, pr, lx=7000, ly=7000, lb=3000, lr=10, br=1, hr=2) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+        test=sol.local_buckl_h_n()
+#        print el.lambdax_()
+#        print el.lambday_()
+        
+        self.assertEqual(test[0],0) 
+#        print(test[2])
+        self.assertLess(abs(test[1]-1.997905)/1.997905,0.0001)        
+        self.assertLess(abs(test[2]-1.44116298)/1.44116298,0.0001)   
 
+        el2=elements(s, pr, lx=210000, ly=7000, lb=3000, lr=10, br=1, hr=2)  
+        sol2=snipn(el2,forc,1)      
+#        print el2.lambdax_()
+#        print el2.lambday_()
+        test=sol2.local_buckl_h_n()
+        self.assertLess(abs(test[1]-2.3)/2.3,0.0001)        
+
+
+        el2=elements(s, pr, lx=7000, ly=5000, lb=3000, lr=10, br=1, hr=2)  
+        sol2=snipn(el2,forc,1)      
+#        print el2.lambdax_()
+#        print el2.lambday_()
+        test=sol2.local_buckl_h_n()
+#        print test[1]
+        self.assertLess(abs(test[1]-1.6975)/1.6975,0.0001) 
+
+        pr=dvut(h=420, b=400, t=20, s=9, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C245',pr)
+        el=elements(s, pr, lx=7000, ly=7000, lb=3000, lr=10, br=1, hr=2) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+        test=sol.local_buckl_b_n()
+
+        self.assertEqual(test[0],0) 
+#        print(test[2])
+        self.assertLess(abs(test[1]-0.5879)/0.5879,0.0001)        
+        self.assertLess(abs(test[2]-0.333615248)/0.333615248,0.0001)        
+        
 
         pr=dvut(h=1070, b=240, t=10, s=8, r1=0, r2=0, a1=0)
         s=steel_snip20107n('C345',pr)
@@ -43,6 +130,34 @@ class test_snipn(unittest.TestCase):
         self.assertLess(abs(test[1]-3.2)/3.2,0.0001)        
         self.assertLess(abs(test[2]-5.173)/5.173,0.0001)   
 
+        pr=dvut(h=420, b=400, t=20, s=9, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C245',pr)
+        el=elements(s, pr, lx=7000, ly=7000, lb=3000, lr=10, br=1, hr=2) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+
+        self.assertLess(abs(sol.phiy()-0.781)/0.781,0.0001)  
+        self.assertLess(abs(sol.phi()-0.781)/0.781,0.0001)
+   
+        self.assertLess(abs(sol.phix()-0.919)/0.919,0.0001)                  
+
+        pr1=dvut(h=520, b=400, t=20, s=9, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C245',pr1)
+        el=elements(s, pr1, lx=35000, ly=7000, lb=3000, lr=10, br=1, hr=2) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+
+        self.assertLess(abs(sol.phi()-0.28394)/0.28394,0.0001)
+
+
+        pr1=dvut(h=520, b=400, t=20, s=9, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C245',pr1)
+        el=elements(s, pr1, lx=7000, ly=700, lb=3000, lr=10, br=1, hr=2) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+#        print el.lambda_()[0]
+#        print sol.phi()
+        self.assertLess(abs(sol.phi()-0.9654)/0.9654,0.0001)
 
         self.assertLess(abs(sol.cxcyn()[1]-1.47)/1.47,0.0001)      
         self.assertLess(abs(sol.cxcyn()[2]-1.5)/1.5,0.0001)   
@@ -468,6 +583,9 @@ class test_snipn(unittest.TestCase):
 
 #        print sol.phix()        
 #        print sol.phiy() 
+
+        self.assertLess(abs(sol.phix()-0.946)/0.946,0.001) 
+        self.assertLess(abs(sol.phiy()-0.8579)/0.8579,0.001)
         
         self.assertLess(abs(sol.local_buckl_b_ne(2)[1]-0.5378)/0.5378,0.001)
 
@@ -1240,6 +1358,38 @@ class test_snipn(unittest.TestCase):
         print 28
 
 
+        s=steel_snip20107n('C345',pr1, 1)
+        el=elements(s, pr1, lx=5000, ly=300, lb=300, lr=0, br=0, hr=0) 
+        forc=force(n=200*1000/9.81, mx=100*1000/9.81*100, my=000*1000/9.81*100, qx=500*1000/9.81)        
+        sol=snipn(el,forc,1)
+        
+        self.assertLess(abs(sol.local_buckl_h_n()[0]-0)/0.0001,0.001)        
+        self.assertLess(abs(sol.local_buckl_h_n()[1]-1.6)/1.6,0.001)    
+
+#        print sol.local_buckl_h_n()[2]     
+        self.assertLess(abs(sol.local_buckl_h_n()[2]-0.6306)/0.6306,0.001) 
+
+        s=steel_snip20107n('C345',pr1, 1)
+        el=elements(s, pr1, lx=50, ly=3, lb=300, lr=0, br=0, hr=0) 
+        forc=force(n=200*1000/9.81, mx=100*1000/9.81*100, my=000*1000/9.81*100, qx=500*1000/9.81)        
+        sol=snipn(el,forc,1)
+
+        self.assertLess(abs(sol.local_buckl_h_n()[0]-0)/0.0001,0.001)        
+        self.assertLess(abs(sol.local_buckl_h_n()[1]-1.2)/1.2,0.001)    
+
+#        print sol.local_buckl_h_n()[2]     
+        self.assertLess(abs(sol.local_buckl_h_n()[2]-0.6306)/0.6306,0.001)
+
+
+        el=elements(s, pr1, lx=200, ly=3, lb=300, lr=0, br=0, hr=0) 
+        forc=force(n=200*1000/9.81, mx=100*1000/9.81*100, my=000*1000/9.81*100, qx=500*1000/9.81)        
+        sol=snipn(el,forc,1)
+
+        self.assertLess(abs(sol.local_buckl_h_n()[0]-0)/0.0001,0.001)        
+        self.assertLess(abs(sol.local_buckl_h_n()[1]-1.364)/1.364,0.001)    
+
+#        print sol.local_buckl_h_n()[1]     
+        self.assertLess(abs(sol.local_buckl_h_n()[2]-0.6306)/0.6306,0.001)
 
 
         pr1=truba_pryam(h=8,b=12,t=0.6, s=0.6, r2=1.2, r1=0.6)
@@ -1248,7 +1398,35 @@ class test_snipn(unittest.TestCase):
         el=elements(s, pr1, lx=300, ly=5000, lb=300, lr=0, br=0, hr=0) 
         forc=force(n=200*1000/9.81, mx=100*1000/9.81*100, my=000*1000/9.81*100, qx=500*1000/9.81)        
         sol=snipn(el,forc,1)
+        
+        self.assertLess(abs(sol.local_buckl_b_n()[0]-0)/0.0001,0.001)        
+        self.assertLess(abs(sol.local_buckl_b_n()[1]-1.6)/1.6,0.001)    
 
+#        print sol.local_buckl_h_n()[2]     
+        self.assertLess(abs(sol.local_buckl_b_n()[2]-0.6306)/0.6306,0.001) 
+
+        s=steel_snip20107n('C345',pr1, 1)
+        el=elements(s, pr1, lx=3, ly=50, lb=300, lr=0, br=0, hr=0) 
+        forc=force(n=200*1000/9.81, mx=100*1000/9.81*100, my=000*1000/9.81*100, qx=500*1000/9.81)        
+        sol=snipn(el,forc,1)
+
+        self.assertLess(abs(sol.local_buckl_b_n()[0]-0)/0.0001,0.001)        
+        self.assertLess(abs(sol.local_buckl_b_n()[1]-1.2)/1.2,0.001)    
+
+#        print sol.local_buckl_h_n()[2]     
+        self.assertLess(abs(sol.local_buckl_b_n()[2]-0.6306)/0.6306,0.001)
+
+
+        el=elements(s, pr1, lx=3, ly=200, lb=300, lr=0, br=0, hr=0) 
+        forc=force(n=200*1000/9.81, mx=100*1000/9.81*100, my=000*1000/9.81*100, qx=500*1000/9.81)        
+        sol=snipn(el,forc,1)
+
+        self.assertLess(abs(sol.local_buckl_b_n()[0]-0)/0.0001,0.001)
+
+        self.assertLess(abs(sol.local_buckl_b_n()[1]-1.364)/1.364,0.001)    
+
+#        print sol.local_buckl_h_n()[1]     
+        self.assertLess(abs(sol.local_buckl_b_n()[2]-0.6306)/0.6306,0.001)
         
 
         self.assertLess(abs(sol.local_buckl_b_m()[0]-0)/0.0001,0.001)
@@ -1523,7 +1701,40 @@ class test_snipn(unittest.TestCase):
 
 
 
+    def test_steel_snip1987(self):
+        print 33     
+        el=dvut(h=400., b=130., t=11., s=9.5, r1=14., r2=6., a1=atan(12./100))
+        s=steel_snip1987('C245',el)
+        self.assertLess(abs(s.ry()-2446.5)/2446.5,0.00002)          
+        self.assertLess(abs(s.ryn()-2497.45)/2497.45,0.00002)
+        self.assertLess(abs(s.ru()-3669.72)/3669.72,0.00002)          
+        self.assertLess(abs(s.run()-3771.66)/3771.66,0.00002) 
+        self.assertLess(abs(s.rs()-1418.97)/1418.97,0.00002) 
+        self.assertLess(abs(s.rth()-1834.86)/1834.86,0.00002)
+        self.assertLess(abs(s.rthf()-1223.25)/1223.25,0.00002) 
+        self.assertLess(abs(s.mu()-0.3)/0.3,0.00002) 
+        self.assertLess(abs(s.e()-2.0999*10**6)/(2.0999*10**6),0.00002)  
 
+        s=steel_snip1987('C345',el)
+#        print s.ry()
+        self.assertLess(abs(s.ry()-315/9.81*100)/2446.5,0.00002)          
+        self.assertLess(abs(s.ryn()-325/9.81*100)/2497.45,0.00002)
+        self.assertLess(abs(s.ru()-460/9.81*100)/3669.72,0.00002)          
+        self.assertLess(abs(s.run()-470/9.81*100)/3771.66,0.00002) 
+
+        self.assertLess(abs(s.mu()-0.3)/0.3,0.00002) 
+        self.assertLess(abs(s.e()-2.0999*10**6)/(2.0999*10**6),0.00002)
+
+        el=dvut(h=400., b=130., t=61., s=9.5, r1=14., r2=6., a1=atan(12./100))
+        s=steel_snip1987('C345',el, typ_steel='list')
+#        print s.ry()
+        self.assertLess(abs(s.ry()-270/9.81*100)/2446.5,0.00002)          
+        self.assertLess(abs(s.ryn()-275/9.81*100)/2497.45,0.00002)
+        self.assertLess(abs(s.ru()-430/9.81*100)/3669.72,0.00002)          
+        self.assertLess(abs(s.run()-440/9.81*100)/3771.66,0.00002) 
+
+        self.assertLess(abs(s.mu()-0.3)/0.3,0.00002) 
+        self.assertLess(abs(s.e()-2.0999*10**6)/(2.0999*10**6),0.00002)
         
 if __name__ == "__main__":
     unittest.main()

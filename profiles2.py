@@ -788,6 +788,8 @@ class truba_pryam(profiles_simple):
         t=self.t()
         r1=self.r1()
         r2=self.r2()
+        
+        self.__s=self.t()
 #        print h,b,t,r1,r2
 
         #полка
@@ -840,7 +842,8 @@ class truba_pryam(profiles_simple):
 
         self.__sx1=b*t*t/2
         self.__sy1=h*t*t/2
-
+    def s(self):
+        return self.__s
     def a(self):
 #        self.solve()
         return self.__a
@@ -1624,26 +1627,8 @@ class  profiles_sostav(object):
 
 class  profiles_blank_sostav(object):
     def p(self):
-        return self.__p
-    def h(self):
-        return self.__h
-    def b(self):
-        return self.__b
-    def s(self):
-        return self.__s
-    def t(self):
-        return self.__t
-    def r1(self):
-        return self.__r1
-    def r2(self):
-        return self.__r2
+        return self.a()*7850./100/100/100
 
-    def r3(self):
-        return self.__r3
-
-
-    def r(self):
-        return self.__r
 
     def ix(self):
         return (self.jx()/self.a())**0.5
@@ -1660,11 +1645,6 @@ class  profiles_blank_sostav(object):
     def yi(self):
         return self.__yi
 
-    def dx(self):
-        return self.__dx
-
-    def dy(self):
-        return self.__dy
 
     def a(self):
         return self.__a
@@ -1749,6 +1729,7 @@ class  profiles_blank_sostav(object):
 
 
         self.__p=self.sostav.a()*7850/100/100
+        
 class sost_ugol_tavr_st_up(profiles_blank_sostav):
     """Расчет сечения сдвоенных уголков. Для неравнополочных - длинная сторона направлена вверх
     Входные данные - h, b, t,
@@ -1766,7 +1747,8 @@ class sost_ugol_tavr_st_up(profiles_blank_sostav):
     def __init__(self     , h=False, b=False\
     , t=False, r1=False, r2=False,  r3=False , dx=False):
 
-
+ 
+        self.__s=t       
         self.pr1=ugol(h=h,b=b,t=t, r2=r2, r1=r1, r3=r3)
         self.pr2=self.pr1
 
@@ -1793,7 +1775,15 @@ class sost_ugol_tavr_st_up(profiles_blank_sostav):
         self.sostav=profiles_sostav( pr1=self.pr1, alpha1=self.__alpha1, x1=self.__x1, y1=self.__y1, mir1=self.__mir1  , pr2=self.pr2, x2=self.__x2, y2=self.__y2, alpha2=self.__alpha2, mir2=self.__mir2, title=self.__title)
 
         self.def_char()
-
+        
+        self.__h=h
+        self.__b=b        
+        self.__t=t  
+        self.__r1=r1 
+        self.__r2=r2        
+        self.__r3=r3      
+        self.__dx=dx  
+        
     def title(self):
         return self.__title
     def input_data(self):
@@ -1836,6 +1826,33 @@ class sost_ugol_tavr_st_up(profiles_blank_sostav):
         ]
         return out
 
+    def hef(self):
+        return self.pr1.h()-self.pr1.t()-self.pr1.r1()
+    def bef(self):
+        return self.pr1.b()-self.pr1.t()-self.pr1.r1()
+
+    def h(self):
+        return self.__h
+    def b(self):
+        return self.__b
+    def s(self):
+        return self.__s
+    def t(self):
+        return self.__t
+    def r1(self):
+        return self.__r1
+    def r2(self):
+        return self.__r2
+
+    def r3(self):
+        return self.__r3
+
+
+    def dx(self):
+        return self.__dx
+
+    def dy(self):
+        return self.__dy
 
 
 class sost_ugol_tavr_st_right(profiles_blank_sostav):
@@ -1854,6 +1871,16 @@ class sost_ugol_tavr_st_right(profiles_blank_sostav):
     def __init__(self     , h=False, b=False\
     , t=False, r1=False, r2=False,  r3=False , dx=False):
 
+        self.__s=t       
+
+        self.__h=h
+        self.__b=b        
+        self.__t=t  
+        self.__r1=r1 
+        self.__r2=r2        
+        self.__r3=r3      
+        self.__dx=dx 
+        
         self.pr1=ugol(h=h,b=b,t=t, r2=r2, r1=r1, r3=r3)
         self.pr2=self.pr1
 
@@ -1920,6 +1947,32 @@ class sost_ugol_tavr_st_right(profiles_blank_sostav):
         ,u'title0'  
         ]
         return out
+    def hef(self):
+        return self.pr1.h()-self.pr1.t()-self.pr1.r1()
+    def bef(self):
+        return self.pr1.b()-self.pr1.t()-self.pr1.r1()
+    def h(self):
+        return self.__h
+    def b(self):
+        return self.__b
+    def s(self):
+        return self.__s
+    def t(self):
+        return self.__t
+    def r1(self):
+        return self.__r1
+    def r2(self):
+        return self.__r2
+
+    def r3(self):
+        return self.__r3
+
+
+    def dx(self):
+        return self.__dx
+
+    def dy(self):
+        return self.__dy
 
 
 class sost_ugol_tavr_st_krest(profiles_blank_sostav):
@@ -1939,7 +1992,17 @@ class sost_ugol_tavr_st_krest(profiles_blank_sostav):
 
     def __init__(self     , h=False, b=False\
     , t=False, r1=False, r2=False,  r3=False , dx=False, dy=False):
+        self.__s=t       
 
+        self.__h=h
+        self.__b=b        
+        self.__t=t  
+        self.__r1=r1 
+        self.__r2=r2        
+        self.__r3=r3      
+        self.__dx=dx 
+        self.__dy=dy 
+        
         self.pr1=ugol(h=h,b=b,t=t, r2=r2, r1=r1, r3=r3)
         self.pr2=self.pr1
 
@@ -2005,3 +2068,30 @@ class sost_ugol_tavr_st_krest(profiles_blank_sostav):
         return out
     def title(self):
         return self.__title
+        
+    def hef(self):
+        return self.pr1.h()-self.pr1.t()-self.pr1.r1()
+    def bef(self):
+        return self.pr1.b()-self.pr1.t()-self.pr1.r1()
+    def h(self):
+        return self.__h
+    def b(self):
+        return self.__b
+    def s(self):
+        return self.__s
+    def t(self):
+        return self.__t
+    def r1(self):
+        return self.__r1
+    def r2(self):
+        return self.__r2
+
+    def r3(self):
+        return self.__r3
+
+
+    def dx(self):
+        return self.__dx
+
+    def dy(self):
+        return self.__dy

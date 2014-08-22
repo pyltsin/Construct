@@ -67,7 +67,7 @@ class steel_general(mat):
         return 2.06*10**5/9.81*100
             
 class steel_snip20107n(mat):
-    def __init__(self, typ, el, dim=0, typ_steel='prokat'):
+    def __init__(self, typ, el, dim=0):
         
         if dim==0:
             t=el.t()*1

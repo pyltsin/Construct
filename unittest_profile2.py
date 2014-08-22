@@ -743,6 +743,8 @@ class Test_profile(unittest.TestCase):
  
 
         pr=sost_ugol_tavr_st_up(80, 50,5, 8, 0, 2.7, 10)
+        self.assertEquals(pr.bef(),50.0-5-8)
+        self.assertEquals(pr.hef(),80.0-5-8)
         self.assertLess(abs(pr.a()-1272)/1272,0.001)
         self.assertLess(abs(pr.jx()-832700)/832700,0.0001)
         self.assertLess(abs(pr.jy()-592266)/592266,0.0001)
@@ -797,6 +799,8 @@ class Test_profile(unittest.TestCase):
         pr=sost_ugol_tavr_st_right(80,50, 5, 8, 0, 2.7, 10)
 #        print 'pr.yi()',pr.yi()
 
+        self.assertEquals(pr.bef(),50.0-5-8)
+        self.assertEquals(pr.hef(),80.0-5-8)
         
         self.assertLess(abs(pr.a()-1272)/1272,0.001)
         self.assertLess(abs(pr.jx()-253600)/253600,0.0001)
@@ -854,6 +858,8 @@ class Test_profile(unittest.TestCase):
 
         pr=sost_ugol_tavr_st_krest(80, 50, 5, 8, 0, 2.7, 10, 20)
 
+        self.assertEquals(pr.bef(),50.0-5-8)
+        self.assertEquals(pr.hef(),80.0-5-8)
 #        print 'pr.jx0()',pr.jx0()
 #        print 'pr.jy0()',pr.jy0()
 #        print 'pr.alpha()',pr.alpha()
