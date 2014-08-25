@@ -20,7 +20,9 @@ class MyWindow(QtGui.QWidget):
         self.basa=BasaSort()
 
 #Загрузка и установка рассчитываемых типов
-        self.list_type_element=[u'Ферма',u'Балка']
+        self.list_type_element=[u'Ферма']
+#        self.list_type_element=[u'Ферма',u'Балка']
+
         self.list_code=self.basa.list_code()
         self.load_combobox(self.type_element, self.list_type_element)
         self.type_element.currentIndexChanged["const QString&"].connect(self.load_sect)
@@ -62,6 +64,11 @@ class MyWindow(QtGui.QWidget):
 
 #направляем на открытие:
         self.listWidget.itemDoubleClicked.connect(self.load_files)
+        
+#связываем с расчетом
+        self.solve_button.clicked.connect(self.solve)
+        
+        
     def load_files(self):
         folder=self.text_folder.text()
         fil_name=self.listWidget.currentItem().text()
@@ -101,12 +108,20 @@ class MyWindow(QtGui.QWidget):
         add_data2=[u'Название', u'Сортамент', u'№ Сечения', u'Сталь']
         
         if self.flag_new==True or current_code!=self.flag_current_code or current_type_element!=self.flag_current_type_element or current_section!=self.flag_current_section:
+
+            self.input_table.clear()
+            self.input_table.setRowCount(0)
+
+            self.input_table.setColumnCount(current_count)
+
             self.flag_new=False
             self.flag_current_code=current_code
             self.flag_current_type_element=  current_type_element 
             self.flag_current_section=current_section
             add_data=self.basa.add_data_sostav(current_section)
-            data=[u'Расчетная длина']
+            
+            
+            data=self.basa.data_solve(current_type_element)
 #            data=self.snipn.solve_data(self.flag_current_type_element)# нет пока таког
             lst=add_data2+add_data+data
             
@@ -119,7 +134,7 @@ class MyWindow(QtGui.QWidget):
             for i in range(current_count):
                 self.load_table_combobox(i)
                 
-
+                        
         if current_count>self.flag_current_count:
             for i in range(self.flag_current_count, current_count):
                 self.load_table_combobox(i)
@@ -133,6 +148,13 @@ class MyWindow(QtGui.QWidget):
                 self.combobox_steel.pop(i-1)               
             self.flag_current_count=current_count            
 
+#обнуление данных
+        for i in range(current_count):
+            for j in range(self.input_table.rowCount()):
+                print self.input_table.cellWidget(j,i)
+                if self.input_table.cellWidget(j,i)==None:
+                    print i, j
+                    self.input_table.setItem(j, i, QtGui.QTableWidgetItem(""))
 
                 
     class load_section_number():
@@ -184,9 +206,66 @@ class MyWindow(QtGui.QWidget):
         if lab!="":
 #            print lab
             pict=self.basa.pict(lab)
-            self.picture.setPixmap(QtGui.QPixmap(pict))      
+            self.picture.setPixmap(QtGui.QPixmap(pict))    
 
+    def solve(self):
+#сбор исходных данных
+        current_code=self.type_code.currentText()
+        current_count=self.number.value()
+        current_type_element=self.type_element.currentText()
+        current_section=self.type_section.currentText()
+        lst_gen=[]
+        for i in range(current_count):
+            lst=[]
+#            print self.input_table.cellWidget(1,0)
 
+            for j in range(self.input_table.rowCount()):
+                if self.input_table.cellWidget(j,i)==None and self.input_table.item(j, i).text()=="" :
+                    print i,j
+                    self.input_table.item(j,i).setText(u"0")
+                if  self.input_table.cellWidget(j,i)==None and ("," in self.input_table.item(j, i).text()):
+                    text=self.input_table.item(j, i).text()
+                    text=text.replace(',','.')
+                    self.input_table.item(j, i).setText(text)
+                    
+                if self.input_table.cellWidget(j,i)==None:
+                    if j==0:
+                        lst.append(self.input_table.item(j,i).text())
+                    else:
+                        num=self.input_table.item(j,i).text()
+                        num=float(num)
+                        lst.append(num)
+                    
+                else:
+                    wid=self.input_table.cellWidget(j,i)
+                    lst.append(wid.currentText())
+            current_gost=lst[1]
+            current_num_sect=lst[2]
+            current_steel=lst[3]
+            inp=lst[4:]
+            print current_code, current_type_element, current_section, current_gost, current_num_sect, current_steel, inp
+            out=self.basa.output_simple(current_code, current_type_element, current_section, current_gost, current_num_sect, current_steel, inp)
+            print out
+            lst_gen.append(out)
+#ставим данные
+            self.output_table.setColumnCount(current_count)
+            self.output_table.setRowCount(len(lst_gen[0]))
+            
+            vert_head=[]
+            for i in lst_gen[0]:
+                vert_head.append(i[1])
+            self.output_table.setVerticalHeaderLabels(vert_head)
+            
+        for i in range(current_count):
+            for j in range(self.output_table.rowCount()):
+                self.output_table.setItem(j, i, QtGui.QTableWidgetItem("1"))
+                if type(lst_gen[i][j][0])!=type(''):
+                    txt="%.2f"%(lst_gen[i][j][0])
+                else:
+                    txt=lst_gen[i][j][0]
+                self.output_table.item(j,i).setText(txt)
+                
+                
 if __name__=="__main__":
     import sys
     app=QtGui.QApplication(sys.argv)

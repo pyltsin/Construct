@@ -1400,15 +1400,29 @@ class ferma(snipn):
     """Класс для расчета элементов ферм по СНиП и СП - нет проверки"""
     def add_data(self):
         """Дополнительные данные для расчета"""
-        lst=[u'yc1(+)', u'yc2(-)', u'lx, м', u'ly, м']
+        lst=[u'yc1(+)', u'yc2(-)', u'l, м', u'mu_x', u'mu_y']
         return  lst   
+    def output_data_all_snip_old(self):
+        dat=self.output_data()
+        dat_glob=self.output_data_snip_old_global()
+        dat_local=self.output_data_snip_old_local()
+        lst=dat_glob+dat+dat_local
+        return lst
+
+    def output_data_all_snip_n(self):
+        dat=self.output_data()
+        dat_glob=self.output_data_snip_n_global()
+        dat_local=self.output_data_snip_n_local()
+        lst=dat_glob+dat+dat_local
+        return lst
+
         
     def output_data(self):
         """Выходные данные сечения"""
         lst=[]
         #Исходные данные:
         yu=self.yu()
-        commentyu=u'п.4'
+        commentyu=u'yu, п.4'
         
         a=self.pr.a()
         commenta=u'A, см2'
@@ -1441,6 +1455,7 @@ class ferma(snipn):
         
         lst=[]        
         #Расчет на расстяжение
+        print self.pr.a(),self.element.steel.ry(),self.yc1()
         n1=self.pr.a()*self.element.steel.ry()*self.yc1()
         comment1=u'N=An*Ry*yc (п.5.1. (5))'         
 
@@ -1451,7 +1466,7 @@ class ferma(snipn):
             nmin=n1
         else:
             nmin=n2
-        commentnmin='min(п.5.1,п.5.2)'
+        commentnmin=u'min(п.5.1,п.5.2)'
         #сжатие:
         phix_old=self.phix_old()
         commentpx=u'phix (п.5.3.)'
@@ -1459,41 +1474,62 @@ class ferma(snipn):
         phiy_old=self.phiy_old()
         commentpy=u'phiy (п.5.3.)'
 
-        n3=self.nminus_old
+        n3=self.nminus_old()
         comment3=u'N=An*Ry*yc*phi (п.5.3. (7))'
-
+        print self.output_data_snip_old_local()
+        if self.output_data_snip_old_local()[0][1]>self.output_data_snip_old_local()[3][1]:
+            fact_local=self.output_data_snip_old_local()[0]
+        else:
+            fact_local=self.output_data_snip_old_local()[3]
+            
         lst=[[n3, comment3],
              [nmin,commentnmin],
+            fact_local,
              [phix_old, commentpx],
-             [phix_old, commentpy],
+             [phiy_old, commentpy],
              [n1, comment1],
              [n2, comment2]]
+
+        commentqx=u'Q_ficmaxx,п.5.8. (23)'
+        commentqy=u'Q_ficmaxy,п.5.8. (23)'
+
              
         if self.element.lx()!=self.element.lfact() :
             q_ficmaxx=self.q_fic_old(n3,phix_old)
-            commentqx=u'п.5.8. (23)'
-            lst.append(list(q_ficmaxx, commentqx))
+            lst.append([q_ficmaxx, commentqx])
+        else:
+            lst.append(['-', commentqx])
+            
         if self.element.ly()!=self.element.lfact() :
             q_ficmaxy=self.q_fic_old(n3,phiy_old)
-            commentqy=u'п.5.8. (23)'
-            lst.append(list(q_ficmaxy, commentqy))
+            lst.append([q_ficmaxy, commentqy])
+        else:
+            lst.append(['-', commentqy])
             
-        if self.pr.title0()=='sostav':
-            if self.pr.title()=='ugol_tavr_st_up' or self.pr.title()=='ugol_tavr_st_right':
-                ix=self.pr.pr1.ix()
-                ixplus=80*ix
-                ixminus=40*ix
-                
-                lst.append(list(ixplus,u'Шаг планкок (+) (п.5.7.), см'))
-                lst.append(list(ixminus,u'Шаг планкок (-) (п.5.7.), см'))
+    
+        if self.pr.title()=='ugol_tavr_st_up' or self.pr.title()=='ugol_tavr_st_right':
+            ix=self.pr.pr1.ix()
+            ixplus=80*ix
+            ixminus=40*ix
+            
+            lst.append([ixplus,u'Шаг планкок (+) (п.5.7.), см'])
+            lst.append([ixminus,u'Шаг планкок (-) (п.5.7.), см'])
+        else:
+            lst.append(['-',u'Шаг планкок (+) (п.5.7.), см'])
+            lst.append(['-',u'Шаг планкок (-) (п.5.7.), см'])
+            
 
-            if self.pr.title()=='ugol_tavr_st_krest':
-                iy0=self.pr.pr1.iy0()
-                ixplus=80*iy0
-                ixminus=40*iy0
+        if self.pr.title()=='ugol_tavr_st_krest':
+            iy0=self.pr.pr1.iy0()
+            ixplus=80*iy0
+            ixminus=40*iy0
+            
+            lst.append([ixplus,u'Шаг планкок (+) (п.5.7.), см'])
+            lst.append([ixminus,u'Шаг планкок (-) (п.5.7.), см'])
+        else:
+            lst.append(['-',u'Шаг планкок (+) (п.5.7.), см'])
+            lst.append(['-',u'Шаг планкок (-) (п.5.7.), см'])
                 
-                lst.append(list(ixplus,u'Шаг планкок (+) (п.5.7.), см'))
-                lst.append(list(ixminus,u'Шаг планкок (-) (п.5.7.), см'))
         return lst
 
     def output_data_snip_n_global(self):
@@ -1522,43 +1558,64 @@ class ferma(snipn):
         commentpy=u'phiy (п.7.1.3)'
         comment_typy=u'Тип сечения Y'
 
-        n3=self.nminus
+        n3=self.nminus()
         comment3=u'N=An*Ry*yc*phi (п.п.7.1.3 (7))'
+
+        if self.output_data_snip_n_local[0][1]>self.output_data_snip_n_local[3][1]:
+            fact_local=self.output_data_snip_n_local[0]
+        else:
+            fact_local=self.output_data_snip_n_local[3]
+
 
         lst=[[n3, comment3],
              [nmin,commentnmin],
+            fact_local,
              [phix, commentpx],
-             [phix, commentpy],
+             [phiy, commentpy],
              [typx, comment_typx],
              [typy, comment_typy],
              [n1, comment1],
              [n2, comment2]]
+
+        commentqx=u'Q_ficmaxx,п.5.8. (23)'
+        commentqy=u'Q_ficmaxy,п.5.8. (23)'
              
         if self.element.lx()!=self.element.lfact() :
             q_ficmaxx=self.q_fic(n3,phix)
-            commentqx=u'п.7.2.7 (18)'
-            lst.append(list(q_ficmaxx, commentqx))
+            commentqx=u'Q_ficmaxx, п.7.2.7 (18) '
+            lst.append([q_ficmaxx, commentqx])
+        else:
+            lst.append(["-", commentqx])
+
         if self.element.ly()!=self.element.lfact() :
             q_ficmaxy=self.q_fic(n3,phiy)
-            commentqy=u'п.7.2.7 (18)'
-            lst.append(list(q_ficmaxy, commentqy))
+            commentqy=u'Q_ficmaxy,п.7.2.7 (18)'
+            lst.append([q_ficmaxy, commentqy])
+        else:
+            lst.append(["-", commentqy])
             
-        if self.pr.title0()=='sostav':
-            if self.pr.title()=='ugol_tavr_st_up' or self.pr.title()=='ugol_tavr_st_right':
-                ix=self.pr.pr1.ix()
-                ixplus=80*ix
-                ixminus=40*ix
-                
-                lst.append(list(ixplus,u'Шаг планкок (+) (п.7.2.6), см'))
-                lst.append(list(ixminus,u'Шаг планкок (-) (п.7.2.6), см'))
+        if self.pr.title()=='ugol_tavr_st_up' or self.pr.title()=='ugol_tavr_st_right':
+            ix=self.pr.pr1.ix()
+            ixplus=80*ix
+            ixminus=40*ix
+            
+            lst.append([ixplus,u'Шаг планкок (+) (п.7.2.6), см'])
+            lst.append([ixminus,u'Шаг планкок (-) (п.7.2.6), см'])
+        else:
+            lst.append(['-',u'Шаг планкок (+) (п.7.2.6), см'])
+            lst.append(['-',u'Шаг планкок (-) (п.7.2.6), см'])
+            
+        if self.pr.title()=='ugol_tavr_st_krest':
+            iy0=self.pr.pr1.iy0()
+            ixplus=80*iy0
+            ixminus=40*iy0
+            
+            lst.append([ixplus,u'Шаг планкок (+) (п.7.2.6), см'])
+            lst.append([ixminus,u'Шаг планкок (-) (п.7.2.6), см'])
+        else:
+            lst.append(['-',u'Шаг планкок (+) (п.7.2.6), см'])
+            lst.append(['-',u'Шаг планкок (-) (п.7.2.6), см'])
 
-            if self.pr.title()=='ugol_tavr_st_krest':
-                iy0=self.pr.pr1.iy0()
-                ixplus=80*iy0
-                ixminus=40*iy0
-                
-                lst.append(list(ixplus,u'Шаг планкок (+) (п.7.2.6), см'))
-                lst.append(list(ixminus,u'Шаг планкок (-) (п.7.2.6), см'))
         return lst
                 
 
@@ -1566,8 +1623,8 @@ class ferma(snipn):
     def output_data_snip_old_local(self):
         """Выходные расчетные данные по местной потери устойчивости по СНиП"""
         lst=[] 
-        check_w, lambda_uw, lambda_w=self.local_h_n_old()
-        check_f, lambda_uf, lambda_f=self.local_b_n_old()
+        check_w, lambda_uw, lambda_w=self.local_buckl_h_n_old()
+        check_f, lambda_uf, lambda_f=self.local_buckl_b_n_old()
         lst=[[check_w,u'К.исп. мест. уст. стенки'],
              [lambda_uw, u'lambda_uw (п.7.14., п.7.23.)'],
              [lambda_w, 'lambda_w'],
@@ -1578,8 +1635,8 @@ class ferma(snipn):
     def output_data_snip_n_local(self):
         """Выходные расчетные данные по местной потери устойчивости по СП"""
         lst=[] 
-        check_w, lambda_uw, lambda_w=self.local_h_n()
-        check_f, lambda_uf, lambda_f=self.local_b_n()
+        check_w, lambda_uw, lambda_w=self.local_buckl_h_n()
+        check_f, lambda_uf, lambda_f=self.local_buckl_b_n()
         lst=[[check_w,u'К.исп. мест. уст. стенки'],
              [lambda_uw, u'lambda_uw (п.7.3.2., п.7.3.8-9)'],
              [lambda_w, 'lambda_w'],

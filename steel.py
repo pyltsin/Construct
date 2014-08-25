@@ -5,7 +5,6 @@ Created on Tue Mar 26 18:03:38 2013
 @author: puma
 """
 from table import tables_csv
-from basa_sort import BasaSort
 #from profiles2 import *
 
 #typ - тип стали, el - элемент, dim - 0 в мм, 1 - в см.typ_steel - тип стали
@@ -17,8 +16,7 @@ class mat(object):
 
 class list_steel(mat):
     def __init__(self, code,typ_steel='prokat'):
-        self.basa=BasaSort()
-        list_code=self.basa.list_code()
+        list_code=[u'СНиП II-23-81*', u'СП16.13330.2012']
         if code==list_code[0] and typ_steel=='prokat':
             fil='SteelData/mat_steel1987.csv'
         if code==list_code[0] and typ_steel=='list':

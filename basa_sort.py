@@ -6,7 +6,9 @@ Created on Fri Aug 08 21:48:07 2014
 """
 import profiles2 as profiles
 from  PyQt4 import QtCore
-import table
+import table as tables
+import codes
+import steel
 
 class BasaSort(object):
     def __init__(self):
@@ -76,6 +78,63 @@ class BasaSort(object):
         ]
     def list_code(self):
         return self.__list_code
+    def data_solve(self, typ):
+        pr1=profiles.truba_pryam(h=8,b=12,t=0.6, r2=1.2, r1=0.6)
+        s=steel.steel_snip20107n('C345',pr1, 1)
+        el=codes.elements(s, pr1, mux=300, muy=5000, lfact=1) 
+        forc=codes.force(n=200*1000/9.81, mx=100*1000/9.81*100, my=000*1000/9.81*100, qx=500*1000/9.81)        
+
+        if typ==self.__list_elements[0][0]:
+            sol=codes.ferma(el,forc,1)
+        
+        return sol.add_data()
+    def output_simple(self, code, type_element, typ_sec, gost, num_sect, stl, inp):
+#ищем файл
+
+        for  x in self.dict_sort:
+            if QtCore.QString(x)==typ_sec:
+                y=self.dict_sort[x]
+                typ_sec=x
+                break
+        for i in self.__list4sortament[1+y]:
+            if QtCore.QString(i[0])==gost:
+                path=i[1]
+                break
+#Грузим свойства прлфиля
+                
+        table=tables.tables_csv(path, 'float')
+        table_data=table.get_table()
+    #определяем кол-во профилей в файле
+        input_data=self.input_data4sortament(self.dict_sort[typ_sec])
+        len_input_data=len(input_data)
+        
+        for x in table_data[1:]:
+            if num_sect==QtCore.QString(x[0]):
+                pr=self.output_data(typ_sec, table_data[1][1:len_input_data+1])
+                break
+        
+        if code==QtCore.QString(self.__list_code[0]):
+            s=steel.steel_snip1987(str(stl), pr,dim=1, typ_steel='prokat')
+        elif code==QtCore.QString(self.__list_code[1]):
+            s=steel.steel_snip20107n(str(stl), pr,dim=1)
+        
+        print s.ry()
+        forc=codes.force()
+        
+        if type_element== QtCore.QString(self.__list_elements[0][0]    ):
+            el=codes.elements(s, pr, mux=inp[-2], muy=inp[-1], lfact=inp[-3]) 
+            print inp[-1],inp[-2]
+            sol=codes.ferma(el,forc,[inp[-5],inp[-4]])
+        
+        if code==QtCore.QString(self.__list_code[0]):
+            out=sol.output_data_all_snip_old()
+        elif code==QtCore.QString(self.__list_code[1]):
+            out=sol.output_data_all_snip_new()
+        
+        return out
+
+
+            
     def add_data_sostav(self, name):
         if name!='':
             for x in self.dict_sort:
@@ -101,7 +160,7 @@ class BasaSort(object):
                 if QtCore.QString(x[0])==sortament:
                     fil=x[1]
             
-            table_sect=table.tables_csv(fil,'float')
+            table_sect=tables.tables_csv(fil,'float')
             list_sect=table_sect.get_title_column()
             return list_sect
         else:
@@ -198,4 +257,4 @@ class BasaSort(object):
     def pict4sortament(self, i):
         return self.pictures_list[i]
     def input_data4sortament(self, i):
-        return self.list_input[i]
+        return self.list_input[int(i)]
