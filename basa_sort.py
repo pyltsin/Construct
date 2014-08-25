@@ -129,7 +129,7 @@ class BasaSort(object):
         if code==QtCore.QString(self.__list_code[0]):
             out=sol.output_data_all_snip_old()
         elif code==QtCore.QString(self.__list_code[1]):
-            out=sol.output_data_all_snip_new()
+            out=sol.output_data_all_snip_n()
         
         return out
 

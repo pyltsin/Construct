@@ -1561,10 +1561,10 @@ class ferma(snipn):
         n3=self.nminus()
         comment3=u'N=An*Ry*yc*phi (п.п.7.1.3 (7))'
 
-        if self.output_data_snip_n_local[0][1]>self.output_data_snip_n_local[3][1]:
-            fact_local=self.output_data_snip_n_local[0]
+        if self.output_data_snip_n_local()[0][1]>self.output_data_snip_n_local()[3][1]:
+            fact_local=self.output_data_snip_n_local()[0]
         else:
-            fact_local=self.output_data_snip_n_local[3]
+            fact_local=self.output_data_snip_n_local()[3]
 
 
         lst=[[n3, comment3],

@@ -111,8 +111,9 @@ class MyWindow(QtGui.QWidget):
 
             self.input_table.clear()
             self.input_table.setRowCount(0)
-
+            self.input_table.setColumnCount(current_count+1)
             self.input_table.setColumnCount(current_count)
+
 
             self.flag_new=False
             self.flag_current_code=current_code
