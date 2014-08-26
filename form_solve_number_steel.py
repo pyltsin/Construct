@@ -211,6 +211,7 @@ class MyWindow(QtGui.QWidget):
 
     def solve(self):
 #сбор исходных данных
+        print 'hell'
         current_code=self.type_code.currentText()
         current_count=self.number.value()
         current_type_element=self.type_element.currentText()

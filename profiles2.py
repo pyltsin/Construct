@@ -524,7 +524,7 @@ class dvut(profiles_simple):
         super(dvut, self).__init__(h=h,b=b,s=s,t=t,r1=r1,r2=r2,a1=a1, title2=title2)
         self.solve()
     def input_data(self):
-        return [u"h, см",u"b, см",u"s, см",u"t, см",u"r1, см",u"r2, см",u"a, %"]
+        return [u"h, см",u"b, см",u"s, см",u"t, см",u"r1, см",u"r2, см",u"a, %/100"]
     def output_dict(self):
         out={u'P, кг/м': self.p()
         ,u'A, см2': self.a()
@@ -1100,7 +1100,7 @@ class shvel(profiles_simple):
         super( shvel, self).__init__(h=h,b=b,s=s,t=t,r1=r1,r2=r2,a1=a1,r3=r3)
         self.solve()
     def input_data(self):
-        return [u"h, см",u"b, см",u"s, см",u"t, см",u"r1, см",u"r2, см",u"r3, см",u"a, %"]
+        return [u"h, см",u"b, см",u"s, см",u"t, см",u"r1, см",u"r2, см",u"r3, см",u"a, %/100"]
     def output_dict(self):
         out={u'P, кг/м': self.p()
         ,u'A, см2': self.a()

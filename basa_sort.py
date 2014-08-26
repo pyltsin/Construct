@@ -77,8 +77,10 @@ class BasaSort(object):
                ]
         ]
     def list_code(self):
+        """Возвращает список нормативов"""
         return self.__list_code
     def data_solve(self, typ):
+        """Возвращает список доп. исходных данных, реализовано только для ферм"""
         pr1=profiles.truba_pryam(h=8,b=12,t=0.6, r2=1.2, r1=0.6)
         s=steel.steel_snip20107n('C345',pr1, 1)
         el=codes.elements(s, pr1, mux=300, muy=5000, lfact=1) 
@@ -89,13 +91,30 @@ class BasaSort(object):
         
         return sol.add_data()
     def output_simple(self, code, type_element, typ_sec, gost, num_sect, stl, inp):
+        """ ТРЕБУЕТСЯ ПРОВЕРКА
+            Возвращает список выходных данных простого расчета,
+            исходные данные:
+            code - текстом (QString) имя норм (СНиП II-23-81*)
+            type_element - текстом (QString) название типа элемента (Ферма)
+            typ_sec - текстом (QString) название сечения (Уголки в тавр (длинные стор. - вверх))
+            gost - текстом (QString) названия ГОСТа соратмента (ГОСТ 8509-93 Уголки равнополочные)
+            num_sect - текстом (QString) номер сечения (L20x20x3)
+            stl - текстом (QString) сталь (C235)
+            inp - список дополнительных данных"""
 #ищем файл
-
+        flag_sostav=False
+        print 'basa', num_sect
         for  x in self.dict_sort:
             if QtCore.QString(x)==typ_sec:
                 y=self.dict_sort[x]
-                typ_sec=x
+                typ_sec=x #меняем текст на номер
                 break
+        print y, 'y'
+        
+        if y in self.dict_sostav_sort:
+            y=self.dict_sostav_sort[y] #меняем y на номер госта
+            flag_sostav=True
+        
         for i in self.__list4sortament[1+y]:
             if QtCore.QString(i[0])==gost:
                 path=i[1]
@@ -105,12 +124,21 @@ class BasaSort(object):
         table=tables.tables_csv(path, 'float')
         table_data=table.get_table()
     #определяем кол-во профилей в файле
+
         input_data=self.input_data4sortament(self.dict_sort[typ_sec])
         len_input_data=len(input_data)
         
+        print table_data
+        print table_data[1:]
+
         for x in table_data[1:]:
             if num_sect==QtCore.QString(x[0]):
-                pr=self.output_data(typ_sec, table_data[1][1:len_input_data+1])
+                if flag_sostav==False:
+                    pr=self.output_data(typ_sec, x[1:-3])
+                else:
+                    add_ln=len_input_data-len(x[1:-3])
+                    lst=x[1:-3]+inp[0:0+add_ln]
+                    pr=self.output_data(typ_sec, lst)
                 break
         
         if code==QtCore.QString(self.__list_code[0]):
@@ -203,6 +231,9 @@ class BasaSort(object):
     def output_dict_sort(self):
         return self.dict_sort
     def output_data(self, i, inp):
+        """Возвращает объект сечения.
+        Исходные данные: i - название по dict_sort (или текст или номер), inp - список исходных данных для сечения
+        Выходные: объект сечения"""
         x=None
         for label in self.dict_sort:
             if i==QtCore.QString(label):
@@ -224,6 +255,7 @@ class BasaSort(object):
         elif x==4:
             pr=profiles.ring(inp[0],inp[1])
         elif x==5:
+            print inp
             pr=profiles.sost_ugol_tavr_st_up(inp[0],inp[1],inp[2],inp[3],inp[4],inp[5],inp[6])
         elif x==6:
             pr=profiles.sost_ugol_tavr_st_right(inp[0],inp[1],inp[2],inp[3],inp[4],inp[5],inp[6])
@@ -257,4 +289,6 @@ class BasaSort(object):
     def pict4sortament(self, i):
         return self.pictures_list[i]
     def input_data4sortament(self, i):
+        """возвращает список входных данных для расчета сечения.
+        входные данные - номер сечения по self.dict_sort"""
         return self.list_input[int(i)]

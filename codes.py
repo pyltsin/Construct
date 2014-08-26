@@ -127,8 +127,11 @@ class snipn(normes):
             b=0.14 
             c=5.8
 #        print a, b
-        delta=9.87*(1-a+b*lambda_)+lambda_**2
-        phi_n=0.5*(delta-(delta**2-39.48*lambda_**2)**0.5)/lambda_**2
+        if lambda_!=0:
+            delta=9.87*(1-a+b*lambda_)+lambda_**2
+            phi_n=0.5*(delta-(delta**2-39.48*lambda_**2)**0.5)/lambda_**2
+        else:
+            phi_n=1
         
         if lambda_>c:
             if phi_n>7.6/lambda_**2:
@@ -182,6 +185,8 @@ class snipn(normes):
             phi=1.47-13*ry/e-(0.371-27.3*ry/e)*lambda_+(0.0275-5.53*ry/e)*lambda_**2
         if lambda_>4.5:
             phi=332/(lambda_**2*(51-lambda_))
+        if lambda_==0:
+            phi=1
         return phi
         
     def phix_old(self):
@@ -1400,7 +1405,7 @@ class ferma(snipn):
     """Класс для расчета элементов ферм по СНиП и СП - нет проверки"""
     def add_data(self):
         """Дополнительные данные для расчета"""
-        lst=[u'yc1(+)', u'yc2(-)', u'l, м', u'mu_x', u'mu_y']
+        lst=[u'yc1(+)', u'yc2(-)', u'l, см', u'mu_x', u'mu_y']
         return  lst   
     def output_data_all_snip_old(self):
         dat=self.output_data()
@@ -1434,10 +1439,10 @@ class ferma(snipn):
         commentiy=u'iy, см'
 
         lambdax=self.element.lambdax()
-        commentlx=u'lambdax'
+        commentlx=u'lambda_x'
         
         lambday=self.element.lambdax()
-        commently=u'lambday'
+        commently=u'lambda_y'
 
         ry=self.element.steel.ry()
         commentry=u'Ry, кг/см2'        
@@ -1457,16 +1462,16 @@ class ferma(snipn):
         #Расчет на расстяжение
         print self.pr.a(),self.element.steel.ry(),self.yc1()
         n1=self.pr.a()*self.element.steel.ry()*self.yc1()
-        comment1=u'N=An*Ry*yc (п.5.1. (5))'         
+        comment1=u'N=An*Ry*yc (п.5.1.(5)), кг'         
 
         n2=self.pr.a()*self.element.steel.ru()*self.yc1()/self.yu()
-        comment2=u'N=A*Ru*yc/yu (п.5.2. (6))'         
+        comment2=u'N=A*Ru*yc/yu (п.5.2.(6)), кг'         
 
         if n1<n2:
             nmin=n1
         else:
             nmin=n2
-        commentnmin=u'min(п.5.1,п.5.2)'
+        commentnmin=u'N(+)min(п.5.1,п.5.2), кг'
         #сжатие:
         phix_old=self.phix_old()
         commentpx=u'phix (п.5.3.)'
@@ -1475,8 +1480,8 @@ class ferma(snipn):
         commentpy=u'phiy (п.5.3.)'
 
         n3=self.nminus_old()
-        comment3=u'N=An*Ry*yc*phi (п.5.3. (7))'
-        print self.output_data_snip_old_local()
+        comment3=u'N=An*Ry*yc*phi (п.5.3.(7)), кг'
+#        print self.output_data_snip_old_local()
         if self.output_data_snip_old_local()[0][1]>self.output_data_snip_old_local()[3][1]:
             fact_local=self.output_data_snip_old_local()[0]
         else:
@@ -1490,8 +1495,8 @@ class ferma(snipn):
              [n1, comment1],
              [n2, comment2]]
 
-        commentqx=u'Q_ficmaxx,п.5.8. (23)'
-        commentqy=u'Q_ficmaxy,п.5.8. (23)'
+        commentqx=u'Q_ficmaxx (п.5.8.(23)), кг'
+        commentqy=u'Q_ficmaxy (п.5.8.(23)), кг'
 
              
         if self.element.lx()!=self.element.lfact() :
@@ -1538,16 +1543,16 @@ class ferma(snipn):
         lst=[]        
         #Расчет на расстяжение
         n1=self.pr.a()*self.element.steel.ry()*self.yc()
-        comment1=u'N=An*Ry*yc (п.7.1.1 (5))'         
+        comment1=u'N=An*Ry*yc (п.7.1.1(5)), кг'         
 
         n2=self.pr.a()*self.element.steel.ru()*self.yc()/self.yu()
-        comment2=u'N=A*Ru*yc/yu (п.7.1.1 )'         
+        comment2=u'N=A*Ru*yc/yu (п.7.1.1), кг'         
 
         if n1<n2:
             nmin=n1
         else:
             nmin=n2
-        commentnmin='min(п.7.1.1)'
+        commentnmin=u'N(+)min(п.7.1.1), кг'
         #сжатие:
         
         phix, typx=self.phix()
@@ -1559,7 +1564,7 @@ class ferma(snipn):
         comment_typy=u'Тип сечения Y'
 
         n3=self.nminus()
-        comment3=u'N=An*Ry*yc*phi (п.п.7.1.3 (7))'
+        comment3=u'N=An*Ry*yc*phi (п.7.1.3 (7)), кг'
 
         if self.output_data_snip_n_local()[0][1]>self.output_data_snip_n_local()[3][1]:
             fact_local=self.output_data_snip_n_local()[0]
@@ -1577,19 +1582,17 @@ class ferma(snipn):
              [n1, comment1],
              [n2, comment2]]
 
-        commentqx=u'Q_ficmaxx,п.5.8. (23)'
-        commentqy=u'Q_ficmaxy,п.5.8. (23)'
+        commentqx=u'Q_ficmaxx (п.7.2.7(18)), кг'
+        commentqy=u'Q_ficmaxy (п.7.2.7(18)), кг'
              
         if self.element.lx()!=self.element.lfact() :
             q_ficmaxx=self.q_fic(n3,phix)
-            commentqx=u'Q_ficmaxx, п.7.2.7 (18) '
             lst.append([q_ficmaxx, commentqx])
         else:
             lst.append(["-", commentqx])
 
         if self.element.ly()!=self.element.lfact() :
             q_ficmaxy=self.q_fic(n3,phiy)
-            commentqy=u'Q_ficmaxy,п.7.2.7 (18)'
             lst.append([q_ficmaxy, commentqy])
         else:
             lst.append(["-", commentqy])
