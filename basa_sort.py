@@ -103,13 +103,13 @@ class BasaSort(object):
             inp - список дополнительных данных"""
 #ищем файл
         flag_sostav=False
-        print 'basa', num_sect
+#        print 'basa', num_sect
         for  x in self.dict_sort:
             if QtCore.QString(x)==typ_sec:
                 y=self.dict_sort[x]
                 typ_sec=x #меняем текст на номер
                 break
-        print y, 'y'
+#        print y, 'y'
         
         if y in self.dict_sostav_sort:
             y=self.dict_sostav_sort[y] #меняем y на номер госта
@@ -128,8 +128,8 @@ class BasaSort(object):
         input_data=self.input_data4sortament(self.dict_sort[typ_sec])
         len_input_data=len(input_data)
         
-        print table_data
-        print table_data[1:]
+#        print table_data
+#        print table_data[1:]
 
         for x in table_data[1:]:
             if num_sect==QtCore.QString(x[0]):
@@ -146,12 +146,12 @@ class BasaSort(object):
         elif code==QtCore.QString(self.__list_code[1]):
             s=steel.steel_snip20107n(str(stl), pr,dim=1)
         
-        print s.ry()
+#        print s.ry()
         forc=codes.force()
         
         if type_element== QtCore.QString(self.__list_elements[0][0]    ):
             el=codes.elements(s, pr, mux=inp[-2], muy=inp[-1], lfact=inp[-3]) 
-            print inp[-1],inp[-2]
+#            print inp[-1],inp[-2]
             sol=codes.ferma(el,forc,[inp[-5],inp[-4]])
         
         if code==QtCore.QString(self.__list_code[0]):
