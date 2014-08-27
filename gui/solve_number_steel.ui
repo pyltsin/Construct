@@ -182,7 +182,7 @@
     <string>Расчет</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_2">
+  <widget class="QPushButton" name="word_button">
    <property name="geometry">
     <rect>
      <x>657</x>
@@ -298,7 +298,7 @@
     <string>Тип сечения</string>
    </property>
   </widget>
-  <widget class="QLabel" name="text_norme">
+  <widget class="QLabel" name="text_code">
    <property name="geometry">
     <rect>
      <x>660</x>

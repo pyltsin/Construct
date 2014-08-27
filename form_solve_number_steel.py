@@ -12,6 +12,7 @@ import win32com.client
 import os
 from basa_sort import BasaSort
 from key_press_event import copy_past
+from py2word import printToWord
 
 class MyWindow(QtGui.QWidget):
     def __init__(self, parent=None):
@@ -67,14 +68,29 @@ class MyWindow(QtGui.QWidget):
         
 #связываем с расчетом
         self.solve_button.clicked.connect(self.solve)
-        
+
+#в ворд
+        self.word_button.clicked.connect(self.toWord)        
+    def keyPressEvent(self, e):
+        """обеспечивает возможность копирования, вставить"""
+        copy_past(e, [window.input_table], [window.output_table], window)
+
+    def toWord(self):
+        lst=[u'Расчет сечений', self.type_element, self.type_section
+        , self.type_code, self.input_table, self.output_table]
+#        , self.type_code, self.input_table]
+
+        printToWord(lst)
         
     def load_files(self):
+        """Обеспечивает загрузку новых файлов из сохранения - недоделано"""
         folder=self.text_folder.text()
         fil_name=self.listWidget.currentItem().text()
         fil=folder+str(u"\\")+fil_name
         print fil           
+        
     def show_dia_folder(self):
+        """отправляет список файлов, которые можно открыть в окно"""
         folder_name = QtGui.QFileDialog.getExistingDirectory(self, 'Open Folfer', '/home')
         self.text_folder.clear()
         self.text_folder.insert(folder_name)
@@ -266,6 +282,9 @@ class MyWindow(QtGui.QWidget):
                 else:
                     txt=lst_gen[i][j][0]
                 self.output_table.item(j,i).setText(txt)
+                
+#НОВОЕ!                
+                self.output_table.item(j,i).setFlags(QtCore.Qt.ItemFlags(1+2+4+8+6+12+64))
                 
                 
 if __name__=="__main__":

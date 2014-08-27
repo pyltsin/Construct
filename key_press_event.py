@@ -8,6 +8,7 @@ from  PyQt4 import QtCore, QtGui, uic
 
 def copy_past(e, list_inputtable, list_outputtable, window):
     clip = QtGui.QApplication.clipboard()
+    flag=None
     for x in list_inputtable:
         if (window.focusWidget()==x):
             table=x
@@ -18,7 +19,7 @@ def copy_past(e, list_inputtable, list_outputtable, window):
             flag='output'
 
 
-    if (e.modifiers() & QtCore.Qt.ControlModifier):
+    if (e.modifiers() & QtCore.Qt.ControlModifier and flag!=None):
         selected = table.selectedRanges()
 
         if e.key() == QtCore.Qt.Key_V and (flag=='input'):#past
@@ -28,14 +29,26 @@ def copy_past(e, list_inputtable, list_outputtable, window):
             #copied text is split by '\n' and '\t' to paste to the cells
             for r, row in enumerate(clip.text().split('\n')):
                 for c, text in enumerate(row.split('\t')):
-                    table.setItem(first_row+r, first_col+c, QtGui.QTableWidgetItem(text))
+                    if table.cellWidget(first_row+r, first_col+c)==None:
+                        table.setItem(first_row+r, first_col+c, QtGui.QTableWidgetItem(text))
+                    else:
+                        widget=table.cellWidget(first_row+r, first_col+c)
+                        count=widget.count()
+                        for i in range(count):
+                            if QtCore.QString(text)==widget.itemText(i):
+                                widget.setCurrentIndex(i)
 
         elif e.key() == QtCore.Qt.Key_C: #copy
             s = ""
             for r in xrange(selected[0].topRow(),selected[0].bottomRow()+1):
                 for c in xrange(selected[0].leftColumn(),selected[0].rightColumn()+1):
                     try:
-                        s += str(table.item(r,c).text()) + "\t"
+                        if table.cellWidget(r, c)==None: 
+                            s += str(table.item(r,c).text()) + "\t"
+                        else:
+                            widget=table.cellWidget(r, c)
+                            txt=widget.currentText()
+                            s +=txt + "\t"
                     except AttributeError:
                         s += "\t"
                 s = s[:-1] + "\n" #eliminate last '\t'
