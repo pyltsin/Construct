@@ -48,9 +48,7 @@ def printToWord(lst):
             table.AutoFormat(16)
             #ставим заголовки горизонтальный
             for i in range(columnCount):
-#                print si
-#                print item.horizontalHeaderItem(1)
-#                print item.verticalHeaderItem(1)
+
                 if item.horizontalHeaderItem(i)!=None:
                     table.Cell(1,i+2).Range.InsertAfter(unicode(item.horizontalHeaderItem(i).text()))
                 else:
@@ -79,20 +77,7 @@ def printToWord(lst):
             for i in range(rowCount+1):
                 worddoc.ActiveWindow.Selection.MoveDown()
             worddoc.ActiveWindow.Selection.TypeParagraph()
-
-                     
-                
-
-#            x=1
-#            for i in basa.input_data(lab):
-#                table.Cell(1,x).Range.InsertAfter(i)
-#                table.Cell(2,x).Range.InsertAfter(window.inputtable.item(0, x-1).text())
-#                x=x+1
-#
-#            worddoc.ActiveWindow.Selection.MoveDown()
-#            worddoc.ActiveWindow.Selection.MoveDown()
-#            worddoc.ActiveWindow.Selection.TypeParagraph()
-
+            
     del wordapp
             
             
