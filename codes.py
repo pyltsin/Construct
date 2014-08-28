@@ -139,6 +139,10 @@ class snipn(normes):
                
         if phi_n>1 or lambda_<0.4:
             phi_n=1
+
+        if phi_n<0:
+            phi_n=0
+
         
         return phi_n, typ_sec
 
@@ -187,6 +191,10 @@ class snipn(normes):
             phi=332/(lambda_**2*(51-lambda_))
         if lambda_==0:
             phi=1
+            
+        if phi<0:
+            phi=0
+
         return phi
         
     def phix_old(self):
@@ -1405,7 +1413,12 @@ class ferma(snipn):
     """Класс для расчета элементов ферм по СНиП и СП - нет проверки"""
     def add_data(self):
         """Дополнительные данные для расчета"""
-        lst=[u'yc1(+)', u'yc2(-)', u'l, см', u'mu_x', u'mu_y']
+
+        lst=[[u'yc1(+)',[0.1,10.]]
+        , [u'yc2(-)',[0.1,10.]]
+        ,[u'l, см', [0., 3000.]]
+        ,[u'mu_x',[0.,4.]]
+        ,[u'mu_y',[0.,4.]]]
         return  lst   
     def output_data_all_snip_old(self):
         dat=self.output_data()

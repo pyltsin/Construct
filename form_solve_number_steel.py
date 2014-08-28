@@ -137,8 +137,16 @@ class MyWindow(QtGui.QWidget):
             self.flag_current_section=current_section
             add_data=self.basa.add_data_sostav(current_section)
             
+            self.data_lst=self.basa.data_solve(current_type_element)
+
+
+#            print self.data_lst
+            data=[]
+            for i in self.data_lst:
+                data.append(i[0])
             
-            data=self.basa.data_solve(current_type_element)
+#            print data            
+#            data=self.basa.data_solve(current_type_element)
 #            data=self.snipn.solve_data(self.flag_current_type_element)# нет пока таког
             lst=add_data2+add_data+data
             
