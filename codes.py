@@ -1530,23 +1530,20 @@ class ferma(snipn):
             ixplus=80*ix
             ixminus=40*ix
             
-            lst.append([ixplus,u'Шаг планкок (+) (п.5.7.), см'])
-            lst.append([ixminus,u'Шаг планкок (-) (п.5.7.), см'])
-        else:
-            lst.append(['-',u'Шаг планкок (+) (п.5.7.), см'])
-            lst.append(['-',u'Шаг планкок (-) (п.5.7.), см'])
+            lst.append([ixplus,u'Шаг планок (+)(п.5.7.), см'])
+            lst.append([ixminus,u'Шаг планок (-)(п.5.7.), см'])
             
 
-        if self.pr.title()=='ugol_tavr_st_krest':
+        elif self.pr.title()=='ugol_tavr_st_krest':
             iy0=self.pr.pr1.iy0()
             ixplus=80*iy0
             ixminus=40*iy0
             
-            lst.append([ixplus,u'Шаг планкок (+) (п.5.7.), см'])
-            lst.append([ixminus,u'Шаг планкок (-) (п.5.7.), см'])
+            lst.append([ixplus,u'Шаг планок (+)(п.5.7.), см'])
+            lst.append([ixminus,u'Шаг планок (-)(п.5.7.), см'])
         else:
-            lst.append(['-',u'Шаг планкок (+) (п.5.7.), см'])
-            lst.append(['-',u'Шаг планкок (-) (п.5.7.), см'])
+            lst.append(['-',u'Шаг планок (+)(п.5.7.), см'])
+            lst.append(['-',u'Шаг планок (-)(п.5.7.), см'])
                 
         return lst
 
@@ -1615,22 +1612,19 @@ class ferma(snipn):
             ixplus=80*ix
             ixminus=40*ix
             
-            lst.append([ixplus,u'Шаг планкок (+) (п.7.2.6), см'])
-            lst.append([ixminus,u'Шаг планкок (-) (п.7.2.6), см'])
-        else:
-            lst.append(['-',u'Шаг планкок (+) (п.7.2.6), см'])
-            lst.append(['-',u'Шаг планкок (-) (п.7.2.6), см'])
+            lst.append([ixplus,u'Шаг планок (+) (п.7.2.6), см'])
+            lst.append([ixminus,u'Шаг планок (-) (п.7.2.6), см'])
             
-        if self.pr.title()=='ugol_tavr_st_krest':
+        elif self.pr.title()=='ugol_tavr_st_krest':
             iy0=self.pr.pr1.iy0()
             ixplus=80*iy0
             ixminus=40*iy0
             
-            lst.append([ixplus,u'Шаг планкок (+) (п.7.2.6), см'])
-            lst.append([ixminus,u'Шаг планкок (-) (п.7.2.6), см'])
+            lst.append([ixplus,u'Шаг планок (+) (п.7.2.6), см'])
+            lst.append([ixminus,u'Шаг планок (-) (п.7.2.6), см'])
         else:
-            lst.append(['-',u'Шаг планкок (+) (п.7.2.6), см'])
-            lst.append(['-',u'Шаг планкок (-) (п.7.2.6), см'])
+            lst.append(['-',u'Шаг планок (+) (п.7.2.6), см'])
+            lst.append(['-',u'Шаг планок (-) (п.7.2.6), см'])
 
         return lst
                 
