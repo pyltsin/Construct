@@ -9,6 +9,14 @@ from  PyQt4 import QtCore, QtGui, uic
 def copy_past(e, list_inputtable, list_outputtable, window):
     clip = QtGui.QApplication.clipboard()
     flag=None
+    focusWidget=window.focusWidget()
+    if type(focusWidget)==QtGui.QComboBox:
+        focusWidget=focusWidget.parent().parent()
+        focusWidget.setFocus()
+        
+        
+        
+        
     for x in list_inputtable:
         if (window.focusWidget()==x):
             table=x

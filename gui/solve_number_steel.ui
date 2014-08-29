@@ -183,6 +183,9 @@
    </property>
   </widget>
   <widget class="QPushButton" name="word_button">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>657</x>
@@ -195,7 +198,7 @@
     <string>В Word</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_3">
+  <widget class="QPushButton" name="save_button">
    <property name="geometry">
     <rect>
      <x>747</x>

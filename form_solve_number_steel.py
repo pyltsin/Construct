@@ -70,18 +70,35 @@ class MyWindow(QtGui.QWidget):
         self.solve_button.clicked.connect(self.solve)
 
 #в ворд
-        self.word_button.clicked.connect(self.toWord)        
+        self.word_button.clicked.connect(self.toWord)     
+#закрыть сохранение и и ворд
+        self.changed_input_data()
+        self.input_table.currentItemChanged.connect(self.changed_input_data)
+        
+    def changed_input_data(self):
+        """закрывает схранение и ворд"""
+        self.word_button.setEnabled(False)
+        self.save_button.setEnabled(False)
+        self.text_error.clear()
+
+        self.text_error.insert(u'Расчет не выполнен')
+
     def keyPressEvent(self, e):
         """обеспечивает возможность копирования, вставить"""
         copy_past(e, [window.input_table], [window.output_table], window)
 
     def toWord(self):
-        lst=[u'Расчет сечений', self.type_element, self.type_section
-        , self.type_code, self.input_table, self.output_table]
-#        , self.type_code, self.input_table]
-
-        printToWord(lst)
-        
+        try:
+            lst=[u'Расчет сечений', self.type_element, self.type_section
+            , self.type_code, self.input_table, self.output_table]
+    #        , self.type_code, self.input_table]
+    
+            printToWord(lst)
+        except:
+            self.changed_input_data()
+            self.text_error.clear()
+            self.text_error.insert(u'Ошибка импорта в Word')
+            
     def load_files(self):
         """Обеспечивает загрузку новых файлов из сохранения - недоделано"""
         folder=self.text_folder.text()
@@ -117,6 +134,7 @@ class MyWindow(QtGui.QWidget):
         self.load_combobox(self.type_section, lst)
         
     def load_input_table(self):
+        self.changed_input_data()
         current_code=self.type_code.currentText()
         current_count=self.number.value()
         current_type_element=self.type_element.currentText()
@@ -176,9 +194,9 @@ class MyWindow(QtGui.QWidget):
 #обнуление данных
         for i in range(current_count):
             for j in range(self.input_table.rowCount()):
-                print self.input_table.cellWidget(j,i)
+#                print self.input_table.cellWidget(j,i)
                 if self.input_table.cellWidget(j,i)==None:
-                    print i, j
+#                    print i, j
                     self.input_table.setItem(j, i, QtGui.QTableWidgetItem(""))
 
                 
@@ -235,64 +253,93 @@ class MyWindow(QtGui.QWidget):
 
     def solve(self):
 #сбор исходных данных
-        print 'hell'
+        class error_data():pass
+            
         current_code=self.type_code.currentText()
         current_count=self.number.value()
         current_type_element=self.type_element.currentText()
         current_section=self.type_section.currentText()
         lst_gen=[]
-        for i in range(current_count):
-            lst=[]
-#            print self.input_table.cellWidget(1,0)
 
-            for j in range(self.input_table.rowCount()):
-                if self.input_table.cellWidget(j,i)==None and self.input_table.item(j, i).text()=="" :
-                    print i,j
-                    self.input_table.item(j,i).setText(u"0")
-                if  self.input_table.cellWidget(j,i)==None and ("," in self.input_table.item(j, i).text()):
-                    text=self.input_table.item(j, i).text()
-                    text=text.replace(',','.')
-                    self.input_table.item(j, i).setText(text)
-                    
-                if self.input_table.cellWidget(j,i)==None:
-                    if j==0:
-                        lst.append(self.input_table.item(j,i).text())
+        self.data_lst=self.basa.data_solve(current_type_element)
+        
+        try:
+            for i in range(current_count):
+                lst=[]
+    
+                for j in range(self.input_table.rowCount()):
+                    if self.input_table.cellWidget(j,i)==None and self.input_table.item(j, i).text()=="" :
+                        self.input_table.item(j,i).setText(u"0")
+                    if  self.input_table.cellWidget(j,i)==None and ("," in self.input_table.item(j, i).text()):
+                        text=self.input_table.item(j, i).text()
+                        text=text.replace(',','.')
+                        self.input_table.item(j, i).setText(text)
+                        
+                    if self.input_table.cellWidget(j,i)==None:
+                        if j==0:
+                            lst.append(self.input_table.item(j,i).text())
+                        else:
+                            num=self.input_table.item(j,i).text()
+                            num=float(num)
+
+                            print j
+                            print self.data_lst[j-4][1][0], self.data_lst[j-4][1][1], num
+                            if self.data_lst[j-4][1][0]<num and self.data_lst[j-4][1][1]>num:
+                                print 'tut'
+                                lst.append(num)
+                        
+                            else:
+                                raise error_data()
                     else:
-                        num=self.input_table.item(j,i).text()
-                        num=float(num)
-                        lst.append(num)
-                    
-                else:
-                    wid=self.input_table.cellWidget(j,i)
-                    lst.append(wid.currentText())
-            current_gost=lst[1]
-            current_num_sect=lst[2]
-            current_steel=lst[3]
-            inp=lst[4:]
-            print current_code, current_type_element, current_section, current_gost, current_num_sect, current_steel, inp
-            out=self.basa.output_simple(current_code, current_type_element, current_section, current_gost, current_num_sect, current_steel, inp)
-            print out
-            lst_gen.append(out)
-#ставим данные
-            self.output_table.setColumnCount(current_count)
-            self.output_table.setRowCount(len(lst_gen[0]))
-            
-            vert_head=[]
-            for i in lst_gen[0]:
-                vert_head.append(i[1])
-            self.output_table.setVerticalHeaderLabels(vert_head)
-            
-        for i in range(current_count):
-            for j in range(self.output_table.rowCount()):
-                self.output_table.setItem(j, i, QtGui.QTableWidgetItem("1"))
-                if type(lst_gen[i][j][0])!=type(''):
-                    txt="%.2f"%(lst_gen[i][j][0])
-                else:
-                    txt=lst_gen[i][j][0]
-                self.output_table.item(j,i).setText(txt)
+                        wid=self.input_table.cellWidget(j,i)
+                        lst.append(wid.currentText())
+    
+    
+                current_gost=lst[1]
+                current_num_sect=lst[2]
+                current_steel=lst[3]
+                inp=lst[4:]
+    #            print current_code, current_type_element, current_section, current_gost, current_num_sect, current_steel, inp
+                out=self.basa.output_simple(current_code, current_type_element, current_section, current_gost, current_num_sect, current_steel, inp)
+                lst_gen.append(out)
+    #ставим данные
+                self.output_table.setColumnCount(current_count)
+                self.output_table.setRowCount(len(lst_gen[0]))
                 
-#НОВОЕ!                
-                self.output_table.item(j,i).setFlags(QtCore.Qt.ItemFlags(1+2+4+8+6+12+64))
+                vert_head=[]
+                for i in lst_gen[0]:
+                    vert_head.append(i[1])
+                self.output_table.setVerticalHeaderLabels(vert_head)
+                
+            for i in range(current_count):
+                for j in range(self.output_table.rowCount()):
+                    self.output_table.setItem(j, i, QtGui.QTableWidgetItem("1"))
+                    if type(lst_gen[i][j][0])!=type(''):
+                        txt="%.2f"%(lst_gen[i][j][0])
+                    else:
+                        txt=lst_gen[i][j][0]
+                    self.output_table.item(j,i).setText(txt)
+                    
+                  
+                    self.output_table.item(j,i).setFlags(QtCore.Qt.ItemFlags(1+2+4+8+6+12+64))
+    
+    
+
+        except ZeroDivisionError :
+            self.changed_input_data()
+            self.text_error.clear()
+            self.text_error.insert(u'Ошибка')
+        except error_data, ValueError:
+            self.changed_input_data()
+            self.text_error.clear()
+            self.text_error.insert(u'Ошибка исходных данных')
+            
+        else:
+            self.word_button.setEnabled(True)
+            self.save_button.setEnabled(True)
+            self.text_error.clear()
+            self.text_error.insert(u'Расчет выполнен')
+
                 
                 
 if __name__=="__main__":

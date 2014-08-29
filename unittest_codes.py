@@ -1119,8 +1119,24 @@ class Test_code_ferma(unittest.TestCase):
         print 28        
 
     def test_ferma_output_data_all_snip_old(self):
+        
+        #проверка двутавров по старому снипу
+        #проверка трубы по старому снипу
+        
+        
 
         print 29        
+
+
+    def test_ferma_output_data_all_snip_n(self):
+        
+        #проверка двутавров по новому снипу
+        #проверка трубы по новому снипу
+        
+        
+
+        print 30        
+
 
 
         
