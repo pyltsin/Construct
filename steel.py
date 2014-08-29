@@ -16,7 +16,7 @@ class mat(object):
 
 class list_steel(mat):
     def __init__(self, code,typ_steel='prokat'):
-        list_code=[u'СНиП II-23-81*', u'СП16.13330.2012']
+        list_code=[u'СНиП II-23-81*', u'СП16.13330.2011']
         if code==list_code[0] and typ_steel=='prokat':
             fil='SteelData/mat_steel1987.csv'
         if code==list_code[0] and typ_steel=='list':

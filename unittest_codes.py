@@ -11,10 +11,12 @@ from table import *
 pi=3.14159265358979
 
 
-
+from  PyQt4 import QtCore
 from steel import *
 
-from codes import *            
+from codes import * 
+
+import basa_sort          
 
 class Test_mat(unittest.TestCase):
     def test_mat_steel_new1(self):
@@ -852,8 +854,272 @@ class Test_code_ferma(unittest.TestCase):
         test=sol.local_buckl_b_n_old()
         self.assertLess(abs(test[1]-0.554)/0.554,0.001)        
 
-
         print 27   
+        
+    def test_basasort_output_simple_ferm(self):
+        
+        basa=basa_sort.BasaSort()
+
+        code=QtCore.QString(u'СНиП II-23-81*')
+        type_element=QtCore.QString(u'Ферма')
+        typ_sec=QtCore.QString(u'Двутавр')
+        gost=QtCore.QString(u"СТО АСЧМ 20-93 (К) Двутавры с параллельными полками")
+        num_sect=QtCore.QString(u'40 К1')
+        stl=QtCore.QString(u'C345')
+        inp=[1,1,300,3,2]        
+        check=basa.output_simple(code, type_element, typ_sec, gost, num_sect, stl, inp) 
+
+        ry=315*100/9.81
+        a=186.8
+        phix=0.813
+        phiy=0.77
+        ru=460*100/9.81
+        e=2.1*10**6
+#дальше подряд все 24 штуки - проверка по старому снип
+        un=check[0][0]
+        res=phiy*ry*a
+        self.assertLess(abs(un-res)/res,0.001)        
+
+
+        un=check[1][0]
+        res=ry*a
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[2][0]
+        res=0.554
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[3][0]
+        res=phix
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[4][0]
+        res=phiy
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[5][0]
+        res=ry*a
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[6][0]
+        res=ru*a/1.3
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[7][0]
+        res=14093.9/9.81*1000
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[8][0]
+        res=10685/9.81*1000
+        self.assertLess(abs(un-res)/res,0.001)        
+
+
+        un=check[9][0]
+        res=phiy*ry*a/phix*7.15*10**(-6)*(2330-e/ry)
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[10][0]
+        res=phiy*ry*a/phiy*7.15*10**(-6)*(2330-e/ry)
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[11][0]
+        res=u'-'
+        self.assertEqual(un, res)        
+
+        un=check[12][0]
+        res=u'-'
+        self.assertEqual(un, res)        
+
+        un=check[13][0]
+        res=1.3
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[14][0]
+        res=ry
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[15][0]
+        res=186.8
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[16][0]
+        res=(56150/186.8)**0.5
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[17][0]
+        res=(18920/186.8)**0.5
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[18][0]
+        res=51.9
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[19][0]
+        res=59.6
+        self.assertLess(abs(un-res)/res,0.001)        
+
+
+        un=check[20][0]
+        res=0.554
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[21][0]
+        res=2.02
+        self.assertLess(abs(un-res)/res,0.0021)        
+
+        un=check[22][0]
+        res=1.12
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[23][0]
+        res=0.628
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[24][0]
+        res=0.59
+        self.assertLess(abs(un-res)/res,0.006)        
+
+        un=check[25][0]
+        res=0.37
+        self.assertLess(abs(un-res)/res,0.007)        
+
+        
+        code=QtCore.QString(u'СП16.13330.2011')
+        type_element=QtCore.QString(u'Ферма')
+        typ_sec=QtCore.QString(u'Двутавр')
+        gost=QtCore.QString(u"ГОСТ 26020-83 (Б) Двутавры с параллельными полками")
+        num_sect=QtCore.QString(u'10Б1')
+        stl=QtCore.QString(u'C255')
+        inp=[1,2,100,2,1]        
+        check=basa.output_simple(code, type_element, typ_sec, gost, num_sect, stl, inp) 
+
+        ry=240*100/9.81
+        a=10.32
+        phix=0.871
+        phiy=0.694
+        ru=360*100/9.81
+        e=2.1*10**6
+
+
+        un=check[0][0]
+        res=phiy*ry*a*2
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[1][0]
+        res=ry*a
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[2][0]
+        res=0.287
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[3][0]
+        res=phix
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[4][0]
+        res=phiy
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[5][0]
+        res='b'
+        self.assertEqual(un, res)        
+
+        un=check[6][0]
+        res='b'
+        self.assertEqual(un, res)        
+
+        un=check[7][0]
+        res=ry*a
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[8][0]
+        res=ru*a/1.3
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[9][0]
+        res=869.3/9.81*1000
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[10][0]
+        res=323.7/9.81*1000
+        self.assertLess(abs(un-res)/res,0.002)        
+
+
+        un=check[11][0]
+        res=phiy*ry*2*a/phix*7.15*10**(-6)*(2330-e/ry)
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[12][0]
+        res='-'
+        self.assertEqual(un, res)        
+
+        un=check[13][0]
+        res='-'
+        self.assertEqual(un, res)        
+
+        un=check[14][0]
+        res='-'
+        self.assertEqual(un, res)        
+
+        un=check[15][0]
+        res=1.3
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[16][0]
+        res=ry
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[17][0]
+        res=a
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[18][0]
+        res=(171/10.32)**0.5
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[19][0]
+        res=(16/10.32)**0.5
+        self.assertLess(abs(un-res)/res,0.003)        
+
+
+        un=check[20][0]
+        res=49.1
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[21][0]
+        res=80.5
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[22][0]
+        res=0.287
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[23][0]
+        res=2.16
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[24][0]
+        res=0.62
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[25][0]
+        res=0.174
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[26][0]
+        res=0.6348
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[27][0]
+        res=0.1105
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        
+        print 28        
+
+
+
 
         
 if __name__ == "__main__":

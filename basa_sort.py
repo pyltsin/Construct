@@ -12,7 +12,7 @@ import steel
 
 class BasaSort(object):
     def __init__(self):
-        self.__list_code=[u'СНиП II-23-81*', u'СП16.13330.2012']
+        self.__list_code=[u'СНиП II-23-81*', u'СП16.13330.2011']
         self.list_sort=[u'Прямоугольник',u'Двутавр', u'Швеллер',u'Уголок', u'Прямоугольная труба',
                         u'Труба', u'Уголки в тавр (длинные стор. - вверх)'
                         , u'Уголки в тавр (длинные стор. - в бок)'
@@ -91,8 +91,7 @@ class BasaSort(object):
         
         return sol.add_data()
     def output_simple(self, code, type_element, typ_sec, gost, num_sect, stl, inp):
-        """ ТРЕБУЕТСЯ ПРОВЕРКА
-            Возвращает список выходных данных простого расчета,
+        """ Возвращает список выходных данных простого расчета,
             исходные данные:
             code - текстом (QString) имя норм (СНиП II-23-81*)
             type_element - текстом (QString) название типа элемента (Ферма)

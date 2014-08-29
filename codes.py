@@ -1454,7 +1454,7 @@ class ferma(snipn):
         lambdax=self.element.lambdax()
         commentlx=u'lambda_x'
         
-        lambday=self.element.lambdax()
+        lambday=self.element.lambday()
         commently=u'lambda_y'
 
         ry=self.element.steel.ry()
@@ -1507,6 +1507,20 @@ class ferma(snipn):
              [phiy_old, commentpy],
              [n1, comment1],
              [n2, comment2]]
+
+        if self.element.lx()!=0:
+            nelx=3.14**2*self.element.steel.e()*self.pr.jx()/self.element.lx()**2
+        else:
+            nelx=0
+
+        if self.element.ly()!=0:
+            nely=3.14**2*self.element.steel.e()*self.pr.jy()/self.element.ly()**2
+        else:
+            nely=0
+
+        lst.append([nelx, u'N_eilerx, кг'])
+        lst.append([nely, u'N_eilery, кг'])
+
 
         commentqx=u'Q_ficmaxx (п.5.8.(23)), кг'
         commentqy=u'Q_ficmaxy (п.5.8.(23)), кг'
@@ -1591,6 +1605,19 @@ class ferma(snipn):
              [typy, comment_typy],
              [n1, comment1],
              [n2, comment2]]
+            
+        if self.element.lx()!=0:
+            nelx=3.14**2*self.element.steel.e()*self.pr.jx()/self.element.lx()**2
+        else:
+            nelx=0
+
+        if self.element.ly()!=0:
+            nely=3.14**2*self.element.steel.e()*self.pr.jy()/self.element.ly()**2
+        else:
+            nely=0
+
+        lst.append([nelx, u'N_eilerx, кг'])
+        lst.append([nely, u'N_eilery, кг'])
 
         commentqx=u'Q_ficmaxx (п.7.2.7(18)), кг'
         commentqy=u'Q_ficmaxy (п.7.2.7(18)), кг'
@@ -1639,8 +1666,8 @@ class ferma(snipn):
              [lambda_uw, u'lambda_uw (п.7.14., п.7.23.)'],
              [lambda_w, 'lambda_w'],
              [check_f, u'К.исп. мест. уст. полки'],
-             [lambda_uw, u'lambda_uf (п.7.14., п.7.23.)'],
-             [lambda_w, 'lambda_f']]        
+             [lambda_uf, u'lambda_uf (п.7.14., п.7.23.)'],
+             [lambda_f, 'lambda_f']]        
         return lst
     def output_data_snip_n_local(self):
         """Выходные расчетные данные по местной потери устойчивости по СП"""
@@ -1651,8 +1678,8 @@ class ferma(snipn):
              [lambda_uw, u'lambda_uw (п.7.3.2., п.7.3.8-9)'],
              [lambda_w, 'lambda_w'],
              [check_f, u'К.исп. мест. уст. полки'],
-             [lambda_uw, u'lambda_uf (п.7.3.2., п.7.3.8-9)'],
-             [lambda_w, 'lambda_f']]        
+             [lambda_uf, u'lambda_uf (п.7.3.2., п.7.3.8-9)'],
+             [lambda_f, 'lambda_f']]        
         return lst
 
 
