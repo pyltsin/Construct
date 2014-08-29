@@ -1526,13 +1526,13 @@ class ferma(snipn):
         commentqy=u'Q_ficmaxy (п.5.8.(23)), кг'
 
              
-        if self.element.lx()!=self.element.lfact() :
+        if self.element.lx()<self.element.lfact() :
             q_ficmaxx=self.q_fic_old(n3,phix_old)
             lst.append([q_ficmaxx, commentqx])
         else:
             lst.append(['-', commentqx])
             
-        if self.element.ly()!=self.element.lfact() :
+        if self.element.ly()<self.element.lfact() :
             q_ficmaxy=self.q_fic_old(n3,phiy_old)
             lst.append([q_ficmaxy, commentqy])
         else:
@@ -1622,13 +1622,13 @@ class ferma(snipn):
         commentqx=u'Q_ficmaxx (п.7.2.7(18)), кг'
         commentqy=u'Q_ficmaxy (п.7.2.7(18)), кг'
              
-        if self.element.lx()!=self.element.lfact() :
+        if self.element.lx()<self.element.lfact() :
             q_ficmaxx=self.q_fic(n3,phix)
             lst.append([q_ficmaxx, commentqx])
         else:
             lst.append(["-", commentqx])
 
-        if self.element.ly()!=self.element.lfact() :
+        if self.element.ly()<self.element.lfact() :
             q_ficmaxy=self.q_fic(n3,phiy)
             lst.append([q_ficmaxy, commentqy])
         else:

@@ -915,12 +915,12 @@ class Test_code_ferma(unittest.TestCase):
 
 
         un=check[9][0]
-        res=phiy*ry*a/phix*7.15*10**(-6)*(2330-e/ry)
-        self.assertLess(abs(un-res)/res,0.001)        
+        res=u'-'
+        self.assertEqual(un, res)        
 
         un=check[10][0]
-        res=phiy*ry*a/phiy*7.15*10**(-6)*(2330-e/ry)
-        self.assertLess(abs(un-res)/res,0.001)        
+        res='-'
+        self.assertEqual(un, res)        
 
         un=check[11][0]
         res=u'-'
@@ -1047,8 +1047,8 @@ class Test_code_ferma(unittest.TestCase):
 
 
         un=check[11][0]
-        res=phiy*ry*2*a/phix*7.15*10**(-6)*(2330-e/ry)
-        self.assertLess(abs(un-res)/res,0.001)        
+        res='-'
+        self.assertEqual(un, res)        
 
         un=check[12][0]
         res='-'
@@ -1118,7 +1118,9 @@ class Test_code_ferma(unittest.TestCase):
         
         print 28        
 
+    def test_ferma_output_data_all_snip_old(self):
 
+        print 29        
 
 
         
