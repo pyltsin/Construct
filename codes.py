@@ -288,7 +288,6 @@ class snipn(normes):
             lambda_uw=0.4+0.07*lambda_            
 #        print 's', self.pr.s()
         lambda_w=self.pr.hef()/self.pr.s()*(self.element.steel.ry()/self.element.steel.e())**0.5                        
-
         check=lambda_w/lambda_uw
         return check, lambda_uw, lambda_w
      
@@ -1473,7 +1472,7 @@ class ferma(snipn):
         
         lst=[]        
         #Расчет на расстяжение
-        print self.pr.a(),self.element.steel.ry(),self.yc1()
+#        print self.pr.a(),self.element.steel.ry(),self.yc1()
         n1=self.pr.a()*self.element.steel.ry()*self.yc1()
         comment1=u'N=An*Ry*yc (п.5.1.(5)), кг'         
 

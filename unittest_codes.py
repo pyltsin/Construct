@@ -1121,9 +1121,160 @@ class Test_code_ferma(unittest.TestCase):
     def test_ferma_output_data_all_snip_old(self):
         
         #проверка двутавров по старому снипу
+
+        pr1=dvut(10.0,	5.5,	0.45,0.72,0.7,0.25,0.119428926)
+        s=steel_snip1987('C235',pr1, dim=1)
+        el=elements(s, pr1, mux=0.5, muy=1.0, mub=1, lfact=500) 
+        forc=force(n=800*1000/9.81, mx=435*1000/9.81*100, my=435*1000/9.81*100)        
+        sol=ferma(el,forc,[0.9,0.95])
+        check=sol.output_data_all_snip_old()
+
+        ry=230*100/9.81
+        a=12.05
+        phix=0.803
+        phiy=0.047
+        ru=350*100/9.81
+        e=2.1*10**6
+
+
+        un=check[0][0]
+        res=phiy*ry*a*0.95
+        self.assertLess(abs(un-res)/res,0.007)        
+
+        un=check[1][0]
+        res=ry*a*0.9
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[2][0]
+        res=0.226
+        self.assertLess(abs(un-res)/res,0.007)        
+
+        un=check[3][0]
+        res=phix
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[4][0]
+        res=phiy
+        self.assertLess(abs(un-res)/res,0.007)        
+
+
+        un=check[5][0]
+        res=ry*a*0.9
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[6][0]
+        res=ru/1.3*a*0.9
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[7][0]
+        res=645.1*1000/9.81
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[8][0]
+        res=14.5*1000/9.81
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[9][0]
+        res=7.15*10**(-6)*(2330-e/ry)*phiy*ry*a*0.95/phix        
+        self.assertLess(abs(un-res)/res,0.007)        
+
+        un=check[10][0]
+        res=u'-'
+        self.assertEqual(un, res)        
+
+        un=check[11][0]
+        res=u'-'
+        self.assertEqual(un, res)        
+
+        un=check[12][0]
+        res=u'-'
+        self.assertEqual(un, res)        
+
+        un=check[13][0]
+        res=1.3     
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[14][0]
+        res=ry     
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[15][0]
+        res=a     
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[16][0]
+        res=(198/12.05)**0.5     
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[17][0]
+        res=(18/12.05)**0.5     
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[18][0]
+        res=61.6     
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[19][0]
+        res=410.61     
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[20][0]
+        res=0.226  
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[21][0]
+        res=2.3
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[22][0]
+        res=0.52 
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[23][0]
+        res=0.116
+        self.assertLess(abs(un-res)/res,0.005)        
+
+        un=check[24][0]
+        res=0.76
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[25][0]
+        res=0.0885
+        self.assertLess(abs(un-res)/res,0.004)        
+
         #проверка трубы по старому снипу
         
+        pr1=truba_pryam(40.0,20.0,	1.2,	2.4,	3.6)
+        s=steel_snip1987('C235',pr1, dim=1)
+        el=elements(s, pr1, mux=1., muy=0.5, mub=1, lfact=500) 
+        forc=force(n=800*1000/9.81, mx=435*1000/9.81*100, my=435*1000/9.81*100)        
+        sol=ferma(el,forc,[0.9,0.95])
+        check=sol.output_data_all_snip_old()
         
+        print 'l', el.lambdax_(),  el.lambday_()
+        ry=230*100/9.81
+        a=132.01
+        phix=0.914
+        phiy=0.932
+        ru=350*100/9.81
+        e=2.1*10**6
+
+        un=check[0][0]
+        res=phix*ry*a*0.95
+        self.assertLess(abs(un-res)/res,0.007)        
+
+        un=check[1][0]
+        res=ry*a*0.9
+        self.assertLess(abs(un-res)/res,0.007)        
+        
+        un=check[2][0]
+        res=(20-1.2-1.2-2.4-2.4)/1.2*(230*100/2.1/10**6)**0.5/1.2
+        self.assertLess(abs(un-res)/res,0.007)        
+
+        un=check[3][0]
+        res=(40-1.2-1.2-2.4-2.4)/1.2*(230*100/2.1/10**6)**0.5/1.2
+        self.assertLess(abs(un-res)/res,0.007)        
+
 
         print 29        
 
@@ -1131,6 +1282,135 @@ class Test_code_ferma(unittest.TestCase):
     def test_ferma_output_data_all_snip_n(self):
         
         #проверка двутавров по новому снипу
+        
+        pr1=dvut(60.0,	19.0,1.2,1.78,2.0,0.8,	0.119428926)
+        s=steel_snip20107n('C375',pr1, 1)
+        el=elements(s, pr1, mux=1., muy=0.5, mub=1, lfact=500) 
+        forc=force(n=800*1000/9.81, mx=435*1000/9.81*100, my=435*1000/9.81*100)        
+        sol=ferma(el,forc,[0.95,0.9])
+        check=sol.output_data_all_snip_n()
+
+        ry=345*100/9.81
+        a=137.5
+        phix=0.96
+        phiy=0.665
+        ru=480*100/9.81
+        e=2.1*10**6
+
+
+        un=check[0][0]
+        res=phiy*ry*a*0.9
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[1][0]
+        res=ry*a*0.95
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[2][0]
+        res=.80
+        self.assertLess(abs(un-res)/res,0.007)        
+
+        un=check[3][0]
+        res=phix
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[4][0]
+        res=phiy
+        self.assertLess(abs(un-res)/res,0.007)        
+
+        un=check[5][0]
+        res='b'
+        self.assertEqual(un,res)        
+
+        un=check[6][0]
+        res='b'
+        self.assertEqual(un,res)        
+
+
+        un=check[7][0]
+        res=ry*a*0.95
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[8][0]
+        res=ru/1.3*a*0.95
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[9][0]
+        res=62466*1000/9.81
+        self.assertLess(abs(un-res)/res,0.0011)        
+
+        un=check[10][0]
+        res=5611*1000/9.81
+        self.assertLess(abs(un-res)/res,0.0011)        
+
+        un=check[12][0]
+        res=7.15*10**(-6)*(2330-e/ry)*phiy*ry*a*0.9/phiy        
+        self.assertLess(abs(un-res)/res,0.007)        
+
+        un=check[11][0]
+        res=u'-'
+        self.assertEqual(un, res)        
+
+        un=check[13][0]
+        res=u'-'
+        self.assertEqual(un, res)        
+
+        un=check[14][0]
+        res=u'-'
+        self.assertEqual(un, res)        
+
+        un=check[15][0]
+        res=1.3     
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[16][0]
+        res=ry     
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[17][0]
+        res=a     
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[18][0]
+        res=(76810/137.5)**0.5     
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[19][0]
+        res=(1725/137.5)**0.5     
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[20][0]
+        res=21.2     
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[21][0]
+        res=70.6     
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[22][0]
+        res=0.80
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[23][0]
+        res=2.21
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[24][0]
+        res=1.77
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[25][0]
+        res=0.253
+        self.assertLess(abs(un-res)/res,0.005)        
+
+        un=check[26][0]
+        res=0.6489
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[27][0]
+        res=0.16411
+        self.assertLess(abs(un-res)/res,0.004)        
+
         #проверка трубы по новому снипу
         
         

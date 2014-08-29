@@ -282,10 +282,7 @@ class MyWindow(QtGui.QWidget):
                             num=self.input_table.item(j,i).text()
                             num=float(num)
 
-                            print j
-                            print self.data_lst[j-4][1][0], self.data_lst[j-4][1][1], num
                             if self.data_lst[j-4][1][0]<num and self.data_lst[j-4][1][1]>num:
-                                print 'tut'
                                 lst.append(num)
                         
                             else:
