@@ -1366,6 +1366,379 @@ class Test_code_ferma(unittest.TestCase):
 
 # тавр с полками вверх
 
+
+        pr1=sost_ugol_tavr_st_up(10.0,	6.3,	0.6,	1.0,	0.0,	0.33, 1)
+        s=steel_snip1987('C235',pr1, dim=1)
+        el=elements(s, pr1, mux=0.8, muy=0.9, mub=1, lfact=300) 
+        forc=force(n=800*1000/9.81, mx=435*1000/9.81*100, my=435*1000/9.81*100)        
+        sol=ferma(el,forc,[0.9,0.8])
+        check=sol.output_data_all_snip_old()
+
+        ry=230*100/9.81
+        a=9.59*2
+        lambda_x=0.8*300/3.2
+        lambda_y=0.9*300/2.62
+        phix=0.736
+        phiy=0.536
+        ru=350*100/9.81
+        e=2.1*10**6
+
+        un=check[0][0]
+        res=phiy*ry*a*0.8
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[1][0]
+        res=ry*a*0.9
+        self.assertLess(abs(un-res)/res,0.001)        
+        
+        un=check[2][0]
+        res=(10-0.6-1.)/0.6*(230*100/9.81/2.1/10**6)**0.5/(0.4+0.07*lambda_y*(ry/e)**0.5)
+        self.assertLess(abs(un-res)/res,0.007)        
+
+        un=check[3][0]
+        res=phix
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[4][0]
+        res=phiy
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[5][0]
+        res=ry*a*0.9
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[6][0]
+        res=ru*a*0.9/1.3
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[7][0]
+        res=3.14*3.14*e*196.85/(0.8*300)**2
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+        un=check[8][0]
+        res=3.14*3.14*e*131.88/(0.9*300)**2
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+        un=check[9][0]
+        res=7.15*10**(-6)*(2330-e/ry)*phiy*ry*a*0.8/phix  
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+
+        un=check[10][0]
+        res=7.15*10**(-6)*(2330-e/ry)*phiy*ry*a*0.8/phiy   
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[11][0]
+        res=80*1.79
+#        print res, un
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[12][0]
+        res=40*1.79
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[13][0]
+        res=1.3
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[14][0]
+        res=ry
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[15][0]
+        res=a
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[16][0]
+        res=3.2
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[17][0]
+        res=2.62
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[18][0]
+        res=lambda_x
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[19][0]
+        res=lambda_y
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[20][0]
+        res=(10-0.6-1.)/0.6*(230*100/9.81/2.1/10**6)**0.5/(0.4+0.07*lambda_y*(ry/e)**0.5)
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[21][0]
+        res=0.4+0.07*lambda_y*(ry/e)**0.5
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[22][0]
+        res=(10-0.6-1.)/0.6*(230*100/9.81/2.1/10**6)**0.5
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[23][0]
+        res=(6.3-0.6-1.)/0.6*(230*100/9.81/2.1/10**6)**0.5/(0.4+0.07*lambda_y*(ry/e)**0.5)
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[24][0]
+        res=0.4+0.07*lambda_y*(ry/e)**0.5
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[25][0]
+        res=(6.3-0.6-1.)/0.6*(230*100/9.81/2.1/10**6)**0.5
+        self.assertLess(abs(un-res)/res,0.003)        
+
+# тавр с полками вбок
+
+        pr1=sost_ugol_tavr_st_right(10.0,	6.3,	0.6,	1.0,	0.0,	0.33, 1)
+        s=steel_snip1987('C235',pr1, dim=1)
+        el=elements(s, pr1, mux=0.8, muy=0.9, mub=1, lfact=300) 
+        forc=force(n=800*1000/9.81, mx=435*1000/9.81*100, my=435*1000/9.81*100)        
+        sol=ferma(el,forc,[0.9,0.8])
+        check=sol.output_data_all_snip_old()
+
+        ry=230*100/9.81
+        a=9.59*2
+        lambda_x=0.8*300/1.786
+        lambda_y=0.9*300/4.91
+        phix=0.356
+        phiy=0.834
+        ru=350*100/9.81
+        e=2.1*10**6
+
+        un=check[0][0]
+        res=phix*ry*a*0.8
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[1][0]
+        res=ry*a*0.9
+        self.assertLess(abs(un-res)/res,0.0012)        
+        
+        un=check[2][0]
+        res=(10.-0.6-1.)/0.6*(ry/2.1/10**6)**0.5/0.68
+        self.assertLess(abs(un-res)/res,0.007)        
+
+        un=check[3][0]
+        res=phix
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+        un=check[4][0]
+        res=phiy
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+        un=check[5][0]
+        res=ry*a*0.9
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[6][0]
+        res=ru*a*0.9/1.3
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[7][0]
+        res=3.14*3.14*e*61.17/(0.8*300)**2
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+        un=check[8][0]
+        res=3.14*3.14*e*463.22/(0.9*300)**2
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+        un=check[9][0]
+        res=7.15*10**(-6)*(2330-e/ry)*phix*ry*a*0.8/phix  
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+
+        un=check[10][0]
+        res=7.15*10**(-6)*(2330-e/ry)*phix*ry*a*0.8/phiy   
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+        un=check[11][0]
+        res=80*1.79
+#        print res, un
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[12][0]
+        res=40*1.79
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[13][0]
+        res=1.3
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[14][0]
+        res=ry
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[15][0]
+        res=a
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[16][0]
+        res=1.79
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[17][0]
+        res=4.91
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[18][0]
+        res=lambda_x
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[19][0]
+        res=lambda_y
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[20][0]
+        res=(10.-0.6-1.)/0.6*(ry/2.1/10**6)**0.5/0.68
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[21][0]
+        res=0.68
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[22][0]
+        res=(10-0.6-1.)/0.6*(230*100/9.81/2.1/10**6)**0.5
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[23][0]
+        res=(6.3-0.6-1.)/0.6*(230*100/9.81/2.1/10**6)**0.5/0.68
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[24][0]
+        res=0.68
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[25][0]
+        res=(6.3-0.6-1.)/0.6*(230*100/9.81/2.1/10**6)**0.5
+        self.assertLess(abs(un-res)/res,0.003)        
+
+
+#крест
+
+        pr1=sost_ugol_tavr_st_krest(10.0,	6.3,	0.6,	1.0,	0.0,	0.33, 1,1 )
+        s=steel_snip1987('C235',pr1, dim=1)
+        el=elements(s, pr1, mux=0.8, muy=0.9, mub=1, lfact=300) 
+        forc=force(n=800*1000/9.81, mx=435*1000/9.81*100, my=435*1000/9.81*100)        
+        sol=ferma(el,forc,[0.9,0.8])
+        check=sol.output_data_all_snip_old()
+
+        ry=230*100/9.81
+        a=9.59*2
+        lambda_x=0.8*300/4.91
+        lambda_y=0.9*300/2.62
+        phix=0.861
+        phiy=0.536
+        ru=350*100/9.81
+        e=2.1*10**6
+        ix=4.91
+        iy=2.62
+
+        un=check[0][0]
+        res=phiy*ry*a*0.8
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[1][0]
+        res=ry*a*0.9
+        self.assertLess(abs(un-res)/res,0.0012)        
+        
+        un=check[2][0]
+        res=(10.-0.6-1.)/0.6*(ry/2.1/10**6)**0.5/(0.4+0.07*lambda_y*(ry/e)**0.5)
+        self.assertLess(abs(un-res)/res,0.007)        
+
+        un=check[3][0]
+        res=phix
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+        un=check[4][0]
+        res=phiy
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+        un=check[5][0]
+        res=ry*a*0.9
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[6][0]
+        res=ru*a*0.9/1.3
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[7][0]
+        res=3.14*3.14*e*ix**2*a/(0.8*300)**2
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[8][0]
+        res=3.14*3.14*e*iy**2*a/(0.9*300)**2
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[9][0]
+        res=7.15*10**(-6)*(2330-e/ry)*phiy*ry*a*0.8/phix  
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+
+        un=check[10][0]
+        res=7.15*10**(-6)*(2330-e/ry)*phiy*ry*a*0.8/phiy   
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+        un=check[11][0]
+        res=80*1.38
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[12][0]
+        res=40*1.38
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[13][0]
+        res=1.3
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[14][0]
+        res=ry
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[15][0]
+        res=a
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[16][0]
+        res=ix
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[17][0]
+        res=iy
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[18][0]
+        res=lambda_x
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[19][0]
+        res=lambda_y
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[20][0]
+        res=(10.-0.6-1.)/0.6*(ry/2.1/10**6)**0.5/(0.4+0.07*lambda_y*(ry/e)**0.5)
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[21][0]
+        res=(0.4+0.07*lambda_y*(ry/e)**0.5)
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[22][0]
+        res=(10-0.6-1.)/0.6*(230*100/9.81/2.1/10**6)**0.5
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[23][0]
+        res=(6.3-0.6-1.)/0.6*(230*100/9.81/2.1/10**6)**0.5/(0.4+0.07*lambda_y*(ry/e)**0.5)
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[24][0]
+        res=(0.4+0.07*lambda_y*(ry/e)**0.5)
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[25][0]
+        res=(6.3-0.6-1.)/0.6*(230*100/9.81/2.1/10**6)**0.5
+        self.assertLess(abs(un-res)/res,0.003)     
+        
         print 29        
 
 
@@ -1633,6 +2006,407 @@ class Test_code_ferma(unittest.TestCase):
         self.assertLess(abs(un-res)/res,0.003)        
         
 
+# тавр с полками вверх
+
+
+        pr1=sost_ugol_tavr_st_up(10.0,	6.3,	0.6,	1.0,	0.0,	0.33, 1)
+        s=steel_snip20107n('C235',pr1, 1)
+        el=elements(s, pr1, mux=0.8, muy=0.9, mub=1, lfact=300) 
+        forc=force(n=800*1000/9.81, mx=435*1000/9.81*100, my=435*1000/9.81*100)        
+        sol=ferma(el,forc,[0.9,0.8])
+        check=sol.output_data_all_snip_n()
+
+        ry=230*100/9.81
+        a=9.59*2
+        lambda_x=0.8*300/3.2
+        lambda_y=0.9*300/2.62
+        phix=0.653
+        phiy=0.486
+        ru=350*100/9.81
+        e=2.1*10**6
+
+        un=check[0][0]
+        res=phiy*ry*a*0.8
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[1][0]
+        res=ry*a*0.9
+        self.assertLess(abs(un-res)/res,0.001)        
+        
+        un=check[2][0]
+        res=(10-0.6-1.)/0.6*(230*100/9.81/2.1/10**6)**0.5/(0.4+0.07*lambda_y*(ry/e)**0.5)
+        self.assertLess(abs(un-res)/res,0.007)        
+
+        un=check[3][0]
+        res=phix
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[4][0]
+        res=phiy
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[5][0]
+        res=u'c'
+        self.assertEqual(un, res)     
+
+        un=check[6][0]
+        res=u'c'
+        self.assertEqual(un, res)     
+
+        
+        un=check[7][0]
+        res=ry*a*0.9
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[8][0]
+        res=ru*a*0.9/1.3
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[9][0]
+        res=3.14*3.14*e*196.85/(0.8*300)**2
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+        un=check[10][0]
+        res=3.14*3.14*e*131.88/(0.9*300)**2
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+        un=check[11][0]
+        res=7.15*10**(-6)*(2330-e/ry)*phiy*ry*a*0.8/phix  
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+
+        un=check[12][0]
+        res=7.15*10**(-6)*(2330-e/ry)*phiy*ry*a*0.8/phiy   
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[13][0]
+        res=80*1.79
+#        print res, un
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[14][0]
+        res=40*1.79
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[15][0]
+        res=1.3
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[16][0]
+        res=ry
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[17][0]
+        res=a
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[18][0]
+        res=3.2
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[19][0]
+        res=2.62
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[20][0]
+        res=lambda_x
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[21][0]
+        res=lambda_y
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[22][0]
+        res=(10-0.6-1.)/0.6*(230*100/9.81/2.1/10**6)**0.5/(0.4+0.07*lambda_y*(ry/e)**0.5)
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[23][0]
+        res=0.4+0.07*lambda_y*(ry/e)**0.5
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[24][0]
+        res=(10-0.6-1.)/0.6*(230*100/9.81/2.1/10**6)**0.5
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[25][0]
+        res=(6.3-0.6-1.)/0.6*(230*100/9.81/2.1/10**6)**0.5/(0.4+0.07*lambda_y*(ry/e)**0.5)
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[26][0]
+        res=0.4+0.07*lambda_y*(ry/e)**0.5
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[27][0]
+        res=(6.3-0.6-1.)/0.6*(230*100/9.81/2.1/10**6)**0.5
+        self.assertLess(abs(un-res)/res,0.003)        
+
+# тавр с полками вбок
+
+        pr1=sost_ugol_tavr_st_right(10.0,	6.3,	0.6,	1.0,	0.0,	0.33, 1)
+        s=steel_snip20107n('C235',pr1, 1)
+        el=elements(s, pr1, mux=0.8, muy=0.9, mub=1, lfact=300) 
+        forc=force(n=800*1000/9.81, mx=435*1000/9.81*100, my=435*1000/9.81*100)        
+        sol=ferma(el,forc,[0.9,0.8])
+        check=sol.output_data_all_snip_n()
+
+        ry=230*100/9.81
+        a=9.59*2
+        lambda_x=0.8*300/1.786
+        lambda_y=0.9*300/4.91
+        phix=0.341
+        phiy=0.772
+        ru=350*100/9.81
+        e=2.1*10**6
+
+        un=check[0][0]
+        res=phix*ry*a*0.8
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[1][0]
+        res=ry*a*0.9
+        self.assertLess(abs(un-res)/res,0.0012)        
+        
+        un=check[2][0]
+        res=(10.-0.6-1.)/0.6*(ry/2.1/10**6)**0.5/0.68
+        self.assertLess(abs(un-res)/res,0.007)        
+
+        un=check[3][0]
+        res=phix
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+        un=check[4][0]
+        res=phiy
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+        un=check[5][0]
+        res=u'c'
+        self.assertEqual(un, res)        
+
+        un=check[6][0]
+        res=u'c'
+        self.assertEqual(un, res)        
+
+
+        un=check[7][0]
+        res=ry*a*0.9
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[8][0]
+        res=ru*a*0.9/1.3
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[9][0]
+        res=3.14*3.14*e*61.17/(0.8*300)**2
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+        un=check[10][0]
+        res=3.14*3.14*e*463.22/(0.9*300)**2
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+        un=check[11][0]
+        res=7.15*10**(-6)*(2330-e/ry)*phix*ry*a*0.8/phix  
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+
+        un=check[12][0]
+        res=7.15*10**(-6)*(2330-e/ry)*phix*ry*a*0.8/phiy   
+        self.assertLess(abs(un-res)/res,0.0017)        
+
+        un=check[13][0]
+        res=80*1.79
+#        print res, un
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[14][0]
+        res=40*1.79
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[15][0]
+        res=1.3
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[16][0]
+        res=ry
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[17][0]
+        res=a
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[18][0]
+        res=1.79
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[19][0]
+        res=4.91
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[20][0]
+        res=lambda_x
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[21][0]
+        res=lambda_y
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[22][0]
+        res=(10.-0.6-1.)/0.6*(ry/2.1/10**6)**0.5/0.68
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[23][0]
+        res=0.68
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[24][0]
+        res=(10-0.6-1.)/0.6*(230*100/9.81/2.1/10**6)**0.5
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[25][0]
+        res=(6.3-0.6-1.)/0.6*(230*100/9.81/2.1/10**6)**0.5/0.68
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[26][0]
+        res=0.68
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[27][0]
+        res=(6.3-0.6-1.)/0.6*(230*100/9.81/2.1/10**6)**0.5
+        self.assertLess(abs(un-res)/res,0.003)        
+
+
+#крест
+
+        pr1=sost_ugol_tavr_st_krest(10.0,	6.3,	0.6,	1.0,	0.0,	0.33, 1,1 )
+        s=steel_snip20107n('C235',pr1, 1)
+        el=elements(s, pr1, mux=0.8, muy=0.9, mub=1, lfact=300) 
+        forc=force(n=800*1000/9.81, mx=435*1000/9.81*100, my=435*1000/9.81*100)        
+        sol=ferma(el,forc,[0.9,0.8])
+        check=sol.output_data_all_snip_n()
+
+        ry=230*100/9.81
+        a=9.59*2
+        lambda_x=0.8*300/4.91
+        lambda_y=0.9*300/2.62
+        phix=0.877
+        phiy=0.554
+        ru=350*100/9.81
+        e=2.1*10**6
+        ix=4.91
+        iy=2.62
+
+        un=check[0][0]
+        res=phiy*ry*a*0.8
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[1][0]
+        res=ry*a*0.9
+        self.assertLess(abs(un-res)/res,0.0012)        
+        
+        un=check[2][0]
+        res=(10.-0.6-1.)/0.6*(ry/2.1/10**6)**0.5/(0.4+0.07*lambda_y*(ry/e)**0.5)
+        self.assertLess(abs(un-res)/res,0.007)        
+
+        un=check[3][0]
+        res=phix
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+        un=check[4][0]
+        res=phiy
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+        un=check[5][0]
+        res=u'b'
+        self.assertEqual(un,res)
+        
+        un=check[6][0]
+        res=u'b'
+        self.assertEqual(un,res)
+        
+        un=check[7][0]
+        res=ry*a*0.9
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[8][0]
+        res=ru*a*0.9/1.3
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[9][0]
+        res=3.14*3.14*e*ix**2*a/(0.8*300)**2
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[10][0]
+        res=3.14*3.14*e*iy**2*a/(0.9*300)**2
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[11][0]
+        res=7.15*10**(-6)*(2330-e/ry)*phiy*ry*a*0.8/phix  
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+
+        un=check[12][0]
+        res=7.15*10**(-6)*(2330-e/ry)*phiy*ry*a*0.8/phiy   
+        self.assertLess(abs(un-res)/res,0.0015)        
+
+        un=check[13][0]
+        res=80*1.38
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[14][0]
+        res=40*1.38
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[15][0]
+        res=1.3
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[16][0]
+        res=ry
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[17][0]
+        res=a
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[18][0]
+        res=ix
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[19][0]
+        res=iy
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[20][0]
+        res=lambda_x
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[21][0]
+        res=lambda_y
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[22][0]
+        res=(10.-0.6-1.)/0.6*(ry/2.1/10**6)**0.5/(0.4+0.07*lambda_y*(ry/e)**0.5)
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[23][0]
+        res=(0.4+0.07*lambda_y*(ry/e)**0.5)
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[24][0]
+        res=(10-0.6-1.)/0.6*(230*100/9.81/2.1/10**6)**0.5
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[25][0]
+        res=(6.3-0.6-1.)/0.6*(230*100/9.81/2.1/10**6)**0.5/(0.4+0.07*lambda_y*(ry/e)**0.5)
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[26][0]
+        res=(0.4+0.07*lambda_y*(ry/e)**0.5)
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[27][0]
+        res=(6.3-0.6-1.)/0.6*(230*100/9.81/2.1/10**6)**0.5
+        self.assertLess(abs(un-res)/res,0.003)  
+        
         print 30        
 
 

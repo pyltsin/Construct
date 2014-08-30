@@ -1539,7 +1539,7 @@ class ferma(snipn):
             
     
         if self.pr.title()=='ugol_tavr_st_up' or self.pr.title()=='ugol_tavr_st_right':
-            ix=self.pr.pr1.ix()
+            ix=self.pr.pr1.iy()
             ixplus=80*ix
             ixminus=40*ix
             
@@ -1634,7 +1634,7 @@ class ferma(snipn):
             lst.append(["-", commentqy])
             
         if self.pr.title()=='ugol_tavr_st_up' or self.pr.title()=='ugol_tavr_st_right':
-            ix=self.pr.pr1.ix()
+            ix=self.pr.pr1.iy()
             ixplus=80*ix
             ixminus=40*ix
             
