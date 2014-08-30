@@ -254,13 +254,15 @@ class MyWindow(QtGui.QWidget):
     def solve(self):
 #сбор исходных данных
         class error_data():pass
-            
         current_code=self.type_code.currentText()
         current_count=self.number.value()
         current_type_element=self.type_element.currentText()
         current_section=self.type_section.currentText()
-        lst_gen=[]
+        add_data=self.basa.add_data_sostav(current_section)            
+        sdv=len(add_data)+4
 
+        lst_gen=[]
+        
         self.data_lst=self.basa.data_solve(current_type_element)
         
         try:
@@ -281,10 +283,12 @@ class MyWindow(QtGui.QWidget):
                         else:
                             num=self.input_table.item(j,i).text()
                             num=float(num)
-
-                            if self.data_lst[j-4][1][0]<num and self.data_lst[j-4][1][1]>num:
+#                            print j
+#                            print self.data_lst[j-sdv][1][0], self.data_lst[j-sdv][1][0], sdv, num
+                            if j>=sdv and self.data_lst[j-sdv][1][0]<num and self.data_lst[j-sdv][1][1]>num:
                                 lst.append(num)
-                        
+                            elif j<sdv:
+                                lst.append(num)                                                        
                             else:
                                 raise error_data()
                     else:
@@ -312,7 +316,7 @@ class MyWindow(QtGui.QWidget):
                 for j in range(self.output_table.rowCount()):
                     self.output_table.setItem(j, i, QtGui.QTableWidgetItem("1"))
                     if type(lst_gen[i][j][0])!=type(''):
-                        txt="%.2f"%(lst_gen[i][j][0])
+                        txt="%.3f"%(lst_gen[i][j][0])
                     else:
                         txt=lst_gen[i][j][0]
                     self.output_table.item(j,i).setText(txt)

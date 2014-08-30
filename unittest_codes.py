@@ -1251,7 +1251,7 @@ class Test_code_ferma(unittest.TestCase):
         sol=ferma(el,forc,[0.9,0.95])
         check=sol.output_data_all_snip_old()
         
-        print 'l', el.lambdax_(),  el.lambday_()
+#        print 'l', el.lambdax_(),  el.lambday_()
         ry=230*100/9.81
         a=132.01
         phix=0.914
@@ -1261,20 +1261,110 @@ class Test_code_ferma(unittest.TestCase):
 
         un=check[0][0]
         res=phix*ry*a*0.95
-        self.assertLess(abs(un-res)/res,0.007)        
+        self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[1][0]
         res=ry*a*0.9
-        self.assertLess(abs(un-res)/res,0.007)        
+        self.assertLess(abs(un-res)/res,0.001)        
         
         un=check[2][0]
-        res=(20-1.2-1.2-2.4-2.4)/1.2*(230*100/2.1/10**6)**0.5/1.2
+        res=(40-1.2-1.2-2.4-2.4)/1.2*(230*100/9.81/2.1/10**6)**0.5/1.2
         self.assertLess(abs(un-res)/res,0.007)        
 
         un=check[3][0]
-        res=(40-1.2-1.2-2.4-2.4)/1.2*(230*100/2.1/10**6)**0.5/1.2
-        self.assertLess(abs(un-res)/res,0.007)        
+        res=phix
+        self.assertLess(abs(un-res)/res,0.001)        
 
+        un=check[4][0]
+        res=phiy
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[5][0]
+        res=ry*a*0.9
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[6][0]
+        res=ru*a*0.9/1.3
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[7][0]
+        res=21348*1000/9.81
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[8][0]
+        res=29202*1000/9.81
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[9][0]
+        res=u'-'
+        self.assertEqual(un, res)        
+
+
+        un=check[10][0]
+        res=7.15*10**(-6)*(2330-e/ry)*phix*ry*a*0.95/phiy   
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[11][0]
+        res=u'-'
+        self.assertEqual(un, res)        
+
+        un=check[12][0]
+        res=u'-'
+        self.assertEqual(un, res)        
+
+        un=check[13][0]
+        res=1.3
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[14][0]
+        res=ry
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[15][0]
+        res=132.1
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[16][0]
+        res=(26250/132.1)**.5
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[17][0]
+        res=(8977/132.1)**.5
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[18][0]
+        res=35.5
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[19][0]
+        res=30.3
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[20][0]
+        res=(40-1.2-1.2-2.4-2.4)/1.2*(230*100/9.81/2.1/10**6)**0.5/1.2
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[21][0]
+        res=1.0+0.2*30.322*(ry/2.1/10**6)**0.5
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[22][0]
+        res=(40-1.2-1.2-2.4-2.4)/1.2*(230*100/9.81/2.1/10**6)**0.5
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[23][0]
+        res=(20-1.2-1.2-2.4-2.4)/1.2*(ry/2.1/10**6)**0.5/1.237
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[24][0]
+        res=1.0+0.2*35.465*(ry/2.1/10**6)**0.5
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[25][0]
+        res=(20-1.2-1.2-2.4-2.4)/1.2*(ry/2.1/10**6)**0.5
+        self.assertLess(abs(un-res)/res,0.003)        
+
+# тавр с полками вверх
 
         print 29        
 
@@ -1413,6 +1503,134 @@ class Test_code_ferma(unittest.TestCase):
 
         #проверка трубы по новому снипу
         
+        pr1=truba_pryam(40.0,20.0,	1.2,	2.4,	3.6)
+        s=steel_snip20107n('C345',pr1, 1)
+        el=elements(s, pr1, mux=1., muy=0.5, mub=1, lfact=500) 
+        forc=force(n=800*1000/9.81, mx=435*1000/9.81*100, my=435*1000/9.81*100)        
+        sol=ferma(el,forc,[0.9,0.95])
+        check=sol.output_data_all_snip_n()
+        
+#        print 'l', el.lambdax_(),  el.lambday_()
+        ry=320*100/9.81
+        a=132.01
+        phix=0.938
+        phiy=0.954
+        ru=460*100/9.81
+        e=2.1*10**6
+
+        un=check[0][0]
+        res=phix*ry*a*0.95
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[1][0]
+        res=ry*a*0.9
+        self.assertLess(abs(un-res)/res,0.001)        
+        
+        un=check[2][0]
+        res=(40-1.2-1.2-2.4-2.4)/1.2*(ry/2.1/10**6)**0.5/1.239
+        self.assertLess(abs(un-res)/res,0.007)        
+
+        un=check[3][0]
+        res=phix
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[4][0]
+        res=phiy
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[5][0]
+        res=u'a'
+        self.assertEqual(un, res)        
+
+        un=check[6][0]
+        res=u'a'
+        self.assertEqual(un, res)        
+
+
+        un=check[7][0]
+        res=ry*a*0.9
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[8][0]
+        res=ru*a*0.9/1.3
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[9][0]
+        res=21348*1000/9.81
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[10][0]
+        res=29202*1000/9.81
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[11][0]
+        res=u'-'
+        self.assertEqual(un, res)        
+
+
+        un=check[12][0]
+        res=7.15*10**(-6)*(2330-e/ry)*phix*ry*a*0.95/phiy   
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[13][0]
+        res=u'-'
+        self.assertEqual(un, res)        
+
+        un=check[14][0]
+        res=u'-'
+        self.assertEqual(un, res)        
+
+        un=check[15][0]
+        res=1.3
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[16][0]
+        res=ry
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[17][0]
+        res=132.1
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[18][0]
+        res=(26250/132.1)**.5
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[19][0]
+        res=(8977/132.1)**.5
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[20][0]
+        res=35.5
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[21][0]
+        res=30.3
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[22][0]
+        res=(40-1.2-1.2-2.4-2.4)/1.2*(ry/2.1/10**6)**0.5/1.239
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[23][0]
+        res=1.0+0.2*30.322*(ry/2.1/10**6)**0.5
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[24][0]
+        res=(40-1.2-1.2-2.4-2.4)/1.2*(ry/2.1/10**6)**0.5
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[25][0]
+        res=(20-1.2-1.2-2.4-2.4)/1.2*(ry/2.1/10**6)**0.5/1.28
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[26][0]
+        res=1.0+0.2*35.465*(ry/2.1/10**6)**0.5
+        self.assertLess(abs(un-res)/res,0.003)        
+
+        un=check[27][0]
+        res=(20-1.2-1.2-2.4-2.4)/1.2*(ry/2.1/10**6)**0.5
+        self.assertLess(abs(un-res)/res,0.003)        
         
 
         print 30        
