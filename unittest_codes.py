@@ -262,6 +262,9 @@ class Test_code_ferma(unittest.TestCase):
 
         self.assertLess(abs(sol.phi_n(3.)[0]-0.704)/0.704,0.001)
 
+
+
+
 #ugol_tavr_st_up
         pr1=sost_ugol_tavr_st_up(h=500, b=400, t=20, r1=0, r2=0)
         s=steel_snip20107n('C245',pr1)
@@ -785,7 +788,7 @@ class Test_code_ferma(unittest.TestCase):
         sol=snipn(el,forc,1)
         test=sol.local_buckl_b_n_old()
 
-        self.assertLess(abs(test[1]-1.456)/1.456,0.001)        
+        self.assertLess(abs(test[1]-(1+0.2*2.64485))/(1+0.2*2.64485),0.001)        
         self.assertLess(abs(test[2]-0.2673)/0.2673,0.001)        
 
 
@@ -1268,7 +1271,7 @@ class Test_code_ferma(unittest.TestCase):
         self.assertLess(abs(un-res)/res,0.001)        
         
         un=check[2][0]
-        res=(40-1.2-1.2-2.4-2.4)/1.2*(230*100/9.81/2.1/10**6)**0.5/1.2
+        res=(40-1.2-1.2-2.4-2.4)/1.2*(230*100/9.81/2.1/10**6)**0.5/(1+0.2*1.1848)
         self.assertLess(abs(un-res)/res,0.007)        
 
         un=check[3][0]
@@ -1341,11 +1344,11 @@ class Test_code_ferma(unittest.TestCase):
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[20][0]
-        res=(40-1.2-1.2-2.4-2.4)/1.2*(230*100/9.81/2.1/10**6)**0.5/1.2
+        res=(40-1.2-1.2-2.4-2.4)/1.2*(230*100/9.81/2.1/10**6)**0.5/(1+0.2*1.1848)
         self.assertLess(abs(un-res)/res,0.003)        
 
         un=check[21][0]
-        res=1.0+0.2*30.322*(ry/2.1/10**6)**0.5
+        res=(1+0.2*1.1848)
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[22][0]
@@ -2409,8 +2412,392 @@ class Test_code_ferma(unittest.TestCase):
         
         print 30        
 
+    def test_local_buckl_h_m(self):
+        pr=dvut(h=1070, b=240, t=10, s=8, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C345',pr)
+        el=elements(s, pr, mux=7000, muy=7000, mub=3000, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+        
+        test=sol.local_buckl_h_m()
+        
+        ch=5.173/3.2
+        self.assertLess(abs(test[0]-ch)/ch,0.0001)        
+        self.assertLess(abs(test[1]-3.2)/3.2,0.0001)        
+        self.assertLess(abs(test[2]-5.173)/5.173,0.0001)   
+
+        pr1=dvut(h=40, b=40, t=2, s=2, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C255',pr1)
+        el=elements(s, pr1, mux=10000, muy=300, mub=300, lfact=1) 
+        forc=force(n=200*1000/9.81, mx=500*1000/9.81*100, my=500*1000/9.81*100, qx=100*1000/9.81)        
+        sol=snipn(el,forc,1)
+        
+        self.assertLess(abs(sol.local_buckl_h_m(1,1)[1]-3.2)/3.2,0.001)
+        self.assertLess(abs(sol.local_buckl_h_m(1,2)[1]-2.2)/2.2,0.001)
+
+        self.assertLess(abs(sol.local_buckl_h_m(2,1)[1]-3.5)/3.2,0.001)
+        self.assertLess(abs(sol.local_buckl_h_m(2,2)[1]-2.5)/2.2,0.001)
 
 
+        print 31   
+
+    def test_local_buckl_h_m_old(self):
+        pr=dvut(h=1070, b=240, t=10, s=8, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C345',pr)
+        el=elements(s, pr, mux=7000, muy=7000, mub=3000, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+        
+        test=sol.local_buckl_h_m_old()
+        
+        ch=5.173/3.2
+        self.assertLess(abs(test[0]-ch)/ch,0.0001)        
+        self.assertLess(abs(test[1]-3.2)/3.2,0.0001)        
+        self.assertLess(abs(test[2]-5.173)/5.173,0.0001)   
+
+        pr1=dvut(h=40, b=40, t=2, s=2, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C255',pr1)
+        el=elements(s, pr1, mux=10000, muy=300, mub=300, lfact=1) 
+        forc=force(n=200*1000/9.81, mx=500*1000/9.81*100, my=500*1000/9.81*100, qx=100*1000/9.81)        
+        sol=snipn(el,forc,1)
+        
+        self.assertLess(abs(sol.local_buckl_h_m_old(1,1)[1]-3.2)/3.2,0.001)
+        self.assertLess(abs(sol.local_buckl_h_m_old(1,2)[1]-2.2)/2.2,0.001)
+
+        self.assertLess(abs(sol.local_buckl_h_m_old(2,1)[1]-3.5)/3.2,0.001)
+        self.assertLess(abs(sol.local_buckl_h_m_old(2,2)[1]-2.5)/2.2,0.001)
+
+    def test_local_buckl_b_m(self):
+
+        pr1=truba_pryam(h=8,b=12,t=0.6, r2=1.2, r1=0.6)
+
+        s=steel_snip20107n('C345',pr1, 1)
+        el=elements(s, pr1, mux=300, muy=5000, mub=300, lfact=1) 
+        forc=force(n=200*1000/9.81, mx=100*1000/9.81*100, my=000*1000/9.81*100, qx=500*1000/9.81)        
+        sol=snipn(el,forc,1)
+
+        
+        ch=0.6306/1.5
+        self.assertLess(abs(sol.local_buckl_b_m()[0]-ch)/ch,0.001)
+        self.assertLess(abs(sol.local_buckl_b_m()[1]-1.5)/1.5,0.001)
+        self.assertLess(abs(sol.local_buckl_b_m()[2]-0.6306)/0.6306,0.001)
+
+
+        pr=dvut(h=1070, b=240, t=10, s=8, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C345',pr)
+        el=elements(s, pr, mux=7000, muy=7000, mub=3000, lfact=10) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+        test=sol.local_buckl_b_m()
+
+        ch=0.4572/0.5
+        self.assertLess(abs(test[0]-ch)/ch,0.0001)        
+        self.assertLess(abs(test[1]-0.5)/0.5,0.0001)        
+        self.assertLess(abs(test[2]-0.4572)/0.4572,0.0001)        
+
+
+        pr=shvel(h=1070, b=240, t=10, s=8, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C345',pr)
+        el=elements(s, pr, mux=7000, muy=7000, mub=3000, lfact=10) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+        test=sol.local_buckl_b_m()
+
+        l=(240-8.)/10.*(320*100/9.81/2.1/10**6)**0.5
+        ch=l/0.5
+#        print test
+        self.assertLess(abs(test[0]-ch)/ch,0.0001)        
+        self.assertLess(abs(test[1]-0.5)/0.5,0.0001)        
+        self.assertLess(abs(test[2]-l)/l,0.0001)        
+
+        
+        print 32  
+
+    def test_local_buckl_b_m_old(self):
+
+        pr1=truba_pryam(h=8,b=12,t=0.6, r2=1.2, r1=0.6)
+
+        s=steel_snip20107n('C345',pr1, 1)
+        el=elements(s, pr1, mux=300, muy=5000, mub=300, lfact=1) 
+        forc=force(n=200*1000/9.81, mx=100*1000/9.81*100, my=000*1000/9.81*100, qx=500*1000/9.81)        
+        sol=snipn(el,forc,1)
+
+        
+        ch=0.6306/1.5
+        self.assertLess(abs(sol.local_buckl_b_m_old()[0]-ch)/ch,0.001)
+        self.assertLess(abs(sol.local_buckl_b_m_old()[1]-1.5)/1.5,0.001)
+        self.assertLess(abs(sol.local_buckl_b_m_old()[2]-0.6306)/0.6306,0.001)
+
+
+        pr=dvut(h=1070, b=240, t=10, s=8, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C345',pr)
+        el=elements(s, pr, mux=7000, muy=7000, mub=3000, lfact=10) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+        test=sol.local_buckl_b_m_old()
+
+        ch=0.4572/0.5
+        self.assertLess(abs(test[0]-ch)/ch,0.0001)        
+        self.assertLess(abs(test[1]-0.5)/0.5,0.0001)        
+        self.assertLess(abs(test[2]-0.4572)/0.4572,0.0001)        
+
+
+        pr=shvel(h=1070, b=240, t=10, s=8, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C345',pr)
+        el=elements(s, pr, mux=7000, muy=7000, mub=3000, lfact=10) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+        test=sol.local_buckl_b_m_old()
+
+        l=(240-8.)/10.*(320*100/9.81/2.1/10**6)**0.5
+        ch=l/0.5
+#        print test
+        self.assertLess(abs(test[0]-ch)/ch,0.0001)        
+        self.assertLess(abs(test[1]-0.5)/0.5,0.0001)        
+        self.assertLess(abs(test[2]-l)/l,0.0001)        
+
+        
+        print 33  
+
+    def test_cxcyn(self):
+
+#двутавр
+        pr=dvut(h=1070, b=240, t=10, s=8, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C345',pr)
+        el=elements(s, pr, mux=7000, muy=7000, mub=3000, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+
+        
+        self.assertLess(abs(sol.cxcyn()[1]-1.47)/1.47,0.0001)      
+        self.assertLess(abs(sol.cxcyn()[2]-1.5)/1.5,0.0001)   
+
+        self.assertLess(abs(sol.cxcyn()[0]-1.18)/1.18,0.0001) 
+
+        pr1=dvut(h=520, b=400, t=10, s=9, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C245',pr1)
+        el=elements(s, pr1, mux=7000, muy=7000, mub=3000, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+        self.assertLess(abs(sol.cxcyn()[0]-1.08111)/1.08111,0.0001) 
+
+
+        pr1=dvut(h=520, b=1500, t=5, s=9, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C245',pr1)
+        el=elements(s, pr1, mux=7000, muy=7000, mub=3000, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)  
+        self.assertLess(abs(sol.cxcyn()[0]-1.05)/1.05,0.001) 
+
+
+
+#короб
+        pr1=truba_pryam(h=8,b=12,t=0.6, r2=1.2, r1=0.6)
+        el=elements(s, pr1, mux=10, muy=10, mub=300, lfact=1) 
+        forc=force(n=200*1000/9.81, mx=1*1000/9.81*100, my=000*1000/9.81*100, qx=00*1000/9.81)        
+        sol=snipn(el,forc,1)
+        self.assertLess(abs(sol.cxcyn()[0]-1.08176)/1.08176,0.0001)        
+        self.assertLess(abs(sol.cxcyn()[1]-1.1735)/1.1735,0.0001)  
+        self.assertLess(abs(sol.cxcyn()[2]-1.5)/1.5,0.0001)  
+
+        pr1=truba_pryam(h=8,b=24,t=0.6, r2=1.2, r1=0.6)
+        el=elements(s, pr1, mux=10, muy=10, mub=300, lfact=1) 
+        forc=force(n=200*1000/9.81, mx=1*1000/9.81*100, my=000*1000/9.81*100, qx=00*1000/9.81)        
+        sol=snipn(el,forc,1)
+        self.assertLess(abs(sol.cxcyn()[0]-1.0471)/1.0471,0.0001)        
+        self.assertLess(abs(sol.cxcyn()[1]-1.2435)/1.2435,0.0001)  
+        self.assertLess(abs(sol.cxcyn()[2]-1.5)/1.5,0.0001)
+
+
+        pr1=truba_pryam(h=8,b=6,t=0.6, r2=1.2, r1=0.6)
+        el=elements(s, pr1, mux=10, muy=10, mub=300, lfact=1) 
+        forc=force(n=200*1000/9.81, mx=1*1000/9.81*100, my=000*1000/9.81*100, qx=00*1000/9.81)        
+        sol=snipn(el,forc,1)
+        self.assertLess(abs(sol.cxcyn()[0]-1.1365)/1.1365,0.0001)        
+        self.assertLess(abs(sol.cxcyn()[1]-1.108235)/1.108235,0.0001)  
+        self.assertLess(abs(sol.cxcyn()[2]-1.5)/1.5,0.0001)
+
+
+#швеллер
+        pr1=shvel(h=15, b=10, t=0.5, s=1, r1=0, r2=0, a1=0)
+        el=elements(s, pr1, mux=10, muy=10, mub=300, lfact=1) 
+        forc=force(n=200*1000/9.81, mx=1*1000/9.81*100, my=000*1000/9.81*100, qx=00*1000/9.81)        
+        sol=snipn(el,forc,1)
+        self.assertLess(abs(sol.cxcyn()[0]-1.148)/1.148,0.0001)        
+        self.assertLess(abs(sol.cxcyn()[1]-1.6)/1.6,0.0001)  
+        self.assertLess(abs(sol.cxcyn()[2]-1.0)/1.0,0.0001)
+
+        pr1=shvel(h=7.5, b=10, t=0.5, s=1, r1=0, r2=0, a1=0)
+        el=elements(s, pr1, mux=10, muy=10, mub=300, lfact=1) 
+        forc=force(n=200*1000/9.81, mx=1*1000/9.81*100, my=000*1000/9.81*100, qx=00*1000/9.81)        
+        sol=snipn(el,forc,1)
+        self.assertLess(abs(sol.cxcyn()[0]-1.085)/1.09,0.001)        
+        self.assertLess(abs(sol.cxcyn()[1]-1.6)/1.6,0.0001)  
+        self.assertLess(abs(sol.cxcyn()[2]-1.0)/1.0,0.0001)
+
+        
+        print 34  
+
+    def test_cxcyn(self):
+#двутавр
+        pr=dvut(h=1070, b=240, t=10, s=8, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C345',pr)
+        el=elements(s, pr, mux=7000, muy=7000, mub=3000, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+
+        
+        self.assertLess(abs(sol.cxcyn_old()[1]-1.47)/1.47,0.0001)      
+        self.assertLess(abs(sol.cxcyn_old()[2]-1.5)/1.5,0.0001)   
+
+        self.assertLess(abs(sol.cxcyn_old()[0]-1.18)/1.18,0.0001) 
+
+        pr1=dvut(h=520, b=400, t=10, s=9, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C245',pr1)
+        el=elements(s, pr1, mux=7000, muy=7000, mub=3000, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+        self.assertLess(abs(sol.cxcyn_old()[0]-1.08111)/1.08111,0.0001) 
+
+
+        pr1=dvut(h=520, b=1500, t=5, s=9, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C245',pr1)
+        el=elements(s, pr1, mux=7000, muy=7000, mub=3000, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)  
+        self.assertLess(abs(sol.cxcyn_old()[0]-1.05)/1.05,0.001) 
+
+
+
+#короб
+        pr1=truba_pryam(h=8,b=12,t=0.6, r2=1.2, r1=0.6)
+        el=elements(s, pr1, mux=10, muy=10, mub=300, lfact=1) 
+        forc=force(n=200*1000/9.81, mx=1*1000/9.81*100, my=000*1000/9.81*100, qx=00*1000/9.81)        
+        sol=snipn(el,forc,1)
+        self.assertLess(abs(sol.cxcyn_old()[0]-1.08176)/1.08176,0.0001)        
+        self.assertLess(abs(sol.cxcyn_old()[1]-1.1735)/1.1735,0.0001)  
+        self.assertLess(abs(sol.cxcyn_old()[2]-1.5)/1.5,0.0001)  
+
+        pr1=truba_pryam(h=8,b=24,t=0.6, r2=1.2, r1=0.6)
+        el=elements(s, pr1, mux=10, muy=10, mub=300, lfact=1) 
+        forc=force(n=200*1000/9.81, mx=1*1000/9.81*100, my=000*1000/9.81*100, qx=00*1000/9.81)        
+        sol=snipn(el,forc,1)
+        self.assertLess(abs(sol.cxcyn_old()[0]-1.0471)/1.0471,0.0001)        
+        self.assertLess(abs(sol.cxcyn_old()[1]-1.2435)/1.2435,0.0001)  
+        self.assertLess(abs(sol.cxcyn_old()[2]-1.5)/1.5,0.0001)
+
+
+        pr1=truba_pryam(h=8,b=6,t=0.6, r2=1.2, r1=0.6)
+        el=elements(s, pr1, mux=10, muy=10, mub=300, lfact=1) 
+        forc=force(n=200*1000/9.81, mx=1*1000/9.81*100, my=000*1000/9.81*100, qx=00*1000/9.81)        
+        sol=snipn(el,forc,1)
+        self.assertLess(abs(sol.cxcyn_old()[0]-1.1365)/1.1365,0.0001)        
+        self.assertLess(abs(sol.cxcyn_old()[1]-1.108235)/1.108235,0.0001)  
+        self.assertLess(abs(sol.cxcyn_old()[2]-1.5)/1.5,0.0001)
+
+
+#швеллер
+        pr1=shvel(h=15, b=10, t=0.5, s=1, r1=0, r2=0, a1=0)
+        el=elements(s, pr1, mux=10, muy=10, mub=300, lfact=1) 
+        forc=force(n=200*1000/9.81, mx=1*1000/9.81*100, my=000*1000/9.81*100, qx=00*1000/9.81)        
+        sol=snipn(el,forc,1)
+        self.assertLess(abs(sol.cxcyn_old()[0]-1.148)/1.148,0.0001)        
+        self.assertLess(abs(sol.cxcyn_old()[1]-1.6)/1.6,0.0001)  
+        self.assertLess(abs(sol.cxcyn_old()[2]-1.0)/1.0,0.0001)
+
+        pr1=shvel(h=7.5, b=10, t=0.5, s=1, r1=0, r2=0, a1=0)
+        el=elements(s, pr1, mux=10, muy=10, mub=300, lfact=1) 
+        forc=force(n=200*1000/9.81, mx=1*1000/9.81*100, my=000*1000/9.81*100, qx=00*1000/9.81)        
+        sol=snipn(el,forc,1)
+        self.assertLess(abs(sol.cxcyn_old()[0]-1.085)/1.09,0.001)        
+        self.assertLess(abs(sol.cxcyn_old()[1]-1.6)/1.6,0.0001)  
+        self.assertLess(abs(sol.cxcyn_old()[2]-1.0)/1.0,0.0001)
+
+        print 35  
+        
+        
+    def test_phib(self):
+        pr1=dvut(h=520, b=200, t=20, s=8, r1=0, r2=0, a1=0)
+
+        s=steel_snip20107n('C245',pr1)
+        el=elements(s, pr1, mux=7000, muy=700, mub=8000, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1) 
+#тип: 1 - балка, 2 -консиль
+#тип 1: 1- без закреплений, 2 - два и более, 3 - один по центру
+#тип 2: 1-сосредоточенная, 2 - сосредоточенная в четверти, 3 - равномерная
+#тип 3: 1- сжатый, 2 - расстянутый
+        self.assertLess(abs(sol.psib(0.319,1,1,1)-1.7787)/1.7787,0.0001) 
+        self.assertLess(abs(sol.psib(0.319,1,1,2)-5.0787)/5.0787,0.0001)
+        self.assertLess(abs(sol.psib(0.319,1,2,1)-1.7787)/1.7787,0.0001)         
+        self.assertLess(abs(sol.psib(0.319,1,2,2)-5.0787)/5.0787,0.0001) 
+        self.assertLess(abs(sol.psib(0.319,1,3,1)-1.62552)/1.62552,0.0001)         
+        self.assertLess(abs(sol.psib(0.319,1,3,2)-3.8255)/3.8255,0.0001)
+        self.assertLess(abs(sol.psib(0.319,2,1,1)-2.27233)/2.27233,0.0001)
+        self.assertLess(abs(sol.psib(0.319,3,1,1)-3.9765775)/3.9765775,0.0001)
+        self.assertLess(abs(sol.psib(0.319,3,2,1)-2.590456)/2.590456,0.0001)
+        self.assertLess(abs(sol.psib(0.319,3,2,2)-3.635728)/3.635728,0.0001)
+        self.assertLess(abs(sol.psib(0.319,3,3,1)-2.590456)/2.590456,0.0001)
+        self.assertLess(abs(sol.psib(0.319,3,3,2)-2.95403)/2.95403,0.0001)
+        
+        
+        self.assertLess(abs(sol.psib(300,1,1,1)-15.15)/15.15,0.0001) 
+        self.assertLess(abs(sol.psib(300,1,1,2)-18.45)/18.45,0.0001)
+        self.assertLess(abs(sol.psib(300,1,2,1)-15.15)/15.15,0.0001)         
+        self.assertLess(abs(sol.psib(300,1,2,2)-18.45)/18.45,0.0001) 
+        self.assertLess(abs(sol.psib(300,1,3,1)-12.72)/12.72,0.0001)         
+        self.assertLess(abs(sol.psib(300,1,3,2)-14.92)/14.92,0.0001) 
+        self.assertLess(abs(sol.psib(300,2,1,1)-12.45)/12.45,0.0001)
+        self.assertLess(abs(sol.psib(300,3,1,1)-21.7875)/21.7875,0.0001)
+        self.assertLess(abs(sol.psib(300,3,2,1)-14.193)/14.193,0.0001)
+        self.assertLess(abs(sol.psib(300,3,2,2)-19.92)/19.92,0.0001)
+        self.assertLess(abs(sol.psib(300,3,3,1)-14.193)/14.193,0.0001)
+        self.assertLess(abs(sol.psib(300,3,3,2)-16.185)/16.185,0.0001)
+
+
+#тип 2: 4 - на конце консоли, 3 - равномерная
+#тип 3: 1- сжатый, 2 - расстянутый
+
+        self.assertLess(abs(sol.psik(10,1,1)-7)/7,0.0001) 
+        self.assertLess(abs(sol.psik(10,1,2)-2.6)/2.6,0.0001) 
+        self.assertLess(abs(sol.psik(10,3,2)-4.4904343)/4.4904343,0.0001) 
+        self.assertLess(abs(sol.psik(50,1,1)-9.5)/9.5,0.0001) 
+        self.assertLess(abs(sol.psik(50,1,2)-6.5)/6.5,0.0001) 
+ 
+#        print (pr1.jy()/pr1.jx())
+#        print sol.phi_b(2,1,4,1)
+        self.assertLess(abs(sol.phi_b(1,1,1,1)[0]-0.583120178122)/0.583120178122,0.0001)   
+        
+        self.assertLess(abs(sol.phi_b(2,1,1,1)[0]-0.94089102707)/0.94089102707,0.001) 
+
+
+
+#двутавр, старый снип        
+        pr1=dvut(h=52, b=20, t=2, s=.8, r1=0, r2=0, a1=0)
+
+        s=steel_snip1987('C255',pr1, dim=1)
+        el=elements(s, pr1, mux=7000, muy=700, mub=800, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1) 
+        test=sol.phi_b_old(1,1,3,1)[0]
+        check=0.525
+        self.assertLess(abs(test-check)/check,0.001) 
+
+#короб, старый снип        
+
+        pr1=truba_pryam(h=8,b=12,t=0.6, r2=1.2, r1=0.6)
+
+        s=steel_snip1987('C255',pr1, dim=1)
+        el=elements(s, pr1, mux=7000, muy=700, mub=800, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1) 
+        test=sol.phi_b_old(1,1,3,1)
+        self.assertEqual(test, (1,1,1,0))
+
+# швеллер (pji и phi2, it и itsp)
+
+        
+        print 36
         
 if __name__ == "__main__":
     unittest.main()

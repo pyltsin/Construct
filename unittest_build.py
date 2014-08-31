@@ -24,48 +24,6 @@ class test_snipn(unittest.TestCase):
 #        print(1)
 
 
-        pr=dvut(h=1070, b=240, t=10, s=8, r1=0, r2=0, a1=0)
-        s=steel_snip20107n('C345',pr)
-        el=elements(s, pr, lx=7000, ly=7000, lb=3000, lr=10, br=1, hr=2) 
-        forc=force()        
-        sol=snipn(el,forc,1)
-        test=sol.local_buckl_b_m()
-
-        self.assertEqual(test[0],0) 
-#        print('lalal0,',test[2])
-        self.assertLess(abs(test[1]-0.5)/0.5,0.0001)        
-        self.assertLess(abs(test[2]-0.4572)/0.4572,0.0001)        
-
-        test=sol.local_buckl_h_m()
-
-        self.assertEqual(test[0],1) 
-#        print(test[2])
-        self.assertLess(abs(test[1]-3.2)/3.2,0.0001)        
-        self.assertLess(abs(test[2]-5.173)/5.173,0.0001)   
-
-
-        self.assertLess(abs(sol.cxcyn()[1]-1.47)/1.47,0.0001)      
-        self.assertLess(abs(sol.cxcyn()[2]-1.5)/1.5,0.0001)   
-
-        self.assertLess(abs(sol.cxcyn()[0]-1.0444)/1.0444,0.0001) 
-
-        pr1=dvut(h=520, b=400, t=10, s=9, r1=0, r2=0, a1=0)
-        s=steel_snip20107n('C245',pr1)
-        el=elements(s, pr1, lx=7000, ly=700, lb=3000, lr=10, br=1, hr=2) 
-        forc=force()        
-        sol=snipn(el,forc,1)
-#        print pr1.afaw()
-#        print sol.cxcyn()[0]
-        self.assertLess(abs(sol.cxcyn()[0]-1.08111)/1.08111,0.0001) 
-
-
-        pr1=dvut(h=520, b=400, t=5, s=9, r1=0, r2=0, a1=0)
-        s=steel_snip20107n('C245',pr1)
-        el=elements(s, pr1, lx=7000, ly=700, lb=3000, lr=10, br=1, hr=2) 
-        forc=force()        
-        sol=snipn(el,forc,1)  
-#        print sol.cxcyn()[0]
-        self.assertLess(abs(sol.cxcyn()[0]-1.138)/1.138,0.0001) 
 
         pr1=dvut(h=520, b=200, t=20, s=8, r1=0, r2=0, a1=0)
 
@@ -73,52 +31,6 @@ class test_snipn(unittest.TestCase):
         el=elements(s, pr1, lx=7000, ly=700, lb=8000, lr=10, br=1, hr=2) 
         forc=force()        
         sol=snipn(el,forc,1) 
-#тип: 1 - балка, 2 -консиль
-#тип 1: 1- без закреплений, 2 - два и более, 3 - один по центру
-#тип 2: 1-сосредоточенная, 2 - сосредоточенная в четверти, 3 - равномерная
-#тип 3: 1- сжатый, 2 - расстянутый
-        self.assertLess(abs(sol.psib(0.319,1,1,1)-1.7787)/1.7787,0.0001) 
-        self.assertLess(abs(sol.psib(0.319,1,1,2)-5.0787)/5.0787,0.0001)
-        self.assertLess(abs(sol.psib(0.319,1,2,1)-1.7787)/1.7787,0.0001)         
-        self.assertLess(abs(sol.psib(0.319,1,2,2)-5.0787)/5.0787,0.0001) 
-        self.assertLess(abs(sol.psib(0.319,1,3,1)-1.62552)/1.62552,0.0001)         
-        self.assertLess(abs(sol.psib(0.319,1,3,2)-3.8255)/3.8255,0.0001)
-        self.assertLess(abs(sol.psib(0.319,2,1,1)-2.27233)/2.27233,0.0001)
-        self.assertLess(abs(sol.psib(0.319,3,1,1)-3.9765775)/3.9765775,0.0001)
-        self.assertLess(abs(sol.psib(0.319,3,2,1)-2.590456)/2.590456,0.0001)
-        self.assertLess(abs(sol.psib(0.319,3,2,2)-3.635728)/3.635728,0.0001)
-        self.assertLess(abs(sol.psib(0.319,3,3,1)-2.590456)/2.590456,0.0001)
-        self.assertLess(abs(sol.psib(0.319,3,3,2)-2.95403)/2.95403,0.0001)
-        
-        
-        self.assertLess(abs(sol.psib(300,1,1,1)-15.15)/15.15,0.0001) 
-        self.assertLess(abs(sol.psib(300,1,1,2)-18.45)/18.45,0.0001)
-        self.assertLess(abs(sol.psib(300,1,2,1)-15.15)/15.15,0.0001)         
-        self.assertLess(abs(sol.psib(300,1,2,2)-18.45)/18.45,0.0001) 
-        self.assertLess(abs(sol.psib(300,1,3,1)-12.72)/12.72,0.0001)         
-        self.assertLess(abs(sol.psib(300,1,3,2)-14.92)/14.92,0.0001) 
-        self.assertLess(abs(sol.psib(300,2,1,1)-12.45)/12.45,0.0001)
-        self.assertLess(abs(sol.psib(300,3,1,1)-21.7875)/21.7875,0.0001)
-        self.assertLess(abs(sol.psib(300,3,2,1)-14.193)/14.193,0.0001)
-        self.assertLess(abs(sol.psib(300,3,2,2)-19.92)/19.92,0.0001)
-        self.assertLess(abs(sol.psib(300,3,3,1)-14.193)/14.193,0.0001)
-        self.assertLess(abs(sol.psib(300,3,3,2)-16.185)/16.185,0.0001)
-
-
-#тип 2: 4 - на конце консоли, 3 - равномерная
-#тип 3: 1- сжатый, 2 - расстянутый
-
-        self.assertLess(abs(sol.psik(10,4,1)-7)/7,0.0001) 
-        self.assertLess(abs(sol.psik(10,4,2)-2.6)/2.6,0.0001) 
-        self.assertLess(abs(sol.psik(10,3,2)-4.4904343)/4.4904343,0.0001) 
-        self.assertLess(abs(sol.psik(50,4,1)-9.5)/9.5,0.0001) 
-        self.assertLess(abs(sol.psik(50,4,2)-6.5)/6.5,0.0001) 
- 
-#        print (pr1.jy()/pr1.jx())
-#        print sol.phi_b(2,1,4,1)
-        self.assertLess(abs(sol.phi_b(1,1,1,1)-0.583120178122)/0.583120178122,0.0001)   
-        
-        self.assertLess(abs(sol.phi_b(2,1,4,1)-0.94089102707)/0.94089102707,0.001) 
 
 
 #phi_b
@@ -698,19 +610,6 @@ class test_snipn(unittest.TestCase):
         self.assertLess(abs(sol.local_buckl_h_ne(1,2)[1]-1.80069709022)/1.80069709022,0.000001)
         self.assertLess(abs(sol.local_buckl_h_ne(1,2)[2]-0.6144)/0.6144,0.001)
 
-        pr1=dvut(h=40, b=40, t=2, s=2, r1=0, r2=0, a1=0)
-        s=steel_snip20107n('C255',pr1)
-        el=elements(s, pr1, lx=10000, ly=300, lb=300, lr=0, br=0, hr=0) 
-        forc=force(n=200*1000/9.81, mx=500*1000/9.81*100, my=500*1000/9.81*100, qx=100*1000/9.81)        
-        sol=snipn(el,forc,1)
-
-#!!!дополнительные тесты по местной устойчивости
-        
-        self.assertLess(abs(sol.local_buckl_h_m(1,1)[1]-3.2)/3.2,0.001)
-        self.assertLess(abs(sol.local_buckl_h_m(1,2)[1]-2.2)/2.2,0.001)
-
-        self.assertLess(abs(sol.local_buckl_h_m(2,1)[1]-3.5)/3.2,0.001)
-        self.assertLess(abs(sol.local_buckl_h_m(2,2)[1]-2.5)/2.2,0.001)
 
 
         pr1=dvut(h=40, b=40, t=2, s=0.6, r1=0, r2=0, a1=0)
@@ -1242,18 +1141,6 @@ class test_snipn(unittest.TestCase):
 
 
 
-        pr1=truba_pryam(h=8,b=12,t=0.6, s=0.6, r2=1.2, r1=0.6)
-
-        s=steel_snip20107n('C345',pr1, 1)
-        el=elements(s, pr1, lx=300, ly=5000, lb=300, lr=0, br=0, hr=0) 
-        forc=force(n=200*1000/9.81, mx=100*1000/9.81*100, my=000*1000/9.81*100, qx=500*1000/9.81)        
-        sol=snipn(el,forc,1)
-
-        
-
-        self.assertLess(abs(sol.local_buckl_b_m()[0]-0)/0.0001,0.001)
-        self.assertLess(abs(sol.local_buckl_b_m()[1]-1.5)/1.5,0.001)
-        self.assertLess(abs(sol.local_buckl_b_m()[2]-0.6306)/0.6306,0.001)
 
 
         el=elements(s, pr1, lx=300, ly=200, lb=300, lr=0, br=0, hr=0) 
@@ -1271,53 +1158,7 @@ class test_snipn(unittest.TestCase):
         self.assertLess(abs(sol.local_buckl_b_m2()[2]-0.6306)/0.6306,0.001)
         
 
-        pr1=truba_pryam(h=8,b=12,t=0.6, s=0.6, r2=1.2, r1=0.6)
-        el=elements(s, pr1, lx=300, ly=300, lb=300, lr=0, br=0, hr=0) 
-        forc=force(n=200*1000/9.81, mx=1*1000/9.81*100, my=000*1000/9.81*100, qx=00*1000/9.81)        
-        sol=snipn(el,forc,1)
-        self.assertLess(abs(sol.phi()-0.541)/0.541,0.001)
-#        print sol.phi()           
 
-
-        pr1=truba_pryam(h=8,b=12,t=0.6, s=0.6, r2=1.2, r1=0.6)
-        el=elements(s, pr1, lx=1000, ly=1000, lb=300, lr=0, br=0, hr=0) 
-        forc=force(n=200*1000/9.81, mx=1*1000/9.81*100, my=000*1000/9.81*100, qx=00*1000/9.81)        
-        sol=snipn(el,forc,1)
-#        print sol.phi()    
-        self.assertLess(abs(sol.phi()-0.04863)/0.04863,0.001)
-
-        pr1=truba_pryam(h=8,b=12,t=0.6, s=0.6, r2=1.2, r1=0.6)
-        el=elements(s, pr1, lx=100, ly=100, lb=300, lr=0, br=0, hr=0) 
-        forc=force(n=200*1000/9.81, mx=1*1000/9.81*100, my=000*1000/9.81*100, qx=00*1000/9.81)        
-        sol=snipn(el,forc,1)
-#        print sol.phi()    
-        self.assertLess(abs(sol.phi()-0.95)/0.95,0.001)
-        
-
-        pr1=truba_pryam(h=8,b=12,t=0.6, s=0.6, r2=1.2, r1=0.6)
-        el=elements(s, pr1, lx=10, ly=10, lb=300, lr=0, br=0, hr=0) 
-        forc=force(n=200*1000/9.81, mx=1*1000/9.81*100, my=000*1000/9.81*100, qx=00*1000/9.81)        
-        sol=snipn(el,forc,1)
-#        print sol.phi()    
-        self.assertLess(abs(sol.phi()-1)/1,0.001)
-
-        pr1=truba_pryam(h=8,b=12,t=0.6, s=0.6, r2=1.2, r1=0.6)
-        el=elements(s, pr1, lx=10, ly=10, lb=300, lr=0, br=0, hr=0) 
-        forc=force(n=200*1000/9.81, mx=1*1000/9.81*100, my=000*1000/9.81*100, qx=00*1000/9.81)        
-        sol=snipn(el,forc,1)
-#        print sol.cxcyn()[1]
-        self.assertLess(abs(sol.cxcyn()[0]-1.08176)/1.08176,0.0001)        
-        self.assertLess(abs(sol.cxcyn()[1]-1.1735)/1.1735,0.0001)  
-        self.assertLess(abs(sol.cxcyn()[2]-1.5)/1.5,0.0001)  
-
-        pr1=truba_pryam(h=8,b=24,t=0.6, s=0.6, r2=1.2, r1=0.6)
-        el=elements(s, pr1, lx=10, ly=10, lb=300, lr=0, br=0, hr=0) 
-        forc=force(n=200*1000/9.81, mx=1*1000/9.81*100, my=000*1000/9.81*100, qx=00*1000/9.81)        
-        sol=snipn(el,forc,1)
-#        print sol.cxcyn()[1]
-        self.assertLess(abs(sol.cxcyn()[0]-1.0471)/1.0471,0.0001)        
-        self.assertLess(abs(sol.cxcyn()[1]-1.2435)/1.2435,0.0001)  
-        self.assertLess(abs(sol.cxcyn()[2]-1.5)/1.5,0.0001)
 
 
         pr1=truba_pryam(h=8,b=6,t=0.6, s=0.6, r2=1.2, r1=0.6)
@@ -1325,9 +1166,6 @@ class test_snipn(unittest.TestCase):
         forc=force(n=200*1000/9.81, mx=1*1000/9.81*100, my=000*1000/9.81*100, qx=00*1000/9.81)        
         sol=snipn(el,forc,1)
 #        print sol.cxcyn()[1]
-        self.assertLess(abs(sol.cxcyn()[0]-1.1365)/1.1365,0.0001)        
-        self.assertLess(abs(sol.cxcyn()[1]-1.108235)/1.108235,0.0001)  
-        self.assertLess(abs(sol.cxcyn()[2]-1.5)/1.5,0.0001)
 
         self.assertLess(abs(sol.phi_b(1,1,1,1)-1.)/1.,0.0001)
         

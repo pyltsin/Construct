@@ -351,7 +351,25 @@ class snipn(normes):
             lambda_uw
             lambda_w"""
             
-        return self.local_buckl_h_n()
+            
+        if self.pr.title()=='korob':
+            lambda_=self.element.lambda_()[0]
+            if lambda_<=1:
+                lambda_uw=1.2
+            else:
+                lambda_uw=1.0+0.2*lambda_
+                if lambda_uw>1.6:
+                    lambda_uw=1.6
+
+            lambda_w=self.pr.hef()/self.pr.s()*(self.element.steel.ry()/self.element.steel.e())**0.5                        
+
+            check=lambda_w/lambda_uw
+
+            return check, lambda_uw, lambda_w
+        else:
+            return self.local_buckl_h_n()
+
+
 
 
     def local_buckl_b_n_old(self):
@@ -365,30 +383,32 @@ class snipn(normes):
             lambda_uf
             lambda_f"""
 
-        return self.local_buckl_b_n()
+        if self.pr.title()=='korob':
+            lambda_=self.element.lambda_()[0]
 
+            if lambda_<=1:
+                lambda_uf=1.2
+            else:
+                lambda_uf=1.0+0.2*lambda_
+                if lambda_uf>1.6:
+                    lambda_uf=1.6
 
+            lambda_f=self.pr.bef()/self.pr.t()*(self.element.steel.ry()/self.element.steel.e())**0.5
+    
+            check=lambda_f/lambda_uf
+            
+            return check, lambda_uf, lambda_f
+        else:
 
+            return self.local_buckl_b_n()
 
-
-
-
-
-
-
-
-
-
-
+    '''---------------------------------------------'''
 
         
     def local_buckl_h_m(self, typ1=1, typ2=1):
-
-#без ребер "простая" проверка
-# typ1 =1 - без ребер
-#typ2 - 
-# 1 - без местной нагрузки
-# 2 - с местной нагрузкой
+        '''Проверка местной устойчивости стенки в изгибаемом элементе по СП для балок 1-го класса. Расчет не выполняется - только по отношению h/t
+        Входные данные - typ1 - 1 - вообще без ребер, 2 - c ребрами, которые ставятся конструктивно
+        typ2 - 1 - без местной нагрузки, 2 - с местной нагрузкой.'''
 
         if typ1==1:
             if typ2==1:        
@@ -401,15 +421,305 @@ class snipn(normes):
             if typ2==2:
                 lambda_uw=2.5
         lambda_w=self.pr.hef()/self.pr.s()*(self.element.steel.ry()/self.element.steel.e())**0.5                        
-        if lambda_uw>=lambda_w:
-            check=0
-        else:
-            check=1
-        return check, lambda_uw, lambda_w     
+
+        check=lambda_w/lambda_uw
+        return check, lambda_uw, lambda_w  
     
-    def local_buckl_h_m_old(self, typ1, typ2):
+    def local_buckl_h_m_old(self, typ1=1, typ2=1):
+        '''Проверка местной устойчивости стенки в изгибаемом элементе по СНиП для балок 1-го класса. Расчет не выполняется - только по отношению h/t
+        Входные данные - typ1 - 1 - вообще без ребер, 2 - c ребрами, которые ставятся конструктивно
+        typ2 - 1 - без местной нагрузки, 2 - с местной нагрузкой.'''
 
         return self.local_buckl_h_m(typ1, typ2)  
+
+
+
+    def local_buckl_b_m(self): 
+        '''Проверка местной устойчивости полки в изгибаемом элементе по СП для балок 1-го класса.'''
+        lambdaf=self.pr.bef()/self.pr.t()  /(self.element.steel.e()/self.element.steel.ry())**0.5                     
+        if self.pr.title()=='dvut' or self.pr.title()=='shvel':
+            lambdauf=0.5
+        if self.pr.title()=='korob':
+            lambdauf=1.5
+        
+        check=lambdaf/lambdauf
+        return check, lambdauf, lambdaf
+
+    def local_buckl_b_m_old(self):
+        '''Проверка местной устойчивости полки в изгибаемом элементе по СНиП для балок 1-го класса. Расчет короба выполняется по СП,
+        так как в СНиП нет указаний'''
+        return self.local_buckl_b_m()     
+
+
+
+    def cxcyn(self):
+        '''расчет коэффициентов cx cy n по СП.
+        Сечения - двутавр, швеллер, короб'''
+        if self.pr.title()=='dvut':
+            n=1.5
+            cy=1.47
+            if 0.25<=self.pr.afaw() and self.pr.afaw()<=0.5:
+                cx=(1.12-1.19)/(0.5-0.25)*(self.pr.afaw()-0.25)+1.19
+            if 0.5<=self.pr.afaw() and self.pr.afaw()<=1:
+                cx=(1.07-1.12)/(1-0.5)*(self.pr.afaw()-0.5)+1.12
+
+            if 1<=self.pr.afaw() and self.pr.afaw()<=2:
+
+                cx=(1.04-1.07)/(2-1)*(self.pr.afaw()-1)+1.07
+        elif self.pr.title()=='shvel':
+            n=1
+            cy=1.6
+            afaw=1/self.pr.afaw()/2
+            if 0.5<=afaw and afaw<=1:
+                cx=(1.12-1.07)/(1-0.5)*(afaw-0.5)+1.07
+            if 1<=afaw and afaw<=2:
+                cx=(1.19-1.12)/(2-1)*(afaw-1)+1.12
+
+        elif self.pr.title()=='korob':
+            n=1.5
+            if 0.25<=self.pr.afaw() and self.pr.afaw()<=0.5:
+#                print 'tut1'
+
+                cx=(1.12-1.19)/(0.5-0.25)*(self.pr.afaw()-0.25)+1.19
+                cy=(1.12-1.07)/(0.5-0.25)*(self.pr.afaw()-0.25)+1.07
+                 
+            if 0.5<=self.pr.afaw() and self.pr.afaw()<=1:
+                cx=(1.07-1.12)/(1-0.5)*(self.pr.afaw()-0.5)+1.12
+                cy=(1.19-1.12)/(1-0.5)*(self.pr.afaw()-0.5)+1.12
+#                print 'tut2'
+                
+            if 1<=self.pr.afaw() and self.pr.afaw()<=2:
+                cx=(1.04-1.07)/(2-1)*(self.pr.afaw()-1)+1.07    
+                cy=(1.26-1.19)/(2-1)*(self.pr.afaw()-1)+1.19
+#                print 'tut3'
+
+        return cx, cy, n   
+    def cxcyn_old(self):
+        '''расчет коэффициентов cx cy n по СНиП.
+        Сечения - двутавр, швеллер, короб'''
+
+        return self.cxcyn()
+
+
+
+
+
+        
+               
+    def phi_b_old(self, typ, typ1, typ2, typ3):
+        '''расчет устойчивости по СНиП - ПРОВЕРКИ НЕТ!!!
+        Профиля - двутавр, швеллер, короб
+        Исходные данные:
+            typ - 1- балка или 2-консоль
+            typ1 - 1-без закреплений, 2-два и более, 3 - один по центру
+            typ2 - 1 - сосредоточенная нагрузка в центре, 2 - сосредоточенная в четверти, 3 - равномерная
+            typ3 - 1 - нагрузка приложена к сжатому поясу, 2- к расстянутому'''
+        return self.phi_b(typ, typ1, typ2, typ3, 0)
+
+        
+    def phi_b(self, typ, typ1, typ2, typ3, typ4=1):
+        '''расчет устойчивости по СП - ПРОВЕРКИ НЕТ!!!
+        Профиля - двутавр, швеллер, короб
+        Исходные данные:
+            typ - 1- балка или 2-консоль
+            typ1 - 1-без закреплений, 2-два и более, 3 - один по центру
+            typ2 - 1 - сосредоточенная нагрузка в центре, 2 - сосредоточенная в четверти, 3 - равномерная
+            typ3 - 1 - нагрузка приложена к сжатому поясу, 2- к расстянутому
+            typ4 - 1-расчет по СП!!!'''
+            
+        pr=self.element.profile
+        el=self.element
+        if pr.title()=='dvut' or pr.title()=='shvel':
+            if pr.title2()=='prokat':
+                if typ4==1:
+                    jt=self.pr.jt_sp()
+#                    print 'jt', jt
+                if typ4!=1:
+                    jt=self.pr.jt()
+
+                    
+                a=1.54*jt/pr.jy()*(el.lb()/pr.h())**2
+#                print 'jy', pr.jy()
+            else:
+                h=self.pr.h()
+                t=self.pr.t()
+                s=self.pr.s()
+                b=self.pr.b()
+                h1=h-t                
+                a1=0.5*h1
+                a=8*(el.lb()*t/(h1*b))**2*(1+a1*s**3/(b*t**3))
+#            print a
+            if typ==1:
+                if typ4==1:
+                    psi=self.psib(a,typ1,typ2,typ3)
+                else:
+                    psi=self.psib_old(a,typ1,typ2,typ3)                    
+            if typ==2:
+                if typ4==1:
+                    psi=self.psik(a, typ2, typ3)
+                else:
+                    psi=self.psik_old(a, typ2, typ3)                    
+            if pr.title2()=='prokat':
+                h_t=pr.h()
+            else:
+                h_t=pr.h()-pr.t()
+            phi1=psi*pr.jy()/pr.jx()*((h_t)/el.lb())**2*el.steel.e()/el.steel.ry()
+            if pr.title()=='dvut' or pr.title()=='shvel':
+                if pr.title()=='shvel':
+                    phi1=0.7*phi1
+                if phi1<=0.85:
+                    phib=phi1
+                else:
+                    phib=0.68+0.21*phi1
+                    if phib>1:
+                        phib=1
+
+        if pr.title()=='korob':
+            phib=1
+            phi1=1
+            psi=1
+            a=0
+        
+        return phib, phi1, psi, a
+        
+        
+    def psib(self,a, typ1, typ2, typ3):
+        '''Определение psi_k по СП
+            a - коэффициент
+            typ1 - 1-без закреплений, 2-два и более, 3 - один по центру
+            typ2 - 1 - сосредоточенная нагрузка в центре, 2 - сосредоточенная в четверти, 3 - равномерная
+            typ3 - 1 - нагрузка приложена к сжатому поясу, 2- к расстянутому'''
+
+        psi=10**(-10)
+        if 0.1<=a and a<=40:
+            psi1=2.25+0.07*a
+        elif 40<a and a<=400:
+            psi1=3.6+0.04*a-3.5*10**(-5)*a**2
+        
+
+        if typ1==1:
+            if 0.1<=a and a<=40:
+                if typ2==1 or typ2==2:
+                    if typ3==1:
+                        psi=1.75+0.09*a
+#                        print 'tut1'
+                    else:
+                        psi=5.05+0.09*a
+#                        print 'tut2'
+
+                if typ2==3:
+                    if typ3==1:
+                        psi=1.6+0.08*a
+                        print 'tut3'
+
+                    else:
+                        psi=3.8+0.08*a
+#                        print 'tut4'
+
+            if 40<a and a<=400:
+                if typ2==1 or typ2==2:
+                    if typ3==1:
+                        psi=3.3+0.053*a-4.5*10**(-5)*a**2
+#                        print 'tut5'
+
+                    else:
+                        psi=6.6+0.053*a-4.5*10**(-5)*a**2
+#                        print 'tut6'
+
+                if typ2==3:
+                    if typ3==1:
+                        psi=3.15+0.04*a-2.7*10**(-5)*a**2
+#                        print 'tut7'
+
+                    else:
+                        psi=5.35+0.04*a-2.7*10**(-5)*a**2
+#                        print 'tut8'
+
+        if typ1==2:
+            psi=psi1
+#            print 'tut9'
+
+        if typ1==3:
+            if typ2==1:
+                psi=1.75*psi1
+#                print 'tut10'
+
+            if typ2==2:
+                if typ3==1:
+                    psi=1.14*psi1
+#                    print 'tut11'
+
+                if typ3==2:
+                    psi=1.6*psi1
+#                    print 'tut12'
+
+            if typ2==3:
+                if typ3==1:
+                    psi=1.14*psi1
+#                    print 'tut13'
+
+                if typ3==2:
+                    psi=1.3*psi1 
+#                    print 'tut14'
+
+        return psi
+    def psik(self, a, typ2, typ3):
+        '''Определение psi_b по СП
+            a - коэффициент
+            typ2 - 1 - сосредоточенная на конце, 2 - сосредоточенная в четверти, 3 - равномерная
+            typ3 - 1 - нагрузка приложена к сжатому поясу, 2- к расстянутому'''
+
+
+
+        psi=10**(-10)
+        if typ2==1 or typ2==2:
+            if typ3==1:
+                if 4<=a and a<=28:
+                    psi=6.2+0.08*a
+#                    print 'tut15'
+
+                if 28<=a and a<=100:
+                    psi=7.+0.05*a
+#                    print 'tut16'
+
+            if typ3==2:
+                if 4<=a and a<=28:
+                    psi=1+0.16*a
+#                    print 'tut17'
+
+                if 28<=a and a<=100:
+                    psi=4+0.05*a
+#                    print 'tut18'
+
+        if typ2==3:
+            if typ3==2:
+                psi=1.42*a**0.5
+#                print 'tut19'
+
+        return psi
+
+    def psib_old(self,a, typ1, typ2, typ3):
+        '''Определение psi_b по СНиП
+            a - коэффициент
+            typ1 - 1-без закреплений, 2-два и более, 3 - один по центру
+            typ2 - 1 - сосредоточенная нагрузка в центре, 2 - сосредоточенная в четверти, 3 - равномерная
+            typ3 - 1 - нагрузка приложена к сжатому поясу, 2- к расстянутому'''
+
+        return self.psib(a,typ1, typ2, typ3)
+    def psik_old(self, a, typ2, typ3):
+        '''Определение psi_k по СНиП
+            a - коэффициент
+            typ2 - 1 , 2 - сосредоточенная на конце, 3 - равномерная
+            typ3 - 1 - нагрузка приложена к сжатому поясу, 2- к расстянутому'''
+
+        return self.psik_old(a, typ2, typ3)
+
+
+
+
+    '''---------------------------------------------'''
+
+
         
     def local_buckl_h_m2(self, typ=1):
 #        typ=2 - для старого снипа
@@ -545,223 +855,9 @@ class snipn(normes):
             check=1
         return check, lambdauf, lambdaf 
         
-    def local_buckl_b_m(self): 
-
-        lambdaf=self.pr.bef()/self.pr.t()  /(self.element.steel.e()/self.element.steel.ry())**0.5                     
-        if self.pr.title()=='dvut' or self.pr.title()=='shvel':
-            lambdauf=0.5
-        if self.pr.title()=='korob':
-            lambdauf=1.5
-        if lambdauf>=lambdaf:
-            check=0
-        else:
-            check=1
-        return check, lambdauf, lambdaf
-
-    def local_buckl_b_m_old(self):
-        
-        lambdaf=self.pr.bef()/self.pr.t()  /(self.element.steel.e()/self.element.steel.ry())**0.5                     
-        if self.pr.title()=='dvut' or self.pr.title()=='shvel':
-            lambdauf=0.5
-        if lambdauf>=lambdaf:
-            check=0
-        else:
-            check=1
-        return check, lambdauf, lambdaf        
 
         
      
-#нет тестов на все элементы        
-   
-
-
-#нет тестов     
-
-        
-    def cxcyn(self):
-        if self.pr.title()=='truba':
-            n=1.5
-            cx=1.26
-            cy=1.26
-        if self.pr.title()=='dvut':
-            n=1.5
-            cy=1.47
-            if 0.25<=self.pr.afaw() and self.pr.afaw()<=0.5:
-                cx=(1.12-1.19)/(0.5-0.25)*(self.pr.afaw()-0.25)+1.19
-            if 0.5<=self.pr.afaw() and self.pr.afaw()<=1:
-                cx=(1.07-1.12)/(1-0.5)*(self.pr.afaw()-0.5)+1.12
-            if 1<=self.pr.afaw() and self.pr.afaw()<=2:
-                cx=(1.04-1.07)/(2-1)*(self.pr.afaw()-1)+1.07
-        if self.pr.title()=='shvel':
-            n=1
-            cy=1.6
-            afaw=1/self.pr.afaw()/2
-            if 0.5<=afaw and afaw<=1:
-                cx=(1.12-1.07)/(1-0.5)*(afaw-0.5)+1.07
-            if 1<=afaw and afaw<=2:
-                cx=(1.19-1.12)/(2-1)*(afaw-1)+1.12
-
-        if self.pr.title()=='korob':
-            n=1.5
-            if 0.25<=self.pr.afaw() and self.pr.afaw()<=0.5:
-                cx=(1.12-1.19)/(0.5-0.25)*(self.pr.afaw()-0.25)+1.19
-                cy=(1.12-1.07)/(0.5-0.25)*(self.pr.afaw()-0.25)+1.07
-                 
-            if 0.5<=self.pr.afaw() and self.pr.afaw()<=1:
-                cx=(1.07-1.12)/(1-0.5)*(self.pr.afaw()-0.5)+1.12
-                cy=(1.19-1.12)/(1-0.5)*(self.pr.afaw()-0.5)+1.12
-                
-            if 1<=self.pr.afaw() and self.pr.afaw()<=2:
-                cx=(1.04-1.07)/(2-1)*(self.pr.afaw()-1)+1.07    
-                cy=(1.26-1.19)/(2-1)*(self.pr.afaw()-1)+1.19
-        return cx, cy, n   
-    def cxcyn_old(self):
-        return self.cxcyn()
-               
-#тип: 1 - балка, 2 -консиль
-#тип 1: 1- без закреплений, 2 - два и более, 3 - один по центру
-#тип 2: 1-сосредоточенная, 2 - сосредоточенная в четверти, 3 - равномерная
-#тип 3: 1- сжатый, 2 - расстянутый
-# тип 4=1 - новый снип иначе старый 
-#полная проверка на старый снип не проводилась   
-
-#нет тестов    
-    def phi_b_old(self, typ, typ1, typ2, typ3):
-        return self.phi_b(self, typ, typ1, typ2, typ3, typ4=0, typ_norm='old')
-
-#    def phi_b(self, typ, typ1, typ2, typ3, typ4=1):
-##        print 'typ4'
-#        return self.phi_ballnorm(self, typ, typ1, typ2, typ3, typ4=typ4, typ_norm='new') 
-        
-    def phi_b(self, typ, typ1, typ2, typ3, typ4=1, typ_norm='new'):
-        pr=self.element.profile
-        el=self.element
-        if pr.title()=='dvut' or pr.title()=='shvel':
-            if pr.title2()=='prokat':
-                if typ4==1:
-                    jt=self.pr.jt_sp()
-#                    print 'jt', jt
-                if typ4!=1 and pr.title()=='dvut':
-                    jt=self.pr.jt()
-
-                if typ_norm=='old':
-                    jt=self.pr.jt()                    
-                    
-                a=1.54*jt/pr.jy()*(el.lb()/pr.h())**2
-#                print 'jy', pr.jy()
-            else:
-                h=self.pr.h()
-                t=self.pr.t()
-                s=self.pr.s()
-                b=self.pr.b()
-                h1=h-t                
-                a1=0.5*h1
-                a=8*(el.lb()*t/(h1*b))**2*(1+a1*s**3/(b*t**3))
-#            print a
-            if typ==1:
-                if typ_norm=='new':
-                    psi=self.psib(a,typ1,typ2,typ3)
-                else:
-                    psi=self.psib_old(a,typ1,typ2,typ3)                    
-            if typ==2:
-                if typ_norm=='new':                
-                    psi=self.psik(a, typ2, typ3)
-                else:
-                    psi=self.psik_old(a, typ2, typ3)                    
-            if pr.title2()=='prokat':
-                h_t=pr.h()
-            else:
-                h_t=pr.h()-pr.t()
-            phi1=psi*pr.jy()/pr.jx()*((h_t)/el.lb())**2*el.steel.e()/el.steel.ry()
-#            print psi,pr.jy()/pr.jx(), ((pr.h()-pr.t1())/el.lb())**2, el.steel.e()/el.steel.ry()
-            if pr.title()=='dvut':
-                if phi1<=0.85:
-                    phib=phi1
-                else:
-                    phib=0.68+0.21*phi1
-                    if phib>1:
-                        phib=1
-            if pr.title()=='shvel':
-                phib=0.7*phi1
-                if phib>1:
-                    phib=1  
-        if pr.title()=='korob':
-            phib=1
-        
-        return phib
-        
-        
-    def psib(self,a, typ1, typ2, typ3):
-
-        psi=10**(10)
-        if 0.1<=a and a<=40:
-            psi1=2.25+0.07*a
-        if 40<a and a<=400:
-            psi1=3.6+0.04*a-3.5*10**(-5)*a**2
-        
-
-        if typ1==1:
-            if 0.1<=a and a<=40:
-                if typ2==1 or typ2==2:
-                    if typ3==1:
-                        psi=1.75+0.09*a
-                    else:
-                        psi=5.05+0.09*a
-                if typ2==3:
-                    if typ3==1:
-                        psi=1.6+0.08*a
-                    else:
-                        psi=3.8+0.08*a
-            if 40<a and a<=400:
-                if typ2==1 or typ2==2:
-                    if typ3==1:
-                        psi=3.3+0.053*a-4.5*10**(-5)*a**2
-                    else:
-                        psi=6.6+0.053*a-4.5*10**(-5)*a**2
-                if typ2==3:
-                    if typ3==1:
-                        psi=3.15+0.04*a-2.7*10**(-5)*a**2
-                    else:
-                        psi=5.35+0.04*a-2.7*10**(-5)*a**2
-        if typ1==2:
-            psi=psi1
-        if typ1==3:
-            if typ2==1:
-                psi=1.75*psi1
-            if typ2==2:
-                if typ3==1:
-                    psi=1.14*psi1
-                if typ3==2:
-                    psi=1.6*psi1
-            if typ2==3:
-                if typ3==1:
-                    psi=1.14*psi1
-                if typ3==2:
-                    psi=1.3*psi1  
-        return psi
-    def psik(self, a, typ2, typ3):
-        psi=10**(10)
-        if typ2==4:
-            if typ3==1:
-                if 4<=a and a<=28:
-                    psi=6.2+0.08*a
-                if 28<=a and a<=100:
-                    psi=7.+0.05*a
-            if typ3==2:
-                if 4<=a and a<=28:
-                    psi=1+0.16*a
-                if 28<=a and a<=100:
-                    psi=4+0.05*a
-        if typ2==3:
-            if typ3==2:
-                psi=1.42*a**0.5
-        return psi
-
-#нет тестов 
-    def psib_old(self,a, typ1, typ2, typ3):
-        return self.psib(a,typ1, typ2, typ3)
-    def psik_old(self, a, typ2, typ3):
-        return self.psik_old(a, typ2, typ3)
 
 
     def phi_e(self, typ):

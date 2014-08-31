@@ -1401,6 +1401,12 @@ class shvel(profiles_simple):
     def xa(self):
         return self.__xa
 
+    def aw(self):
+        return self.s()*(self.h()-self.t()*2)
+    def af(self):
+        return self.b()*self.t()
+    def afaw(self):
+        return self.af()/self.aw()
 
     def hef(self):
 #        return self.h()-self.t1()*2-self.t2()*2-0
