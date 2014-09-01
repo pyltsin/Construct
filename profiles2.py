@@ -37,7 +37,7 @@ def profiles_infile(files, number,typ):
 class  profiles_simple(object):
     def __init__(self, h=False, b=False\
     , s=False, t=False, r1=False, r2=False, a1=False, a2=False, x1=False\
-    , x2=False, y1=False, y2=False, r=False, r3=False, title2=''):
+    , x2=False, y1=False, y2=False, r=False, r3=False, title2='prokat'):
 
         self.__h=float(h)
         self.__b=float(b)
@@ -520,7 +520,7 @@ class dvut(profiles_simple):
 #    '8 - отнимаемый круговой уголок
 #    '12 - прибавляем круговой уголок
     def __init__(self, h=False, b=False\
-    , s=False, t=False, r1=False, r2=False, a1=False, title2='svar'):
+    , s=False, t=False, r1=False, r2=False, a1=False, title2='prokat'):
         super(dvut, self).__init__(h=h,b=b,s=s,t=t,r1=r1,r2=r2,a1=a1, title2=title2)
         self.solve()
     def input_data(self):

@@ -507,7 +507,7 @@ class snipn(normes):
         
                
     def phi_b_old(self, typ, typ1, typ2, typ3):
-        '''расчет устойчивости по СНиП - ПРОВЕРКИ НЕТ!!!
+        '''расчет устойчивости по СНиП 
         Профиля - двутавр, швеллер, короб
         Исходные данные:
             typ - 1- балка или 2-консоль
@@ -518,7 +518,7 @@ class snipn(normes):
 
         
     def phi_b(self, typ, typ1, typ2, typ3, typ4=1):
-        '''расчет устойчивости по СП - ПРОВЕРКИ НЕТ!!!
+        '''расчет устойчивости по СП
         Профиля - двутавр, швеллер, короб
         Исходные данные:
             typ - 1- балка или 2-консоль
@@ -526,55 +526,60 @@ class snipn(normes):
             typ2 - 1 - сосредоточенная нагрузка в центре, 2 - сосредоточенная в четверти, 3 - равномерная
             typ3 - 1 - нагрузка приложена к сжатому поясу, 2- к расстянутому
             typ4 - 1-расчет по СП!!!'''
-            
-        pr=self.element.profile
-        el=self.element
-        if pr.title()=='dvut' or pr.title()=='shvel':
-            if pr.title2()=='prokat':
-                if typ4==1:
-                    jt=self.pr.jt_sp()
-#                    print 'jt', jt
-                if typ4!=1:
-                    jt=self.pr.jt()
-
-                    
-                a=1.54*jt/pr.jy()*(el.lb()/pr.h())**2
-#                print 'jy', pr.jy()
-            else:
-                h=self.pr.h()
-                t=self.pr.t()
-                s=self.pr.s()
-                b=self.pr.b()
-                h1=h-t                
-                a1=0.5*h1
-                a=8*(el.lb()*t/(h1*b))**2*(1+a1*s**3/(b*t**3))
-#            print a
-            if typ==1:
-                if typ4==1:
-                    psi=self.psib(a,typ1,typ2,typ3)
-                else:
-                    psi=self.psib_old(a,typ1,typ2,typ3)                    
-            if typ==2:
-                if typ4==1:
-                    psi=self.psik(a, typ2, typ3)
-                else:
-                    psi=self.psik_old(a, typ2, typ3)                    
-            if pr.title2()=='prokat':
-                h_t=pr.h()
-            else:
-                h_t=pr.h()-pr.t()
-            phi1=psi*pr.jy()/pr.jx()*((h_t)/el.lb())**2*el.steel.e()/el.steel.ry()
+        if  self.element.lb()!=0:
+            pr=self.element.profile
+            el=self.element
             if pr.title()=='dvut' or pr.title()=='shvel':
-                if pr.title()=='shvel':
-                    phi1=0.7*phi1
-                if phi1<=0.85:
-                    phib=phi1
+    
+                if pr.title2()=='prokat':
+                    print 'tut1'
+                    if typ4==1:
+                        jt=self.pr.jt_sp()
+    #                    print 'jt', jt
+                    if typ4!=1:
+                        jt=self.pr.jt()
+    
+                        
+                    a=1.54*jt/pr.jy()*(el.lb()/pr.h())**2
+                    print jt, pr.jy(),el.lb(), pr.h()
+    #                print 'jy', pr.jy()
                 else:
-                    phib=0.68+0.21*phi1
-                    if phib>1:
-                        phib=1
+    #                print 'tut1'
+                    h=self.pr.h()
+                    t=self.pr.t()
+                    s=self.pr.s()
+                    b=self.pr.b()
+                    h1=h-t                
+                    a1=0.5*h1
+                    a=8*(el.lb()*t/(h1*b))**2*(1+a1*s**3/(b*t**3))
+            
+    #            print a
+                if typ==1:
+                    if typ4==1:
+                        psi=self.psib(a,typ1,typ2,typ3)
+                    else:
+                        psi=self.psib_old(a,typ1,typ2,typ3)                    
+                if typ==2:
+                    if typ4==1:
+                        psi=self.psik(a, typ2, typ3)
+                    else:
+                        psi=self.psik_old(a, typ2, typ3)                    
+                if pr.title2()=='prokat':
+                    h_t=pr.h()
+                else:
+                    h_t=pr.h()-pr.t()
+                phi1=psi*pr.jy()/pr.jx()*((h_t)/el.lb())**2*el.steel.e()/el.steel.ry()
+                if pr.title()=='dvut' or pr.title()=='shvel':
+                    if pr.title()=='shvel':
+                        phi1=0.7*phi1
+                    if phi1<=0.85:
+                        phib=phi1
+                    else:
+                        phib=0.68+0.21*phi1
+                        if phib>1:
+                            phib=1
 
-        if pr.title()=='korob':
+        if pr.title()=='korob' or el.lb()==0:
             phib=1
             phi1=1
             psi=1
@@ -610,7 +615,7 @@ class snipn(normes):
                 if typ2==3:
                     if typ3==1:
                         psi=1.6+0.08*a
-                        print 'tut3'
+#                        print 'tut3'
 
                     else:
                         psi=3.8+0.08*a
@@ -1505,7 +1510,7 @@ class snipn(normes):
         return check, lambda_uf, lambda_f
         
 class ferma(snipn):
-    """Класс для расчета элементов ферм по СНиП и СП - нет проверки"""
+    """Класс для расчета элементов ферм по СНиП и СП """
     def add_data(self):
         """Дополнительные данные для расчета"""
 
@@ -1807,3 +1812,184 @@ class ferma(snipn):
             nmin=n2
         return nmin                            
         
+class beam(snipn):
+    """Класс для расчета элементов балок по СНиП и СП в упругой области """
+    def add_data(self):
+        """Дополнительные данные для расчета"""
+
+        lst=[[u'yc',[0.1,1.]]
+        , [u'ycи',[0.1,0.95]]
+        ,[u'lfact, см', [0., 3000.]]
+        ,[u'mu_b',[0.,1.]]
+        ,[u'Тип:',[u'Балка',u'Консоль']]
+        ,[u'Кол-во закр. (только для балки; для консоли - закр. нет):',[u'Нет',u'1',u'2 и больше']]
+        ,[u'Тип нагрузки:',[u'Соср. в сер. (для консоли - на конце)',u'Соср. в четвер. (для консоли - на конце)',u'Равномер.']]
+
+        ]
+        return  lst   
+    def output_data_all_snip_old(self):
+        '''неиспр'''
+        dat=self.output_data()
+        dat_glob=self.output_data_snip_old_global()
+        dat_local=self.output_data_snip_old_local()
+        lst=dat_glob+dat+dat_local
+        return lst
+
+    def output_data_all_snip_n(self):
+        '''неиспр'''
+
+        dat=self.output_data()
+        dat_glob=self.output_data_snip_n_global()
+        dat_local=self.output_data_snip_n_local()
+        lst=dat_glob+dat+dat_local
+        return lst
+
+        
+    def output_data(self):
+        """Выходные данные сечения"""
+        lst=[]
+        #Исходные данные:
+        
+        a=self.pr.a()
+        commenta=u'A, см2'
+        
+        jx=self.pr.jx()
+        commentjx=u'Jx, см4'
+
+        jy=self.pr.jy()
+        commentjy=u'Jy, см4'
+
+        wx=self.pr.wx()
+        commentwx=u'Wx, см3'
+
+        wy=self.pr.wy()
+        commentwy=u'Wy, см3'
+
+
+        s2x=self.pr.s2x()
+        comments2x=u'S2x, см3'
+
+        s2y=self.pr.s2y()
+        comments2y=u'S2y, см3'
+        
+        ry=self.element.steel.ry()
+        commentry=u'Ry, кг/см2'        
+        lst=[
+             [ry, commentry],
+             [a, commenta],
+             [jx, commentjx],
+             [jy, commentjy],
+             [wx, commentwx],
+             [wy, commentwy],
+
+             [s2x, comments2x],
+             [s2y, comments2y]]
+        return lst
+        
+    def output_data_snip_old_global(self,typ,typ1,typ2,typ3):
+        """Выходные основные расчетные данные по СНиП"""
+        
+        lst=[]        
+        #Расчет на расстяжение
+#        print self.pr.a(),self.element.steel.ry(),self.yc1()
+        mx_ult=self.mx_old()
+        commentmx=u'Mx=Wx*Ry*yc (п.5.12.(28)), кг*м'         
+
+        my_ult=self.my_old()
+        commentmy=u'My=Wy*Ry*yc (п.5.12.(28)), кг*м'         
+
+        
+        phi_b=self.phi_b_old(typ,typ1,typ2,typ3) 
+        
+        mxb=self.mxb_old(typ,typ1,typ2,typ3)
+        commentmxb=u'My=Wy*Ry*ycb*phi (п.5.15.(34)), кг*м'         
+        
+        cxcy=self.cxcyn_old()
+        
+        
+        qx_ult=self.qx_old()
+        qy_ult=self.qy_old()
+
+        lst=[[mx_ult, commentmx],
+             [my_ult, commentmy],
+             [mxb, commentmxb],
+             [phi_b[0], u'phi_b (прил. 7)'],
+             [phi_b[1], u'phi_1 (прил. 7)'],
+             [phi_b[2], u'psi (прил. 7)'],
+             [phi_b[3], u'a (прил. 7)'],
+             [cxcy[0],u'cx (табл. 66)'],
+
+             [cxcy[1],u'cy (табл. 66)'],
+             [qx_ult,u'Qxult (п.5.12.(29)), кг'],
+             [qy_ult,u'Qxult (п.5.12.(29)), кг']]
+
+
+
+        '''добавить расчет поперечки'''
+        commentqx=u'Q_ficmaxx (п.5.8.(23)), кг'
+        commentqy=u'Q_ficmaxy (п.5.8.(23)), кг'
+
+             
+        if self.element.lx()<self.element.lfact() :
+            q_ficmaxx=self.q_fic_old(n3,phix_old)
+            lst.append([q_ficmaxx, commentqx])
+        else:
+            lst.append(['-', commentqx])
+            
+        if self.element.ly()<self.element.lfact() :
+            q_ficmaxy=self.q_fic_old(n3,phiy_old)
+            lst.append([q_ficmaxy, commentqy])
+        else:
+            lst.append(['-', commentqy])
+            
+    
+        return lst
+
+    def output_data_snip_n_global(self):
+        """Выходные основные расчетные данные по СП"""
+
+
+                
+    def output_data_snip_old_local(self):
+        """Выходные расчетные данные по местной потери устойчивости по СНиП ИСПРАВИТЬ!!!!!"""
+        lst=[] 
+        check_w, lambda_uw, lambda_w=self.local_buckl_h_n_old()
+        check_f, lambda_uf, lambda_f=self.local_buckl_b_n_old()
+        lst=[[check_w,u'К.исп. мест. уст. стенки'],
+             [lambda_uw, u'lambda_uw (п.7.14., п.7.23.)'],
+             [lambda_w, 'lambda_w'],
+             [check_f, u'К.исп. мест. уст. полки'],
+             [lambda_uf, u'lambda_uf (п.7.14., п.7.23.)'],
+             [lambda_f, 'lambda_f']]        
+        return lst
+    def output_data_snip_n_local(self):
+        """Выходные расчетные данные по местной потери устойчивости по СП"""
+      
+
+    def mxb_old(self,typ,typ1,typ2,typ3):
+        """максимальная несущая способность (изгиб Х) по СНиП"""
+        mxb=self.pr.wx()*self.element.steel.ry()*self.yc1()*self.phi_b_old(typ,typ1,typ2,typ3) [0]
+        return mxb
+
+
+    def mx_old(self):
+        """максимальная несущая способность (изгиб Х) по СНиП"""
+        mx=self.pr.wx()*self.element.steel.ry()*self.yc1()
+        return mx
+
+    def my_old(self):
+        """максимальная несущая способность (изгиб Х) по СНиП"""
+        my=self.pr.wy()*self.element.steel.ry()*self.yc1()
+        return mx
+
+    def qx_old(self):
+        if self.pr.title=='dvut' or self.pr.title=='shvel':
+            qx=self.element.steel.rs()*self.yc1()*self.pr.t()*self.pr.jx()/self.pr.s2x()
+        elif self.pr.title=='korob':
+            qx=self.element.steel.rs()*self.yc1()*(self.pr.t()*2)*self.pr.jx()/self.pr.s2x()
+        return qx
+
+    def qy_old(self):
+        qy=self.element.steel.rs()*self.yc1()*(self.pr.t()*2)*self.pr.jy()/self.pr.s2y()
+        return qy
+

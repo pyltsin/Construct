@@ -2717,7 +2717,7 @@ class Test_code_ferma(unittest.TestCase):
         
         
     def test_phib(self):
-        pr1=dvut(h=520, b=200, t=20, s=8, r1=0, r2=0, a1=0)
+        pr1=dvut(h=520, b=200, t=20, s=8, r1=0, r2=0, a1=0, title2='svar')
 
         s=steel_snip20107n('C245',pr1)
         el=elements(s, pr1, mux=7000, muy=700, mub=8000, lfact=1) 
@@ -2773,7 +2773,7 @@ class Test_code_ferma(unittest.TestCase):
 
 
 #двутавр, старый снип        
-        pr1=dvut(h=52, b=20, t=2, s=.8, r1=0, r2=0, a1=0)
+        pr1=dvut(h=52, b=20, t=2, s=.8, r1=0, r2=0, a1=0, title2='svar')
 
         s=steel_snip1987('C255',pr1, dim=1)
         el=elements(s, pr1, mux=7000, muy=700, mub=800, lfact=1) 
@@ -2782,6 +2782,18 @@ class Test_code_ferma(unittest.TestCase):
         test=sol.phi_b_old(1,1,3,1)[0]
         check=0.525
         self.assertLess(abs(test-check)/check,0.001) 
+
+
+        pr1=dvut(39.6,	19.9,	0.7,	1.1,	1.6,	0.0,	0.0)
+
+        s=steel_snip1987('C255',pr1, dim=1)
+        el=elements(s, pr1, mux=7000, muy=700, mub=800, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1) 
+        test=sol.phi_b_old(1,1,3,1)[0]
+        check=0.393
+        self.assertLess(abs(test-check)/check,0.003) 
+
 
 #короб, старый снип        
 
@@ -2794,7 +2806,30 @@ class Test_code_ferma(unittest.TestCase):
         test=sol.phi_b_old(1,1,3,1)
         self.assertEqual(test, (1,1,1,0))
 
-# швеллер (pji и phi2, it и itsp)
+# швеллер 
+        pr1=shvel(30.0	,10.0,	0.65,	1.1,	1.2,	0.5,	0.0,	0.1)
+
+        s=steel_snip1987('C255',pr1, dim=1)
+        el=elements(s, pr1, mux=7000, muy=700, mub=700, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1) 
+        check=0.2622
+        test=sol.phi_b_old(1,1,3,1)
+        
+        self.assertLess(abs(test[0]-check)/check,0.003) 
+
+
+        pr1=shvel(30.0	,10.0,	0.65,	1.1,	1.2,	0.5,	0.0,	0.1)
+
+        s=steel_snip1987('C255',pr1, dim=1)
+        el=elements(s, pr1, mux=7000, muy=700, mub=700, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1) 
+        check=0.245
+        test=sol.phi_b(1,1,3,1)
+        
+        self.assertLess(abs(test[0]-check)/check,0.003) 
+
 
         
         print 36
