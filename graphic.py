@@ -99,10 +99,7 @@ print sol.phi_n(1)[1]
 
 
 
-
-
-
-def phi_euro(lambda_, typ):
+def phi_euro_st(lambda_, typ):
     if typ=='a0':
         alpha=0.13
     elif typ=='a':
@@ -115,6 +112,28 @@ def phi_euro(lambda_, typ):
         alpha=0.76
         
     p=0.5*(1+alpha*(lambda_-0.2)+lambda_**2)
+    
+    x=1./(p+(p**2-lambda_**2)**0.5)
+    
+    if x>1:
+        x=1
+    
+    return x
+
+
+def phi_euro(lambda_, typ):
+    if typ=='a0':
+        alpha=0.17
+    elif typ=='a':
+        alpha=0.275
+    elif typ=='b':
+        alpha=0.34
+    elif typ=='c':
+        alpha=0.49
+    elif typ=='d':
+        alpha=0.76
+        
+    p=0.5*(1+alpha*(lambda_-0.4/3.14)+lambda_**2)
     
     x=1./(p+(p**2-lambda_**2)**0.5)
     
@@ -171,6 +190,27 @@ plt.plot(lambda_, yeb,'-.', label=u'EC b')
 plt.plot(lambda_, yec,'-.', label=u'EC c')
 plt.plot(lambda_, yed,'-.', label=u'EC d')
 
+'''построим эйлера/1,3:'''
+yel=[]
+for i in lambda_:
+    if 7.6/i**2>1:
+        yel.append(1)
+    else:
+        yel.append(7.6/i**2)
+        
+
+plt.plot(lambda_, yel,'-', label=u'Ncr/1.3')
+
+
+yel2=[]
+for i in lambda_:
+    if 7.6/i**2*1.3>1:
+        yel2.append(1)
+    else:
+        yel2.append(7.6*1.3/i**2)
+        
+
+plt.plot(lambda_, yel2,'-', label=u'Ncr')
 
 
 plt.legend()

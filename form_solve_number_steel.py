@@ -316,7 +316,7 @@ class MyWindow(QtGui.QWidget):
                 for j in range(self.output_table.rowCount()):
                     self.output_table.setItem(j, i, QtGui.QTableWidgetItem("1"))
                     if type(lst_gen[i][j][0])!=type(''):
-                        txt="%.3f"%(lst_gen[i][j][0])
+                        txt="%.2f"%(lst_gen[i][j][0])
                     else:
                         txt=lst_gen[i][j][0]
                     self.output_table.item(j,i).setText(txt)

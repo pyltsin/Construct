@@ -93,7 +93,7 @@ class snipn(normes):
     def yu(self):
         """Коэффициент надежности по материалу для Ru, принимается 1.3"""
         return 1.3
-    def phi_n(self, lambda_, typ=0):
+    def phi_n(self, lambda_, typ=0, typ_s=0):
         """Вычисление коэффициента продольной устойчивости по новому снипу.
         Реализованы сечения:
             - короб, труба
@@ -103,14 +103,17 @@ class snipn(normes):
             typ - направление плоскости (typ=1 - в плоскости стенки двутавра)
         Выходные данные: phi, тип сечения"""
         #typ = 1 - в плоскости стенки
-        if self.pr.title()=='korob' or self.pr.title()=='truba':       
-            typ_sec='a'
-        if self.pr.title()=='dvut' or self.pr.title()=='ugol_tavr_st_krest' :
-            typ_sec='b'
-        if self.pr.title()=='dvut' and    self.pr.h()>500 and typ==1:
-            typ_sec='a'
-        if self.pr.title()=='ugol_tavr_st_right' or self.pr.title()=='ugol_tavr_st_up':               
-            typ_sec='c'
+        if typ_s==0:
+            if self.pr.title()=='korob' or self.pr.title()=='truba':       
+                typ_sec='a'
+            if self.pr.title()=='dvut' or self.pr.title()=='ugol_tavr_st_krest' :
+                typ_sec='b'
+            if self.pr.title()=='dvut' and    self.pr.h()>500 and typ==1:
+                typ_sec='a'
+            if self.pr.title()=='ugol_tavr_st_right' or self.pr.title()=='ugol_tavr_st_up':               
+                typ_sec='c'
+        else:
+            typ_sec=typ_s
 
            
         if typ_sec=='a':
@@ -1811,9 +1814,12 @@ class ferma(snipn):
         else:
             nmin=n2
         return nmin                            
+
+
+
         
 class beam(snipn):
-    """Класс для расчета элементов балок по СНиП и СП в упругой области """
+    """Класс для расчета элементов балок по СНиП и СП в упругой области, НЕТ ПРОВЕРОК!!! """
     def add_data(self):
         """Дополнительные данные для расчета"""
 
@@ -1828,7 +1834,6 @@ class beam(snipn):
         ]
         return  lst   
     def output_data_all_snip_old(self):
-        '''неиспр'''
         dat=self.output_data()
         dat_glob=self.output_data_snip_old_global()
         dat_local=self.output_data_snip_old_local()
@@ -1890,8 +1895,7 @@ class beam(snipn):
         """Выходные основные расчетные данные по СНиП"""
         
         lst=[]        
-        #Расчет на расстяжение
-#        print self.pr.a(),self.element.steel.ry(),self.yc1()
+        
         mx_ult=self.mx_old()
         commentmx=u'Mx=Wx*Ry*yc (п.5.12.(28)), кг*м'         
 
@@ -1921,54 +1925,110 @@ class beam(snipn):
 
              [cxcy[1],u'cy (табл. 66)'],
              [qx_ult,u'Qxult (п.5.12.(29)), кг'],
-             [qy_ult,u'Qxult (п.5.12.(29)), кг']]
+             [qy_ult,u'Qyult (п.5.12.(29)), кг']]
 
 
 
-        '''добавить расчет поперечки'''
-        commentqx=u'Q_ficmaxx (п.5.8.(23)), кг'
-        commentqy=u'Q_ficmaxy (п.5.8.(23)), кг'
+        
+        commentq=u'Q_fic (п.5.8., 5.16.), кг'
 
              
-        if self.element.lx()<self.element.lfact() :
-            q_ficmaxx=self.q_fic_old(n3,phix_old)
-            lst.append([q_ficmaxx, commentqx])
+        if self.element.lb()<self.element.lfact() :
+            n3=(self.pr.b()*self.pr.t()+0.25*(self.pr.h()-2*self.pr.t())*self.pr.s())*self.element.steel.ry()
+            lambda_=self.element.lb()/(self.pr.b()/12.**0.5)*(self.element.steel.ry()/self.element.steel.e())**0.5            
+            phi=self.phi_n_old(lambda_)
+            q_fic=self.q_fic_old(n3,phi)
+            lst.append([q_fic, commentq])
         else:
-            lst.append(['-', commentqx])
+            lst.append(['-', commentq])
             
-        if self.element.ly()<self.element.lfact() :
-            q_ficmaxy=self.q_fic_old(n3,phiy_old)
-            lst.append([q_ficmaxy, commentqy])
-        else:
-            lst.append(['-', commentqy])
             
     
         return lst
 
-    def output_data_snip_n_global(self):
-        """Выходные основные расчетные данные по СП"""
+    def output_data_snip_n_global(self,typ,typ1,typ2,typ3):
+        """Выходные основные расчетные данные по СП"""        
+        lst=[]        
+        
+        mx_ult=self.mx()
+        commentmx=u'Mx=Wx*Ry*yc (п.8.21.), кг*м'         
 
+        my_ult=self.my()
+        commentmy=u'My=Wy*Ry*yc (п.8.21.), кг*м'         
+
+        
+        phi_b=self.phi_b(typ,typ1,typ2,typ3) 
+        
+        mxb=self.mxb(typ,typ1,typ2,typ3)
+        commentmxb=u'My=Wy*Ry*ycb*phi (п.8.4.1.), кг*м'         
+        
+        cxcy=self.cxcyn()
+        
+        
+        qx_ult=self.qx()
+        qy_ult=self.qy()
+
+        lst=[[mx_ult, commentmx],
+             [my_ult, commentmy],
+             [mxb, commentmxb],
+             [phi_b[0], u'phi_b (прил. Ж)'],
+             [phi_b[1], u'phi_1 (прил. Ж)'],
+             [phi_b[2], u'psi (прил. Ж)'],
+             [phi_b[3], u'a (прил. Ж)'],
+             [cxcy[0],u'cx (табл. Е.1.)'],
+
+             [cxcy[1],u'cy (табл. Е.1.)'],
+             [qx_ult,u'Qxult (п.8.21.), кг'],
+             [qy_ult,u'Qyult (п.8.21.), кг']]
+
+
+        
+        commentq=u'Q_fic (п.5.8., 5.16.), кг'
+
+             
+        if self.element.lb()<self.element.lfact() :
+            n3=(self.pr.b()*self.pr.t()+0.25*(self.pr.h()-2*self.pr.t())*self.pr.s())*self.element.steel.ry()
+            lambda_=self.element.lb()/(self.pr.b()/12.**0.5)*(self.element.steel.ry()/self.element.steel.e())**0.5            
+            phi=self.phi_n(lambda_, typ=0, typ_s='b')
+            q_fic=self.q_fic(n3,phi)
+            lst.append([q_fic, commentq])
+        else:
+            lst.append(['-', commentq])
+            
+            
+    
+        return lst
 
                 
     def output_data_snip_old_local(self):
-        """Выходные расчетные данные по местной потери устойчивости по СНиП ИСПРАВИТЬ!!!!!"""
+        """Выходные расчетные данные по местной потери устойчивости по СНиП"""
         lst=[] 
-        check_w, lambda_uw, lambda_w=self.local_buckl_h_n_old()
-        check_f, lambda_uf, lambda_f=self.local_buckl_b_n_old()
-        lst=[[check_w,u'К.исп. мест. уст. стенки'],
-             [lambda_uw, u'lambda_uw (п.7.14., п.7.23.)'],
+        check_w, lambda_uw, lambda_w=self.local_buckl_h_m_old(typ1=1, typ2=1)
+        check_f, lambda_uf, lambda_f=self.local_buckl_b_m_old()
+        lst=[[check_w,u'К.исп. мест. уст. стенки (без подв. нагрузки)'],
+             [lambda_uw, u'lambda_uw (п.7.10., п.7.3.)'],
              [lambda_w, 'lambda_w'],
-             [check_f, u'К.исп. мест. уст. полки'],
-             [lambda_uf, u'lambda_uf (п.7.14., п.7.23.)'],
+             [check_f, u'К.исп. мест. уст. полки (для пр. трубы - по СП)'],
+             [lambda_uf, u'lambda_uf (п.7.24.)'],
              [lambda_f, 'lambda_f']]        
         return lst
+        
     def output_data_snip_n_local(self):
         """Выходные расчетные данные по местной потери устойчивости по СП"""
-      
+        lst=[] 
+        check_w, lambda_uw, lambda_w=self.local_buckl_h_m(typ1=1, typ2=1)
+        check_f, lambda_uf, lambda_f=self.local_buckl_b_m()
+        lst=[[check_w,u'К.исп. мест. уст. стенки'],
+             [lambda_uw, u'lambda_uw (п.8.5.9.)'],
+             [lambda_w, 'lambda_w'],
+             [check_f, u'К.исп. мест. уст. полки'],
+             [lambda_uf, u'lambda_uf (п.8.5.18.)'],
+             [lambda_f, 'lambda_f']]        
+        return lst      
 
     def mxb_old(self,typ,typ1,typ2,typ3):
-        """максимальная несущая способность (изгиб Х) по СНиП"""
-        mxb=self.pr.wx()*self.element.steel.ry()*self.yc1()*self.phi_b_old(typ,typ1,typ2,typ3) [0]
+        """максимальная несущая способность устойчивость (изгиб Х) по СНиП"""
+        mxb=self.pr.wx()*self.element.steel.ry()*self.ycb()*self.phi_b_old(typ,typ1,typ2,typ3) [0]
         return mxb
 
 
@@ -1978,9 +2038,9 @@ class beam(snipn):
         return mx
 
     def my_old(self):
-        """максимальная несущая способность (изгиб Х) по СНиП"""
+        """максимальная несущая способность (изгиб Y) по СНиП"""
         my=self.pr.wy()*self.element.steel.ry()*self.yc1()
-        return mx
+        return my
 
     def qx_old(self):
         if self.pr.title=='dvut' or self.pr.title=='shvel':
@@ -1993,3 +2053,25 @@ class beam(snipn):
         qy=self.element.steel.rs()*self.yc1()*(self.pr.t()*2)*self.pr.jy()/self.pr.s2y()
         return qy
 
+
+
+
+    def mxb(self,typ,typ1,typ2,typ3):
+        """максимальная несущая способность устойчивость (изгиб Х) по СП"""
+        mxb=self.pr.wx()*self.element.steel.ry()*self.ycb()*self.phi_b(typ,typ1,typ2,typ3) [0]
+        return mxb
+
+
+    def mx(self):
+        """максимальная несущая способность (изгиб Х) по СП"""
+        return self.mx_old()
+
+    def my(self):
+        """максимальная несущая способность (изгиб Y) по СП"""
+        return self.my_old()
+
+    def qx(self):
+        return self.qx_old()
+
+    def qy(self):
+        return self.qy_old()
