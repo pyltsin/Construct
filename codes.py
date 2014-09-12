@@ -473,6 +473,7 @@ class snipn(normes):
             n=1
             cy=1.6
             afaw=1/self.pr.afaw()/2
+            cx=1
             if 0.5<=afaw and afaw<=1:
                 cx=(1.12-1.07)/(1-0.5)*(afaw-0.5)+1.07
             if 1<=afaw and afaw<=2:
@@ -535,7 +536,7 @@ class snipn(normes):
             if pr.title()=='dvut' or pr.title()=='shvel':
     
                 if pr.title2()=='prokat':
-                    print 'tut1'
+#                    print 'tut1'
                     if typ4==1:
                         jt=self.pr.jt_sp()
     #                    print 'jt', jt
@@ -544,7 +545,7 @@ class snipn(normes):
     
                         
                     a=1.54*jt/pr.jy()*(el.lb()/pr.h())**2
-                    print jt, pr.jy(),el.lb(), pr.h()
+#                    print jt, pr.jy(),el.lb(), pr.h()
     #                print 'jy', pr.jy()
                 else:
     #                print 'tut1'
@@ -720,7 +721,7 @@ class snipn(normes):
             typ2 - 1 , 2 - сосредоточенная на конце, 3 - равномерная
             typ3 - 1 - нагрузка приложена к сжатому поясу, 2- к расстянутому'''
 
-        return self.psik_old(a, typ2, typ3)
+        return self.psik(a, typ2, typ3)
 
 
 
@@ -1824,27 +1825,27 @@ class beam(snipn):
         """Дополнительные данные для расчета"""
 
         lst=[[u'yc',[0.1,1.]]
-        , [u'ycи',[0.1,0.95]]
+        , [u'ycb',[0.1,0.95]]
         ,[u'lfact, см', [0., 3000.]]
         ,[u'mu_b',[0.,1.]]
         ,[u'Тип:',[u'Балка',u'Консоль']]
-        ,[u'Кол-во закр. (только для балки; для консоли - закр. нет):',[u'Нет',u'1',u'2 и больше']]
+        ,[u'Кол-во закр. (только для балки; для консоли - закр. нет):',[u'Нет',u'2 и больше',u'одно по центру']]
         ,[u'Тип нагрузки:',[u'Соср. в сер. (для консоли - на конце)',u'Соср. в четвер. (для консоли - на конце)',u'Равномер.']]
+        ,[u'Нагрузка приложена к поясу:',[u'сжатому',u'расстянутому']]
 
         ]
         return  lst   
-    def output_data_all_snip_old(self):
+    def output_data_all_snip_old(self,typ,typ1,typ2,typ3):
         dat=self.output_data()
-        dat_glob=self.output_data_snip_old_global()
+        dat_glob=self.output_data_snip_old_global(typ,typ1,typ2,typ3)
         dat_local=self.output_data_snip_old_local()
         lst=dat_glob+dat+dat_local
         return lst
 
-    def output_data_all_snip_n(self):
-        '''неиспр'''
+    def output_data_all_snip_n(self,typ,typ1,typ2,typ3):
 
         dat=self.output_data()
-        dat_glob=self.output_data_snip_n_global()
+        dat_glob=self.output_data_snip_n_global(typ,typ1,typ2,typ3)
         dat_local=self.output_data_snip_n_local()
         lst=dat_glob+dat+dat_local
         return lst
@@ -1893,6 +1894,12 @@ class beam(snipn):
         
     def output_data_snip_old_global(self,typ,typ1,typ2,typ3):
         """Выходные основные расчетные данные по СНиП"""
+
+        if self.output_data_snip_old_local()[0][1]>self.output_data_snip_old_local()[3][1]:
+            fact_local=self.output_data_snip_old_local()[0]
+        else:
+            fact_local=self.output_data_snip_old_local()[3]
+
         
         lst=[]        
         
@@ -1917,6 +1924,7 @@ class beam(snipn):
         lst=[[mx_ult, commentmx],
              [my_ult, commentmy],
              [mxb, commentmxb],
+             fact_local,
              [phi_b[0], u'phi_b (прил. 7)'],
              [phi_b[1], u'phi_1 (прил. 7)'],
              [phi_b[2], u'psi (прил. 7)'],
@@ -1948,6 +1956,14 @@ class beam(snipn):
 
     def output_data_snip_n_global(self,typ,typ1,typ2,typ3):
         """Выходные основные расчетные данные по СП"""        
+
+
+        if self.output_data_snip_n_local()[0][1]>self.output_data_snip_n_local()[3][1]:
+            fact_local=self.output_data_snip_n_local()[0]
+        else:
+            fact_local=self.output_data_snip_n_local()[3]
+
+
         lst=[]        
         
         mx_ult=self.mx()
@@ -1971,6 +1987,7 @@ class beam(snipn):
         lst=[[mx_ult, commentmx],
              [my_ult, commentmy],
              [mxb, commentmxb],
+             fact_local,
              [phi_b[0], u'phi_b (прил. Ж)'],
              [phi_b[1], u'phi_1 (прил. Ж)'],
              [phi_b[2], u'psi (прил. Ж)'],
@@ -2028,24 +2045,24 @@ class beam(snipn):
 
     def mxb_old(self,typ,typ1,typ2,typ3):
         """максимальная несущая способность устойчивость (изгиб Х) по СНиП"""
-        mxb=self.pr.wx()*self.element.steel.ry()*self.ycb()*self.phi_b_old(typ,typ1,typ2,typ3) [0]
+        mxb=self.pr.wx()*self.element.steel.ry()*self.ycb()*self.phi_b_old(typ,typ1,typ2,typ3) [0]/100.
         return mxb
 
 
     def mx_old(self):
         """максимальная несущая способность (изгиб Х) по СНиП"""
-        mx=self.pr.wx()*self.element.steel.ry()*self.yc1()
+        mx=self.pr.wx()*self.element.steel.ry()*self.yc1()/100.
         return mx
 
     def my_old(self):
         """максимальная несущая способность (изгиб Y) по СНиП"""
-        my=self.pr.wy()*self.element.steel.ry()*self.yc1()
+        my=self.pr.wy()*self.element.steel.ry()*self.yc1()/100.
         return my
 
     def qx_old(self):
-        if self.pr.title=='dvut' or self.pr.title=='shvel':
+        if self.pr.title()=='dvut' or self.pr.title()=='shvel':
             qx=self.element.steel.rs()*self.yc1()*self.pr.t()*self.pr.jx()/self.pr.s2x()
-        elif self.pr.title=='korob':
+        elif self.pr.title()=='korob':
             qx=self.element.steel.rs()*self.yc1()*(self.pr.t()*2)*self.pr.jx()/self.pr.s2x()
         return qx
 

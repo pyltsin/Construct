@@ -21,7 +21,7 @@ class MyWindow(QtGui.QWidget):
         self.basa=BasaSort()
 
 #Загрузка и установка рассчитываемых типов
-        self.list_type_element=[u'Ферма']
+        self.list_type_element=[u'Ферма', u'Балка']
 #        self.list_type_element=[u'Ферма',u'Балка']
 
         self.list_code=self.basa.list_code()
@@ -88,6 +88,7 @@ class MyWindow(QtGui.QWidget):
         copy_past(e, [window.input_table], [window.output_table], window)
 
     def toWord(self):
+        '''импорт в ворд'''
         try:
             lst=[u'Расчет сечений', self.type_element, self.type_section
             , self.type_code, self.input_table, self.output_table]
@@ -174,6 +175,12 @@ class MyWindow(QtGui.QWidget):
             self.combobox_sort=[]
             self.combobox_num_sect=[]
             self.combobox_steel=[]
+            
+            self.combobox_buckl_typ=[]
+            self.combobox_buckl_fix=[]
+            self.combobox_buckl_load=[]
+            self.combobox_buckl_place=[]
+            
             for i in range(current_count):
                 self.load_table_combobox(i)
                 
@@ -188,7 +195,16 @@ class MyWindow(QtGui.QWidget):
             for i in range(self.flag_current_count,current_count,-1):
                 self.combobox_sort.pop(i-1)
                 self.combobox_num_sect.pop(i-1)
-                self.combobox_steel.pop(i-1)               
+                self.combobox_steel.pop(i-1) 
+
+                if current_type_element==u'Балка':
+
+                    self.combobox_buckl_typ.pop(i-1)
+                    self.combobox_buckl_fix.pop(i-1)
+                    self.combobox_buckl_load.pop(i-1) 
+                    self.combobox_buckl_place.pop(i-1) 
+    
+                    
             self.flag_current_count=current_count            
 
 #обнуление данных
@@ -239,7 +255,31 @@ class MyWindow(QtGui.QWidget):
         self.load_combobox(self.combobox_steel[i], lst_steel)
 
         self.input_table.setCellWidget(3,i,self.combobox_steel[i]) 
-                
+#Только для балок
+
+        if self.type_element.currentText()==u'Балка':
+            self.combobox_buckl_typ.append(QtGui.QComboBox())
+            self.combobox_buckl_fix.append(QtGui.QComboBox())
+            self.combobox_buckl_load.append(QtGui.QComboBox())
+            self.combobox_buckl_place.append(QtGui.QComboBox())
+            
+            lst1=self.data_lst[4][1]
+            lst2=self.data_lst[5][1]
+            lst3=self.data_lst[6][1]
+            lst4=self.data_lst[7][1]
+
+            self.load_combobox(self.combobox_buckl_typ[i], lst1)
+            self.input_table.setCellWidget(8,i,self.combobox_buckl_typ[i])
+
+            self.load_combobox(self.combobox_buckl_fix[i], lst2)
+            self.input_table.setCellWidget(9,i,self.combobox_buckl_fix[i])
+
+            self.load_combobox(self.combobox_buckl_load[i], lst3)
+            self.input_table.setCellWidget(10,i,self.combobox_buckl_load[i])
+
+            self.load_combobox(self.combobox_buckl_place[i], lst4)
+            self.input_table.setCellWidget(11,i,self.combobox_buckl_place[i])
+                    
     def change_column_table(self, i):
         self.input_table.setColumnCount(i)
         self.load_input_table()
@@ -254,6 +294,7 @@ class MyWindow(QtGui.QWidget):
     def solve(self):
 #сбор исходных данных
         class error_data():pass
+            
         current_code=self.type_code.currentText()
         current_count=self.number.value()
         current_type_element=self.type_element.currentText()
@@ -283,17 +324,24 @@ class MyWindow(QtGui.QWidget):
                         else:
                             num=self.input_table.item(j,i).text()
                             num=float(num)
+                            
 #                            print j
 #                            print self.data_lst[j-sdv][1][0], self.data_lst[j-sdv][1][0], sdv, num
-                            if j>=sdv and self.data_lst[j-sdv][1][0]<num and self.data_lst[j-sdv][1][1]>num:
+                            
+                            if j>=sdv and self.data_lst[j-sdv][1][0]<=num and self.data_lst[j-sdv][1][1]>=num:
                                 lst.append(num)
                             elif j<sdv:
                                 lst.append(num)                                                        
                             else:
                                 raise error_data()
                     else:
-                        wid=self.input_table.cellWidget(j,i)
-                        lst.append(wid.currentText())
+                        if j<4:
+                            wid=self.input_table.cellWidget(j,i)
+                            lst.append(wid.currentText())
+                        else:
+                            wid=self.input_table.cellWidget(j,i)
+                            lst.append(wid.currentIndex()+1)
+                            
     
     
                 current_gost=lst[1]

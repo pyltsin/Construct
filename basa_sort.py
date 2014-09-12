@@ -88,6 +88,8 @@ class BasaSort(object):
 
         if typ==self.__list_elements[0][0]:
             sol=codes.ferma(el,forc,1)
+        elif typ==self.__list_elements[1][0]:
+            sol=codes.beam(el,forc,[1,1])
         
         return sol.add_data()
     def output_simple(self, code, type_element, typ_sec, gost, num_sect, stl, inp):
@@ -152,11 +154,24 @@ class BasaSort(object):
             el=codes.elements(s, pr, mux=inp[-2], muy=inp[-1], lfact=inp[-3]) 
 #            print inp[-1],inp[-2]
             sol=codes.ferma(el,forc,[inp[-5],inp[-4]])
+
+            if code==QtCore.QString(self.__list_code[0]):
+                out=sol.output_data_all_snip_old()
+            elif code==QtCore.QString(self.__list_code[1]):
+                out=sol.output_data_all_snip_n()
+
+
+        elif  type_element== QtCore.QString(self.__list_elements[1][0]    ):
+            el=codes.elements(s, pr, mub=inp[-5], lfact=inp[-6]) 
+#            print inp[-1],inp[-2]
+            sol=codes.beam(el,forc,yc=[inp[-8]],ycb=inp[-7])
+
+            if code==QtCore.QString(self.__list_code[0]):
+                out=sol.output_data_all_snip_old(inp[-4],inp[-3],inp[-2],inp[-1])
+            elif code==QtCore.QString(self.__list_code[1]):
+                out=sol.output_data_all_snip_n(inp[-4],inp[-3],inp[-2],inp[-1])
+    
         
-        if code==QtCore.QString(self.__list_code[0]):
-            out=sol.output_data_all_snip_old()
-        elif code==QtCore.QString(self.__list_code[1]):
-            out=sol.output_data_all_snip_n()
         
         return out
 
