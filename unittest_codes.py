@@ -2410,7 +2410,10 @@ class Test_code_ferma(unittest.TestCase):
         res=(6.3-0.6-1.)/0.6*(230*100/9.81/2.1/10**6)**0.5
         self.assertLess(abs(un-res)/res,0.003)  
         
-        print 30        
+        print 30    
+        
+        
+class Test_code_beam(unittest.TestCase):
 
     def test_local_buckl_h_m(self):
         pr=dvut(h=1070, b=240, t=10, s=8, r1=0, r2=0, a1=0)
@@ -2467,6 +2470,9 @@ class Test_code_ferma(unittest.TestCase):
         self.assertLess(abs(sol.local_buckl_h_m_old(2,1)[1]-3.5)/3.2,0.001)
         self.assertLess(abs(sol.local_buckl_h_m_old(2,2)[1]-2.5)/2.2,0.001)
 
+        print 32   
+
+
     def test_local_buckl_b_m(self):
 
         pr1=truba_pryam(h=8,b=12,t=0.6, r2=1.2, r1=0.6)
@@ -2511,7 +2517,7 @@ class Test_code_ferma(unittest.TestCase):
         self.assertLess(abs(test[2]-l)/l,0.0001)        
 
         
-        print 32  
+        print 33  
 
     def test_local_buckl_b_m_old(self):
 
@@ -2557,7 +2563,7 @@ class Test_code_ferma(unittest.TestCase):
         self.assertLess(abs(test[2]-l)/l,0.0001)        
 
         
-        print 33  
+        print 34  
 
     def test_cxcyn(self):
 
@@ -2636,9 +2642,9 @@ class Test_code_ferma(unittest.TestCase):
         self.assertLess(abs(sol.cxcyn()[2]-1.0)/1.0,0.0001)
 
         
-        print 34  
+        print 35  
 
-    def test_cxcyn(self):
+    def test_cxcyn2(self):
 #двутавр
         pr=dvut(h=1070, b=240, t=10, s=8, r1=0, r2=0, a1=0)
         s=steel_snip20107n('C345',pr)
@@ -2713,7 +2719,7 @@ class Test_code_ferma(unittest.TestCase):
         self.assertLess(abs(sol.cxcyn_old()[1]-1.6)/1.6,0.0001)  
         self.assertLess(abs(sol.cxcyn_old()[2]-1.0)/1.0,0.0001)
 
-        print 35  
+        print 36  
         
         
     def test_phib(self):
@@ -2830,9 +2836,794 @@ class Test_code_ferma(unittest.TestCase):
         
         self.assertLess(abs(test[0]-check)/check,0.003) 
 
+        print 37  
+
+
+    def test_output_data_all_snip_old(self):
+#двутавр
+        pr1=dvut(60.0,	19.0,1.2,1.78,2.0,0.8,	0.119428926)
+        s=steel_snip1987('C345',pr1, 1)
+        el=elements(s, pr1, mub=0.5, lfact=1000) 
+        forc=force(n=800*1000/9.81, mx=435*1000/9.81*100, my=435*1000/9.81*100)        
+        sol=beam(el,forc,[0.95],0.9)
+        check=sol.output_data_all_snip_old(1,1,3,1)
+
+        ry=315*100/9.81
+        wx=2560.3
+        wy=181.6
+        phi=0.479
+        e=2.1*10**6
+        rs=183*100/9.81
+        
+        un=check[0][0]
+        res=wx*ry*0.95/100.
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[1][0]
+        res=wy*ry*0.95/100.
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[2][0]
+        res=wx*ry*0.9/100.*phi
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[3][0]
+        res=1.69/3.2
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[4][0]
+        res=0.479
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[5][0]
+        res=0.479
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[6][0]
+        res=2.27
+        self.assertLess(abs(un-res)/res,0.0017)        
+
+        un=check[7][0]
+        res=8.313
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[8][0]
+        res=1.12
+        self.assertLess(abs(un-res)/res,0.002)        
+    
+        un=check[9][0]
+        res=1.47
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[10][0]
+        res=rs*0.95*76810*1.2/1491
+        self.assertLess(abs(un-res)/res,0.002)        
+
+
+        un=check[11][0]
+        res=rs*0.95*1725*1.78*2/156.05
+        self.assertLess(abs(un-res)/res,0.002)        
+    
+        un=check[12][0]
+        n=(1.78*19+1.2*(60-1.78*2)*0.25)*ry
+        phi=0.522
+        res=7.15*10**(-6)*(2330-e/ry)*n/phi
+        self.assertLess(abs(un-res)/res,0.007)        
+
+        un=check[13][0]
+        res=ry
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[14][0]
+        res=137.5
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[15][0]
+        res=76810
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[16][0]
+        res=1725
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[17][0]
+        res=2560
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[18][0]
+        res=181
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[19][0]
+        res=1490
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[20][0]
+        res=156
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[21][0]
+        res=1.69/3.2
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[22][0]
+        res=3.2
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[23][0]
+        res=1.69
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[24][0]
+        res=0.16/0.5
+        self.assertLess(abs(un-res)/res,0.02)        
+
+        un=check[25][0]
+        res=0.5
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[26][0]
+        res=0.16
+        self.assertLess(abs(un-res)/res,0.02)        
+
+
+    
+#Швеллер
+        pr1=shvel(24.0, 9.0, 0.56, 1.0,	1.05, 0.4, 0.0, 0.1)
+        s=steel_snip1987('C345',pr1, 1)
+        el=elements(s, pr1, mub=0.5, lfact=1000) 
+        forc=force(n=800*1000/9.81, mx=435*1000/9.81*100, my=435*1000/9.81*100)        
+        sol=beam(el,forc,[0.95],0.9)
+        check=sol.output_data_all_snip_old(1,1,3,1)
+
+        ry=335*100/9.81
+        wx=241.73
+        wy=31.56
+        e=2.06*10**6*10/9.81
+
+        phi1=(1.6 + 0.08*1.54*8.16/207.43*(500./24)**2)
+        at=1.54*8.16/207.43*(500./24.)**2
+        phi=phi1*207.43/2900.78*(24./500.)**2*e/ry*0.7
+        rs=ry*0.58
+        un=check[0][0]
+        res=wx*ry*0.95/100.
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[1][0]
+        res=wy*ry*0.95/100.
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[2][0]
+        res=wx*ry*0.9/100.*phi
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[3][0]
+        res=(24.-2.37*2)/0.56*(ry/e)**0.5/3.2
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[4][0]
+        res=phi
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[5][0]
+        res=phi
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[6][0]
+        res=phi1
+        self.assertLess(abs(un-res)/res,0.0017)        
+
+        un=check[7][0]
+        res=at
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[8][0]
+        res=1.09
+        self.assertLess(abs(un-res)/res,0.002)        
+    
+        un=check[9][0]
+        res=1.6
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[10][0]
+        res=rs*0.95*2901*0.56/138.76
+        self.assertLess(abs(un-res)/res,0.01)        
+
+
+        un=check[11][0]
+        res=rs*0.95*207*1.*2/34.14
+        self.assertLess(abs(un-res)/res,0.003)        
+    
+        un=check[12][0]
+        n=(9.0*1+0.56*(24-1.*2)*0.25)*ry
+        phi=0.13
+        res=7.15*10**(-6)*(2330-e/ry)*n/phi
+        self.assertLess(abs(un-res)/res,0.02)        
+
+        un=check[13][0]
+        res=ry
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[14][0]
+        res=30.64
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[15][0]
+        res=2901
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[16][0]
+        res=207.56
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[17][0]
+        res=241.76
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[18][0]
+        res=31.56
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[19][0]
+        res=138.76
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[20][0]
+        res=34.14
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[21][0]
+        res=(24.-2-1.05-0.1*(9./2-0.56))/0.56*(ry/e)**0.5/3.2
+        self.assertLess(abs(un-res)/res,0.08)        
+
+        un=check[22][0]
+        res=3.2
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[23][0]
+        res=(24.-2.37*2)/0.56*(ry/e)**0.5
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[24][0]
+        res=((9-0.56-1)/1.)*(ry/e)**0.5/0.5
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[25][0]
+        res=0.5
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[26][0]
+        res=((9-0.56-1)/1.)*(ry/e)**0.5
+        self.assertLess(abs(un-res)/res,0.01)        
+
+    
+#прямоугольник
+
+        pr1=truba_pryam(8.0,6.0,	0.3,	0.3,	0.6)
+        s=steel_snip1987('C345',pr1, 1)
+        el=elements(s, pr1, mub=0.5, lfact=1000) 
+        forc=force(n=800*1000/9.81, mx=435*1000/9.81*100, my=435*1000/9.81*100)        
+        sol=beam(el,forc,[0.95],0.9)
+        check=sol.output_data_all_snip_old(1,1,3,1)
+
+        ry=335*100/9.81
+        wx=17.5
+        wy=14.96
+        e=2.06*10**6
+
+        phi1=1
+        at=0
+        phi=1
+        rs=ry*0.58
+        
+        un=check[0][0]
+        res=wx*ry*0.95/100.
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[1][0]
+        res=wy*ry*0.95/100.
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[2][0]
+        res=wx*ry*0.9/100.*phi
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[3][0]
+        res=(8-0.3*2-0.3*2)/0.3*(ry/e)**0.5/3.2
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[4][0]
+        res=phi
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[5][0]
+        res=phi
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[6][0]
+        res=phi1
+        self.assertLess(abs(un-res)/res,0.0017)        
+
+        un=check[7][0]
+        res=at
+        self.assertEquals(un, res)        
+
+        un=check[8][0]
+        res=1.15
+        self.assertLess(abs(un-res)/res,0.005)        
+    
+        un=check[9][0]
+        res=1.10
+        self.assertLess(abs(un-res)/res,0.005)        
+
+        un=check[10][0]
+        res=rs*0.95*70.05*0.3*2/10.58
+        self.assertLess(abs(un-res)/res,0.01)        
+
+
+        un=check[11][0]
+        res=rs*0.95*44.89*0.3*2/8.69
+        self.assertLess(abs(un-res)/res,0.003)        
+    
+
+        un=check[12][0]
+        res=ry
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[13][0]
+        res=7.81
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[14][0]
+        res=70.05
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[15][0]
+        res=44.89
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[16][0]
+        res=17.51
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[17][0]
+        res=14.96
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[18][0]
+        res=10.58
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[19][0]
+        res=8.69
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[20][0]
+        res=(8-0.3*2-0.3*2)/0.3*(ry/e)**0.5/3.2
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[21][0]
+        res=3.2
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[22][0]
+        res=(8-0.3*2-0.3*2)/0.3*(ry/e)**0.5
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[23][0]
+        res=((6-0.3*2-0.3*2)/0.3)*(ry/e)**0.5/1.5
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[24][0]
+        res=1.5
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[25][0]
+        res=((6-0.3*2-0.3*2)/0.3)*(ry/e)**0.5
+        self.assertLess(abs(un-res)/res,0.01)        
+
+    
+    
+        print 38
 
         
-        print 36
+    def test_output_data_all_snip_n(self):
+#двутавр
+        pr1=dvut(60.0,	19.0,1.2,1.78,2.0,0.8,	0.119428926)
+        s=steel_snip20107n('C345',pr1, 1)
+        el=elements(s, pr1, mub=0.5, lfact=1000) 
+        forc=force(n=800*1000/9.81, mx=435*1000/9.81*100, my=435*1000/9.81*100)        
+        sol=beam(el,forc,[0.95],0.9)
+        check=sol.output_data_all_snip_n(1,1,3,1)
+
+        ry=320*100/9.81
+        wx=2560.3
+        wy=181.6
+        phi=0.44
+        e=2.1*10**6
+        rs=186*100/9.81
+        
+        un=check[0][0]
+        res=wx*ry*0.95/100.
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[1][0]
+        res=wy*ry*0.95/100.
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[2][0]
+        res=wx*ry*0.9/100.*phi
+        print un, res
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[3][0]
+        res=(60-4.09*2)/1.2*(ry/e)**.5/3.2
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[4][0]
+        res=0.44
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[5][0]
+        res=0.44
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[6][0]
+        res=2.116
+        self.assertLess(abs(un-res)/res,0.0017)        
+
+        un=check[7][0]
+        res=6.444
+        self.assertLess(abs(un-res)/res,0.006)        
+
+        un=check[8][0]
+        res=1.12
+        self.assertLess(abs(un-res)/res,0.002)        
+    
+        un=check[9][0]
+        res=1.47
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[10][0]
+        res=rs*0.95*76810*1.2/1491
+        self.assertLess(abs(un-res)/res,0.003)        
+
+
+        un=check[11][0]
+        res=rs*0.95*1725*1.78*2/156.05
+        self.assertLess(abs(un-res)/res,0.003)        
+    
+        un=check[12][0]
+        n=(1.78*19+1.2*(60-1.78*2)*0.25)*ry
+        phi=0.522
+        res=7.15*10**(-6)*(2330-e/ry)*n/phi
+        self.assertLess(abs(un-res)/res,0.007)        
+
+        un=check[13][0]
+        res=ry
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[14][0]
+        res=137.5
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[15][0]
+        res=76810
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[16][0]
+        res=1725
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[17][0]
+        res=2560
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[18][0]
+        res=181
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[19][0]
+        res=1490
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[20][0]
+        res=156
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[21][0]
+        res=1.69/3.2
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[22][0]
+        res=3.2
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[23][0]
+        res=1.71
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[24][0]
+        res=0.16/0.5
+        self.assertLess(abs(un-res)/res,0.013)        
+
+        un=check[25][0]
+        res=0.5
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[26][0]
+        res=0.16
+        self.assertLess(abs(un-res)/res,0.013)        
+
+
+    
+#Швеллер
+        pr1=shvel(24.0, 9.0, 0.56, 1.0,	1.05, 0.4, 0.0, 0.1)
+        s=steel_snip20107n('C345',pr1, 1)
+        el=elements(s, pr1, mub=0.5, lfact=1000) 
+        forc=force(n=800*1000/9.81, mx=435*1000/9.81*100, my=435*1000/9.81*100)        
+        sol=beam(el,forc,[0.95],0.9)
+        check=sol.output_data_all_snip_n(1,1,3,1)
+
+        ry=320*100/9.81
+        wx=241.73
+        wy=31.56
+        e=2.06*10**6*10/9.81
+
+        phi1=(1.6 + 0.08*1.54*7.29/207.43*(500./24)**2)
+        at=1.54*7.29/207.43*(500./24.)**2
+        phi=phi1*207.43/2900.78*(24./500.)**2*e/ry*0.7
+        rs=ry*0.58
+        
+        un=check[0][0]
+        res=wx*ry*0.95/100.
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[1][0]
+        res=wy*ry*0.95/100.
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[2][0]
+        res=wx*ry*0.9/100.*phi
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[3][0]
+        res=(24.-2.37*2)/0.56*(ry/e)**0.5/3.2
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[4][0]
+        res=phi
+
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[5][0]
+        res=phi
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[6][0]
+        res=phi1
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[7][0]
+        res=at
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[8][0]
+        res=1.09
+        self.assertLess(abs(un-res)/res,0.002)        
+    
+        un=check[9][0]
+        res=1.6
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[10][0]
+        res=rs*0.95*2901*0.56/138.76
+        self.assertLess(abs(un-res)/res,0.01)        
+
+
+        un=check[11][0]
+        res=rs*0.95*207*1.*2/34.14
+        self.assertLess(abs(un-res)/res,0.003)        
+    
+        un=check[12][0]
+        n=(9.0*1+0.56*(24-1.*2)*0.25)*ry
+        phi=0.13
+        res=7.15*10**(-6)*(2330-e/ry)*n/phi
+        self.assertLess(abs(un-res)/res,0.03)        
+
+        un=check[13][0]
+        res=ry
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[14][0]
+        res=30.64
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[15][0]
+        res=2901
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[16][0]
+        res=207.56
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[17][0]
+        res=241.76
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[18][0]
+        res=31.56
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[19][0]
+        res=138.76
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[20][0]
+        res=34.14
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[21][0]
+        res=(24.-2.37*2)/0.56*(ry/e)**0.5/3.2
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[22][0]
+        res=3.2
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[23][0]
+        res=(24.-2.37*2)/0.56*(ry/e)**0.5
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[24][0]
+        res=((9-0.56-1)/1.)*(ry/e)**0.5/0.5
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[25][0]
+        res=0.5
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[26][0]
+        res=((9-0.56-1)/1.)*(ry/e)**0.5
+        self.assertLess(abs(un-res)/res,0.01)        
+
+    
+#прямоугольник
+
+        pr1=truba_pryam(8.0,6.0,	0.3,	0.3,	0.6)
+        s=steel_snip20107n('C345',pr1, 1)
+        el=elements(s, pr1, mub=0.5, lfact=1000) 
+        forc=force(n=800*1000/9.81, mx=435*1000/9.81*100, my=435*1000/9.81*100)        
+        sol=beam(el,forc,[0.95],0.9)
+        check=sol.output_data_all_snip_n(1,1,3,1)
+
+        ry=320*100/9.81
+        wx=17.5
+        wy=14.96
+        e=2.06*10**6
+
+        phi1=1
+        at=0
+        phi=1
+        rs=ry*0.58
+        
+        un=check[0][0]
+        res=wx*ry*0.95/100.
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[1][0]
+        res=wy*ry*0.95/100.
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+        un=check[2][0]
+        res=wx*ry*0.9/100.*phi
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[3][0]
+        res=(8-0.3*2-0.3*2)/0.3*(ry/e)**0.5/3.2
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[4][0]
+        res=phi
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[5][0]
+        res=phi
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[6][0]
+        res=phi1
+        self.assertLess(abs(un-res)/res,0.0017)        
+
+        un=check[7][0]
+        res=at
+        self.assertEquals(un, res)        
+
+        un=check[8][0]
+        res=1.15
+        self.assertLess(abs(un-res)/res,0.005)        
+    
+        un=check[9][0]
+        res=1.10
+        self.assertLess(abs(un-res)/res,0.005)        
+
+        un=check[10][0]
+        res=rs*0.95*70.05*0.3*2/10.58
+        self.assertLess(abs(un-res)/res,0.01)        
+
+
+        un=check[11][0]
+        res=rs*0.95*44.89*0.3*2/8.69
+        self.assertLess(abs(un-res)/res,0.003)        
+    
+
+        un=check[12][0]
+        res=ry
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[13][0]
+        res=7.81
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[14][0]
+        res=70.05
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[15][0]
+        res=44.89
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[16][0]
+        res=17.51
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[17][0]
+        res=14.96
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[18][0]
+        res=10.58
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[19][0]
+        res=8.69
+        self.assertLess(abs(un-res)/res,0.004)        
+
+        un=check[20][0]
+        res=(8-0.3*2-0.3*2)/0.3*(ry/e)**0.5/3.2
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[21][0]
+        res=3.2
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[22][0]
+        res=(8-0.3*2-0.3*2)/0.3*(ry/e)**0.5
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[23][0]
+        res=((6-0.3*2-0.3*2)/0.3)*(ry/e)**0.5/1.5
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[24][0]
+        res=1.5
+        self.assertLess(abs(un-res)/res,0.01)        
+
+        un=check[25][0]
+        res=((6-0.3*2-0.3*2)/0.3)*(ry/e)**0.5
+        self.assertLess(abs(un-res)/res,0.01)
+
+        print 39
+
+        
+    def test_basasort_output_simple_beam(self):
+        
+#СНиП
+#СП
+
+
+        
+        print 40
         
 if __name__ == "__main__":
     unittest.main()

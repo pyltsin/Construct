@@ -1633,7 +1633,7 @@ class  profiles_sostav(object):
 
 class  profiles_blank_sostav(object):
     def p(self):
-        return self.a()*7850./100/100/100
+        return self.a()*7850./100./100.
 
 
     def ix(self):

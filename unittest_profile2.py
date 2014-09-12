@@ -291,7 +291,7 @@ class Test_profile(unittest.TestCase):
         self.assertLess(abs(el3.output_dict()[u"Jt_sp2013, см4"]-31.22*10**4/1.3)/abs(el3.jt()),0.005)
 
         e14=dvut(h=60.0, b=19.0, t=1.78, s=1.2, r1=2, r2=0.8, a1=atan(12./100))
-        self.assertEqual(e14.input_data(), [u"h, см",u"b, см",u"s, см",u"t, см",u"r1, см",u"r2, см",u"a, %"])
+        self.assertEqual(e14.input_data(), [u"h, см",u"b, см",u"s, см",u"t, см",u"r1, см",u"r2, см",u"a, %/100"])
         self.assertEqual(e14.output_list(), [u'P, кг/м',u'A, см2',u'Jx, см4',u'Wx, см3',u'Sx, см3',u'ix, см'
         ,u'Jy, см4',u'Wy, см3',u'Sy, см3',u'iy, см',u'Jw, см6',u'Jt, см4',u'Jt_sp2013, см4',u'w1, см2',u'Ww, см4',u'title',u'title0'])
         self.assertLess(abs(e14.output_dict()[u"A, см2"]-137.53)/abs(137.53),0.001)
@@ -526,7 +526,7 @@ class Test_profile(unittest.TestCase):
         pr1=shvel(27,9.5,0.6, 1.05, 1.1,  0.45,0.0, atan(0.1))
 
         
-        self.assertEquals(pr1.input_data(),[u"h, см",u"b, см",u"s, см",u"t, см",u"r1, см",u"r2, см",u"r3, см",u"a, %"])
+        self.assertEquals(pr1.input_data(),[u"h, см",u"b, см",u"s, см",u"t, см",u"r1, см",u"r2, см",u"r3, см",u"a, %/100"])
 
         self.assertEquals(pr1.output_list(),[u'P, кг/м'
         ,u'A, см2'
@@ -894,6 +894,7 @@ class Test_profile(unittest.TestCase):
         ,u'title0'  
         ])
 
+        print pr.output_dict()[u'P, кг/м']
         self.assertLess(abs(pr.output_dict()[u'P, кг/м']-1272./100/100*7850)/(1272./100/100*7850),0.001)
         self.assertLess(abs(pr.output_dict()[u'A, см2']-1272)/1272,0.001)
 

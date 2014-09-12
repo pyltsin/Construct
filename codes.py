@@ -1940,15 +1940,16 @@ class beam(snipn):
         
         commentq=u'Q_fic (п.5.8., 5.16.), кг'
 
+        if  self.pr.title()!='korob':     
              
-        if self.element.lb()<self.element.lfact() :
-            n3=(self.pr.b()*self.pr.t()+0.25*(self.pr.h()-2*self.pr.t())*self.pr.s())*self.element.steel.ry()
-            lambda_=self.element.lb()/(self.pr.b()/12.**0.5)*(self.element.steel.ry()/self.element.steel.e())**0.5            
-            phi=self.phi_n_old(lambda_)
-            q_fic=self.q_fic_old(n3,phi)
-            lst.append([q_fic, commentq])
-        else:
-            lst.append(['-', commentq])
+            if self.element.lb()<self.element.lfact() :
+                n3=(self.pr.b()*self.pr.t()+0.25*(self.pr.h()-2*self.pr.t())*self.pr.s())*self.element.steel.ry()
+                lambda_=self.element.lb()/(self.pr.b()/12.**0.5)*(self.element.steel.ry()/self.element.steel.e())**0.5            
+                phi=self.phi_n_old(lambda_)
+                q_fic=self.q_fic_old(n3,phi)
+                lst.append([q_fic, commentq])
+            else:
+                lst.append(['-', commentq])
             
             
     
@@ -2002,15 +2003,16 @@ class beam(snipn):
         
         commentq=u'Q_fic (п.5.8., 5.16.), кг'
 
-             
-        if self.element.lb()<self.element.lfact() :
-            n3=(self.pr.b()*self.pr.t()+0.25*(self.pr.h()-2*self.pr.t())*self.pr.s())*self.element.steel.ry()
-            lambda_=self.element.lb()/(self.pr.b()/12.**0.5)*(self.element.steel.ry()/self.element.steel.e())**0.5            
-            phi=self.phi_n(lambda_, typ=0, typ_s='b')
-            q_fic=self.q_fic(n3,phi)
-            lst.append([q_fic, commentq])
-        else:
-            lst.append(['-', commentq])
+        if  self.pr.title()!='korob':     
+            if self.element.lb()<self.element.lfact() :
+                n3=(self.pr.b()*self.pr.t()+0.25*(self.pr.h()-2*self.pr.t())*self.pr.s())*self.element.steel.ry()
+                lambda_=self.element.lb()/(self.pr.b()/12.**0.5)*(self.element.steel.ry()/self.element.steel.e())**0.5            
+                phi=self.phi_n(lambda_, typ=0, typ_s='b')[0]
+                q_fic=self.q_fic(n3,phi)
+                lst.append([q_fic, commentq])
+            else:
+                lst.append(['-', commentq])
+
             
             
     
@@ -2061,9 +2063,10 @@ class beam(snipn):
 
     def qx_old(self):
         if self.pr.title()=='dvut' or self.pr.title()=='shvel':
-            qx=self.element.steel.rs()*self.yc1()*self.pr.t()*self.pr.jx()/self.pr.s2x()
+            qx=self.element.steel.rs()*self.yc1()*self.pr.s()*self.pr.jx()/self.pr.s2x()
+#            print self.element.steel.rs(),self.yc1(),self.pr.s(),self.pr.jx(),self.pr.s2x()
         elif self.pr.title()=='korob':
-            qx=self.element.steel.rs()*self.yc1()*(self.pr.t()*2)*self.pr.jx()/self.pr.s2x()
+            qx=self.element.steel.rs()*self.yc1()*(self.pr.s()*2)*self.pr.jx()/self.pr.s2x()
         return qx
 
     def qy_old(self):
@@ -2075,7 +2078,7 @@ class beam(snipn):
 
     def mxb(self,typ,typ1,typ2,typ3):
         """максимальная несущая способность устойчивость (изгиб Х) по СП"""
-        mxb=self.pr.wx()*self.element.steel.ry()*self.ycb()*self.phi_b(typ,typ1,typ2,typ3) [0]
+        mxb=self.pr.wx()*self.element.steel.ry()*self.ycb()*self.phi_b(typ,typ1,typ2,typ3) [0]/100.
         return mxb
 
 
