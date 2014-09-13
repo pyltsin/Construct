@@ -19,8 +19,8 @@ def printToWord(lst):
 #    worddoc.ActiveWindow.Selection.BoldRun()
 
     for item in lst:
-        print type(item)
-        print QtCore.QString(u'a') 
+#        print type(item)
+#        print QtCore.QString(u'a') 
         if type(item)==QtCore.QString or type(item)==type(u'a'):
             worddoc.ActiveWindow.Selection.Font.Size = 12
 
@@ -74,7 +74,7 @@ def printToWord(lst):
                         txt=widget.currentText()
                         table.Cell(i+1,j+1).Range.InsertAfter(txt)
 
-            for i in range(rowCount+1):
+            for i in range(rowCount+2):
                 worddoc.ActiveWindow.Selection.MoveDown()
             worddoc.ActiveWindow.Selection.TypeParagraph()
             

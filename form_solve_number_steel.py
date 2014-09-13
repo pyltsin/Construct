@@ -74,7 +74,15 @@ class MyWindow(QtGui.QWidget):
 #закрыть сохранение и и ворд
         self.changed_input_data()
         self.input_table.currentItemChanged.connect(self.changed_input_data)
-        
+
+#устанавливаем начальный путь
+        self.load_list_files('c:\\') 
+        self.text_folder.clear()
+        self.text_folder.insert('c:\\')
+    
+#Сохраняем файл
+        self.save_button.clicked.connect(self.toSave)     
+
     def changed_input_data(self):
         """закрывает схранение и ворд"""
         self.word_button.setEnabled(False)
@@ -87,6 +95,80 @@ class MyWindow(QtGui.QWidget):
         """обеспечивает возможность копирования, вставить"""
         copy_past(e, [window.input_table], [window.output_table], window)
 
+    def toSave(self):
+        '''сохраняем данные в файл, в указанную папку, имя==название 1-го элемента,
+        если такой файл уже есть - спрашиваем про перезапись, после записи обновляем список файлов'''
+        #1 - получаем путь и имя файла
+        folder=self.text_folder.text()
+        fil_name=self.input_table.item(0, 0).text()+'.con1'
+        if folder[-2:]==":\\":
+            fil=folder+fil_name
+        else:
+            fil=folder+str("\\")+fil_name
+        #спрашиваем про перезапись файлов
+        raw_list_files=os.listdir(folder)
+        if fil_name in raw_list_files:
+            msgBox = QtGui.QMessageBox()
+            msgBox.setWindowTitle(u'Перезапись файла')
+            msgBox.setText(u'Файл существует, перезаписать?')
+            msgBox.addButton(QtGui.QPushButton(u'Да'), QtGui.QMessageBox.YesRole)
+            msgBox.addButton(QtGui.QPushButton(u'Нет'), QtGui.QMessageBox.NoRole)
+            ret = msgBox.exec_()
+            if ret==0:
+                try:
+                    self.save(fil, [self.type_element, self.number, self.type_section, self.type_code, self.input_table])
+                except(IOError):
+                    self.text_error.clear()
+                    self.text_error.insert(u'Ошибка записи, файл создан с ошибкой')
+                    
+
+        else:
+            try:
+                self.save(fil, [self.type_element, self.number, self.type_section, self.type_code, self.input_table])
+            except(IOError):
+                self.text_error.clear()
+                self.text_error.insert(u'Ошибка записи, файл создан с ошибкой')
+        
+        #обновляем список файлов
+        self.load_list_files(folder)
+
+    def save(self, fil, widgetList):
+        '''сама запись и возврат 1 если ошибка, 0 - если все ок'''
+        
+        f= open(fil, 'w')
+        for item in widgetList:
+            if type(item)==QtGui.QComboBox:
+                txt=str(item.currentIndex())+u'\n'
+                f.write(txt)
+                print txt
+            if type(item)==QtGui.QSpinBox:
+                txt=str(item.value())+u'\n'
+                f.write(txt)
+                print txt
+
+            if type(item)==QtGui.QTableWidget:
+                columnCount=item.columnCount()
+                rowCount=item.rowCount()
+                for i in range(columnCount):
+                    for j in range(rowCount):
+                        if item.cellWidget(j,i)==None:
+                            txt=item.item(j,i).text()+u'\n'
+                            f.write(txt)
+                            print txt
+
+                        else:
+                            txt=str(item.cellWidget(j,i).currentIndex())+u'\n'
+                            f.write(txt)
+                            print txt
+
+
+#                    if self.input_table.cellWidget(j,i)==None and self.input_table.item(j, i).text()=="" :
+#                        self.input_table.item(j,i).setText(u"0")
+
+
+        f.close()
+                
+            
     def toWord(self):
         '''импорт в ворд'''
         try:
@@ -101,30 +183,67 @@ class MyWindow(QtGui.QWidget):
             self.text_error.insert(u'Ошибка импорта в Word')
             
     def load_files(self):
-        """Обеспечивает загрузку новых файлов из сохранения - недоделано"""
+        """Обеспечивает загрузку новых файлов из сохранения. Сделано криво, только чтобы работало"""
         folder=self.text_folder.text()
         fil_name=self.listWidget.currentItem().text()
         fil=folder+str(u"\\")+fil_name
-        print fil           
+        print fil
+        
+        f=open(fil, 'r') 
+        
+        txt=int(f.readline())
+        print txt
+        self.type_element.setCurrentIndex(txt)                       
+
+        txt=int(f.readline())
+        print txt
+        self.number.setValue(txt)                       
+
+        txt=int(f.readline())
+        print txt
+        self.type_section.setCurrentIndex(txt)                       
+
+        txt=int(f.readline())
+        print txt
+        self.type_code.setCurrentIndex(txt)                       
+
+        columnCount=self.input_table.columnCount()
+        rowCount=self.input_table.rowCount()
+        for i in range(columnCount):
+            for j in range(rowCount):
+                if self.input_table.cellWidget(j,i)==None:
+                    txt=(f.readline())
+                    print txt
+                    self.input_table.item(j,i).setText(txt)
+                else:
+                    txt=int(f.readline())
+                    print txt
+                    self.input_table.cellWidget(j,i).setCurrentIndex(txt)
+
+
+        f.close()
+        
+        self.changed_input_data()
         
     def show_dia_folder(self):
         """отправляет список файлов, которые можно открыть в окно"""
-        folder_name = QtGui.QFileDialog.getExistingDirectory(self, 'Open Folfer', '/home')
-        self.text_folder.clear()
-        self.text_folder.insert(folder_name)
-        self.load_list_files(folder_name)
+        folder_name = QtGui.QFileDialog.getExistingDirectory(self, 'Open Folfer', self.text_folder.text())
+        if folder_name!='':
+            self.text_folder.clear()
+            self.text_folder.insert(folder_name)
+            self.load_list_files(folder_name)
        
     def load_list_files(self, folder_name):
-        
-        raw_list_files=os.listdir(folder_name)
-        list_files=[]
-        for x in raw_list_files:
-            if x[-4:]=='.txt':
-                list_files.append(unicode(x))
-            
-            
-        self.listWidget.clear()
-        self.listWidget.addItems(list_files)
+        if folder_name!='':        
+            raw_list_files=os.listdir(folder_name)
+            list_files=[]
+            for x in raw_list_files:
+                if x[-5:]=='.con1':
+                    list_files.append(unicode(x))
+                
+                
+            self.listWidget.clear()
+            self.listWidget.addItems(list_files)
         
     def load_combobox(self, widget, lst):
         widget.clear()
