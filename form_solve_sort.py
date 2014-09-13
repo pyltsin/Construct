@@ -44,19 +44,14 @@ def toword():
         worddoc.ActiveWindow.Selection.TypeText(u"Расчет сечения")
         worddoc.ActiveWindow.Selection.TypeParagraph()
         worddoc.ActiveWindow.Selection.BoldRun()
-#        print lab
         worddoc.ActiveWindow.Selection.TypeText(u"Сечение: "+unicode(lab))
-        worddoc.ActiveWindow.Selection.TypeParagraph()
-        for i in sys.path:
-#            print i
-#            print os.listdir(i)
-            if 'SortamentPicture' in os.listdir(i):
-                home=i
-                break
-        dir_pict=str(home+'\\'+basa.pict(lab))
-    #    print (dir_pict)
-    #    dir_pict2='D:\python_my\Construct\SortamentPicture\shvel.png'
-        worddoc.ActiveWindow.Selection.InlineShapes.AddPicture(dir_pict)
+#        worddoc.ActiveWindow.Selection.TypeParagraph()
+#        for i in sys.path:
+#            if 'SortamentPicture' in os.listdir(i):
+#                home=i
+#                break
+#        dir_pict=str(home+'\\'+basa.pict(lab))
+#        worddoc.ActiveWindow.Selection.InlineShapes.AddPicture(dir_pict)
         worddoc.ActiveWindow.Selection.TypeParagraph()
         worddoc.ActiveWindow.Selection.TypeText(u"Исходные характеристики:")
         worddoc.ActiveWindow.Selection.TypeParagraph()

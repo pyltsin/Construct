@@ -248,9 +248,11 @@ class BasaSort(object):
         """Возвращает объект сечения.
         Исходные данные: i - название по dict_sort (или текст или номер), inp - список исходных данных для сечения
         Выходные: объект сечения"""
+#        print i, inp
+#        print type(i)
         x=None
         for label in self.dict_sort:
-            if i==QtCore.QString(label):
+            if i==QtCore.QString(label) or i==label:
                 x=self.dict_sort[label]
         if x==None:
             x=i
@@ -269,7 +271,7 @@ class BasaSort(object):
         elif x==4:
             pr=profiles.ring(inp[0],inp[1])
         elif x==5:
-            print inp
+#            print inp
             pr=profiles.sost_ugol_tavr_st_up(inp[0],inp[1],inp[2],inp[3],inp[4],inp[5],inp[6])
         elif x==6:
             pr=profiles.sost_ugol_tavr_st_right(inp[0],inp[1],inp[2],inp[3],inp[4],inp[5],inp[6])

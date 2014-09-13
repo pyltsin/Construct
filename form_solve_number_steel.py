@@ -100,14 +100,18 @@ class MyWindow(QtGui.QWidget):
         если такой файл уже есть - спрашиваем про перезапись, после записи обновляем список файлов'''
         #1 - получаем путь и имя файла
         folder=self.text_folder.text()
-        fil_name=self.input_table.item(0, 0).text()+'.con1'
+        fil_name=unicode(self.input_table.item(0, 0).text()).rstrip()+'.con1'
         if folder[-2:]==":\\":
             fil=folder+fil_name
         else:
             fil=folder+str("\\")+fil_name
         #спрашиваем про перезапись файлов
         raw_list_files=os.listdir(folder)
+#        print fil_name
+#        print raw_list_files
+        
         if fil_name in raw_list_files:
+#            print 'tut'
             msgBox = QtGui.QMessageBox()
             msgBox.setWindowTitle(u'Перезапись файла')
             msgBox.setText(u'Файл существует, перезаписать?')
@@ -115,19 +119,19 @@ class MyWindow(QtGui.QWidget):
             msgBox.addButton(QtGui.QPushButton(u'Нет'), QtGui.QMessageBox.NoRole)
             ret = msgBox.exec_()
             if ret==0:
-                try:
-                    self.save(fil, [self.type_element, self.number, self.type_section, self.type_code, self.input_table])
-                except(IOError):
-                    self.text_error.clear()
-                    self.text_error.insert(u'Ошибка записи, файл создан с ошибкой')
+#                try:
+                self.save(fil, [self.type_element, self.number, self.type_section, self.type_code, self.input_table])
+#                except(IOError):
+#                    self.text_error.clear()
+#                    self.text_error.insert(u'Ошибка записи, файл создан с ошибкой')
                     
 
         else:
-            try:
-                self.save(fil, [self.type_element, self.number, self.type_section, self.type_code, self.input_table])
-            except(IOError):
-                self.text_error.clear()
-                self.text_error.insert(u'Ошибка записи, файл создан с ошибкой')
+#            try:
+            self.save(fil, [self.type_element, self.number, self.type_section, self.type_code, self.input_table])
+#            except(IOError):
+#                self.text_error.clear()
+#                self.text_error.insert(u'Ошибка записи, файл создан с ошибкой')
         
         #обновляем список файлов
         self.load_list_files(folder)
@@ -138,13 +142,13 @@ class MyWindow(QtGui.QWidget):
         f= open(fil, 'w')
         for item in widgetList:
             if type(item)==QtGui.QComboBox:
-                txt=str(item.currentIndex())+u'\n'
+                txt=str(item.currentIndex()).rstrip()+u'\n'
                 f.write(txt)
-                print txt
+#                print txt
             if type(item)==QtGui.QSpinBox:
-                txt=str(item.value())+u'\n'
+                txt=str(item.value()).rstrip()+u'\n'
                 f.write(txt)
-                print txt
+#                print txt
 
             if type(item)==QtGui.QTableWidget:
                 columnCount=item.columnCount()
@@ -152,14 +156,14 @@ class MyWindow(QtGui.QWidget):
                 for i in range(columnCount):
                     for j in range(rowCount):
                         if item.cellWidget(j,i)==None:
-                            txt=item.item(j,i).text()+u'\n'
+                            txt=str(item.item(j,i).text()).rstrip()+u'\n'
                             f.write(txt)
-                            print txt
+#                            print txt
 
                         else:
-                            txt=str(item.cellWidget(j,i).currentIndex())+u'\n'
+                            txt=str(item.cellWidget(j,i).currentIndex()).rstrip()+u'\n'
                             f.write(txt)
-                            print txt
+#                            print txt
 
 
 #                    if self.input_table.cellWidget(j,i)==None and self.input_table.item(j, i).text()=="" :
@@ -174,6 +178,7 @@ class MyWindow(QtGui.QWidget):
         try:
             lst=[u'Расчет сечений', self.type_element, self.type_section
             , self.type_code, self.input_table, self.output_table]
+#            
     #        , self.type_code, self.input_table]
     
             printToWord(lst)
@@ -187,24 +192,24 @@ class MyWindow(QtGui.QWidget):
         folder=self.text_folder.text()
         fil_name=self.listWidget.currentItem().text()
         fil=folder+str(u"\\")+fil_name
-        print fil
+#        print fil
         
         f=open(fil, 'r') 
         
         txt=int(f.readline())
-        print txt
+#        print txt
         self.type_element.setCurrentIndex(txt)                       
 
         txt=int(f.readline())
-        print txt
+#        print txt
         self.number.setValue(txt)                       
 
         txt=int(f.readline())
-        print txt
+#        print txt
         self.type_section.setCurrentIndex(txt)                       
 
         txt=int(f.readline())
-        print txt
+#        print txt
         self.type_code.setCurrentIndex(txt)                       
 
         columnCount=self.input_table.columnCount()
@@ -213,11 +218,11 @@ class MyWindow(QtGui.QWidget):
             for j in range(rowCount):
                 if self.input_table.cellWidget(j,i)==None:
                     txt=(f.readline())
-                    print txt
+#                    print txt
                     self.input_table.item(j,i).setText(txt)
                 else:
                     txt=int(f.readline())
-                    print txt
+#                    print txt
                     self.input_table.cellWidget(j,i).setCurrentIndex(txt)
 
 

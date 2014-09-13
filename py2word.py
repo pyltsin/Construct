@@ -22,20 +22,25 @@ def printToWord(lst):
 #        print type(item)
 #        print QtCore.QString(u'a') 
         if type(item)==QtCore.QString or type(item)==type(u'a'):
+#            print 'tut1'
             worddoc.ActiveWindow.Selection.Font.Size = 12
 
             worddoc.ActiveWindow.Selection.BoldRun()
             
-            worddoc.ActiveWindow.Selection.TypeText(item)
+            worddoc.ActiveWindow.Selection.TypeText(unicode(item))
             worddoc.ActiveWindow.Selection.TypeParagraph()
             worddoc.ActiveWindow.Selection.BoldRun()
         elif type(item)==QtGui.QComboBox:
-            worddoc.ActiveWindow.Selection.Font.Size = 12
+#            print 'tut2'
 
-            worddoc.ActiveWindow.Selection.TypeText(item.currentText())
+            worddoc.ActiveWindow.Selection.Font.Size = 12
+            txt=unicode(item.currentText())
+            worddoc.ActiveWindow.Selection.TypeText(txt)
             worddoc.ActiveWindow.Selection.TypeParagraph()
             
         elif type(item)==QtGui.QTableWidget:
+#            print 'tut3'
+
             worddoc.ActiveWindow.Selection.Font.Size = 8
 
             worddoc.ActiveWindow.Selection.TypeParagraph()
@@ -72,10 +77,12 @@ def printToWord(lst):
                     else:
                         widget=item.cellWidget(i-1,j-1)
                         txt=widget.currentText()
-                        table.Cell(i+1,j+1).Range.InsertAfter(txt)
+                        table.Cell(i+1,j+1).Range.InsertAfter(unicode(txt))
 
-            for i in range(rowCount+2):
+            for i in range(rowCount+3):
                 worddoc.ActiveWindow.Selection.MoveDown()
+#            worddoc.ActiveWindow.Selection.MoveDown(rowCount+1)
+
             worddoc.ActiveWindow.Selection.TypeParagraph()
             
     del wordapp
