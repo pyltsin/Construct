@@ -1546,6 +1546,10 @@ class ferma(snipn):
         yu=self.yu()
         commentyu=u'yu, п.4'
         
+        p=self.pr.p()
+        commentp=u'P, кг/м3'
+
+
         a=self.pr.a()
         commenta=u'A, см2'
         
@@ -1564,6 +1568,7 @@ class ferma(snipn):
         ry=self.element.steel.ry()
         commentry=u'Ry, кг/см2'        
         lst=[[yu, commentyu],
+             [p, commentp],
              [ry, commentry],
              [a, commenta],
              [ix, commentix],
@@ -1855,6 +1860,8 @@ class beam(snipn):
         """Выходные данные сечения"""
         lst=[]
         #Исходные данные:
+        p=self.pr.p()
+        commentp=u'P, кг/м3'
         
         a=self.pr.a()
         commenta=u'A, см2'
@@ -1881,6 +1888,7 @@ class beam(snipn):
         ry=self.element.steel.ry()
         commentry=u'Ry, кг/см2'        
         lst=[
+             [p, commentp],
              [ry, commentry],
              [a, commenta],
              [jx, commentjx],
