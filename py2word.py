@@ -7,6 +7,7 @@ Created on Wed Aug 27 23:05:25 2014
 import win32com.client
 import os
 from  PyQt4 import QtCore, QtGui
+import shutil
 
 def printToWord(lst):
     wordapp = win32com.client.Dispatch("Word.Application")
@@ -21,7 +22,18 @@ def printToWord(lst):
     for item in lst:
 #        print type(item)
 #        print QtCore.QString(u'a') 
-        if type(item)==QtCore.QString or type(item)==type(u'a'):
+        if type(item)==QtGui.QLabel:
+            pict=item.pixmap()
+            print pict
+            temp=os.environ['TEMP']
+            path=temp+'\\temp_con1.jpg'           
+            pict.save(path)
+            worddoc.ActiveWindow.Selection.InlineShapes.AddPicture(path)
+            os.remove(path)
+            worddoc.ActiveWindow.Selection.TypeParagraph()
+
+            
+        elif type(item)==QtCore.QString or type(item)==type(u'a'):
 #            print 'tut1'
             worddoc.ActiveWindow.Selection.Font.Size = 12
 

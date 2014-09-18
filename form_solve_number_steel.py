@@ -119,19 +119,19 @@ class MyWindow(QtGui.QWidget):
             msgBox.addButton(QtGui.QPushButton(u'Нет'), QtGui.QMessageBox.NoRole)
             ret = msgBox.exec_()
             if ret==0:
-#                try:
-                self.save(fil, [self.type_element, self.number, self.type_section, self.type_code, self.input_table])
-#                except(IOError):
-#                    self.text_error.clear()
-#                    self.text_error.insert(u'Ошибка записи, файл создан с ошибкой')
+                try:
+                    self.save(fil, [self.type_element, self.number, self.type_section, self.type_code, self.input_table])
+                except(IOError):
+                    self.text_error.clear()
+                    self.text_error.insert(u'Ошибка записи, файл возможно создан с ошибкой')
                     
 
         else:
-#            try:
-            self.save(fil, [self.type_element, self.number, self.type_section, self.type_code, self.input_table])
-#            except(IOError):
-#                self.text_error.clear()
-#                self.text_error.insert(u'Ошибка записи, файл создан с ошибкой')
+            try:
+                self.save(fil, [self.type_element, self.number, self.type_section, self.type_code, self.input_table])
+            except(IOError):
+                self.text_error.clear()
+                self.text_error.insert(u'Ошибка записи, файл возможно создан с ошибкой')
         
         #обновляем список файлов
         self.load_list_files(folder)
@@ -175,18 +175,18 @@ class MyWindow(QtGui.QWidget):
             
     def toWord(self):
         '''импорт в ворд'''
-        try:
-            lst=[u'Расчет сечений', self.type_element, self.type_section
-            , self.type_code, self.input_table, self.output_table]
+#        try:
+        lst=[u'Расчет сечений',self.picture, self.type_element, self.type_section
+        , self.type_code, self.input_table, self.output_table]
 #            
     #        , self.type_code, self.input_table]
     
-            printToWord(lst)
-        except:
-            self.changed_input_data()
-            self.text_error.clear()
-            self.text_error.insert(u'Ошибка импорта в Word')
-            
+        printToWord(lst)
+#        except:
+#            self.changed_input_data()
+#            self.text_error.clear()
+#            self.text_error.insert(u'Ошибка импорта в Word')
+#            
     def load_files(self):
         """Обеспечивает загрузку новых файлов из сохранения. Сделано криво, только чтобы работало"""
         folder=self.text_folder.text()
