@@ -104,7 +104,7 @@ class snipn(normes):
         Выходные данные: phi, тип сечения"""
         #typ = 1 - в плоскости стенки
         if typ_s==0:
-            if self.pr.title()=='korob' or self.pr.title()=='truba':       
+            if self.pr.title()=='korob' or self.pr.title()=='ring':       
                 typ_sec='a'
             if self.pr.title()=='dvut' or self.pr.title()=='ugol_tavr_st_krest' :
                 typ_sec='b'
@@ -273,7 +273,7 @@ class snipn(normes):
                 if lambda_uw>2.3:
 #                    print 'tut3'
                     lambda_uw=2.3
-        if self.pr.title()=='korob':
+        elif self.pr.title()=='korob':
             lambda_=self.el.lambday_()
             if lambda_<=1:
                 lambda_uw=1.2
@@ -281,14 +281,18 @@ class snipn(normes):
                 lambda_uw=1.0+0.2*lambda_
                 if lambda_uw>1.6:
                     lambda_uw=1.6
-        if self.pr.title()=='ugol_tavr_st_krest' or self.pr.title()=='ugol_tavr_st_right' or self.pr.title()=='ugol_tavr_st_up':
+        elif self.pr.title()=='ugol_tavr_st_krest' or self.pr.title()=='ugol_tavr_st_right' or self.pr.title()=='ugol_tavr_st_up':
             lambda_=self.element.lambda_()[0]
             if lambda_<=0.8:
                 lambda_=0.8
             if lambda_>=4:
                 lambda_=4
 
-            lambda_uw=0.4+0.07*lambda_            
+            lambda_uw=0.4+0.07*lambda_ 
+
+        elif self.pr.title()=='ring':
+            lambda_uw=3.14/2
+
 #        print 's', self.pr.hef(),self.pr.s()
         lambda_w=self.pr.hef()/self.pr.s()*(self.element.steel.ry()/self.element.steel.e())**0.5                        
         check=lambda_w/lambda_uw
@@ -314,7 +318,7 @@ class snipn(normes):
                 lambda_=4
             lambda_uf=0.4+0.07*lambda_            
 
-        if self.pr.title()=='dvut':
+        elif self.pr.title()=='dvut':
 #            print 'tut1'
             lambda_=self.element.lambda_() [0]
             if lambda_<=0.8:
@@ -327,7 +331,7 @@ class snipn(normes):
             lambda_uf=0.36+0.1*lambda_
 #            print lambda_uf
 
-        if self.pr.title()=='korob':
+        elif self.pr.title()=='korob':
             lambda_=self.element.lambdax_() 
 
             if lambda_<=1:
@@ -336,6 +340,9 @@ class snipn(normes):
                 lambda_uf=1.0+0.2*lambda_
                 if lambda_uf>1.6:
                     lambda_uf=1.6
+
+        elif self.pr.title()=='ring':
+            lambda_uf=3.14/2
     
         lambda_f=self.pr.bef()/self.pr.t()*(self.element.steel.ry()/self.element.steel.e())**0.5
 

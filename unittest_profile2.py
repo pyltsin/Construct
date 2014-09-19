@@ -134,6 +134,13 @@ class Test_profile(unittest.TestCase):
         print 8       ,       "test_solid"
     def test_ring(self):
         el=ring(15, 10)
+        
+        self.assertLess(abs(el.t()-5)/abs(el.t()), 0.00001)
+        self.assertLess(abs(el.s()-5)/abs(el.t()), 0.00001)
+        self.assertLess(abs(el.bef()-12.5)/abs(el.t()), 0.00001)
+
+        self.assertLess(abs(el.hef()-12.5)/abs(el.t()), 0.00001)
+
         self.assertLess(abs(el.a()-15**2*pi+10**2*pi)/abs(el.a()), 0.00001)
         self.assertLess(abs(el.xi()-15)/abs(el.xi()),0.00001)
         self.assertLess(abs(el.yi()-15)/abs(el.yi()),0.00001)

@@ -346,6 +346,15 @@ class ring(profiles_simple):
         return self.wx()
     def jxy(self):
         return 0
+        #для расчета устойчивости
+    def t(self):
+        return self.r()-self.r1()
+    def s(self):
+        return self.r()-self.r1()
+    def hef(self):
+        return (self.r()+self.r1())/2.
+    def bef(self):
+        return (self.r()+self.r1())/2.
 
 class angle(profiles_simple):
     """треугольник  , b, h, x1 """

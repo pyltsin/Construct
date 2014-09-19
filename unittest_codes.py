@@ -3985,6 +3985,299 @@ class Test_code_beam(unittest.TestCase):
 
         
         print 40
+
+    def test_basasort_output_simple_ferma_ring(self):
+        
+#СНиП
+        basa=basa_sort.BasaSort()
+
+        code=QtCore.QString(u'СНиП II-23-81*')
+        type_element=QtCore.QString(u'Ферма')
+        typ_sec=QtCore.QString(u'Труба')
+        gost=QtCore.QString(u"ГОСТ 10704-91 Трубы электросварные прямошовные")
+        num_sect=QtCore.QString(u'1420x20.0')
+        stl=QtCore.QString(u'C245')
+        inp=[1,0.95,600,4,2]        
+        check=basa.output_simple(code, type_element, typ_sec, gost, num_sect, stl, inp) 
+
+#        print check
+
+    
+        ry=240*100/9.81
+        a=879.65
+        lambda_x=600*4/49.5
+        lambda_y=lambda_x/2
+        phix=0.86
+        phiy=0.95
+        ru=360*100/9.81
+        e=2.1*10**6
+        lambda_w=(1450./2-20./2)/20.*(ry/e)**0.5
+        lambda_uw=3.14/2
+
+        un=check[0][0]
+        res=phix*ry*a*0.95
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[1][0]
+        res=ry*a
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[2][0]
+        res=1.195*2/3.14
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[3][0]
+        res=phix
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[4][0]
+        res=phiy
+        self.assertLess(abs(un-res)/res,0.001)        
+
+
+        un=check[5][0]
+        res=ry*a
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[6][0]
+        res=ru*a/1.3
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[7][0]
+        res=3.14*3.14*e*2155572.38/(600*4)**2
+
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[8][0]
+        res=3.14*3.14*e*2155572.38/(600*2)**2
+        self.assertLess(abs(un-res)/res,0.002)        
+
+
+        un=check[9][0]
+        res='-'
+        self.assertEqual(un, res)        
+
+        un=check[10][0]
+        res='-'
+        self.assertEqual(un, res)        
+
+        un=check[11][0]
+        res='-'
+        self.assertEqual(un, res)        
+
+        un=check[12][0]
+        res='-'
+        self.assertEqual(un, res)        
+
+        un=check[13][0]
+        res=1.3
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[14][0]
+        res=a*7850./100/100
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+
+        un=check[15][0]
+        res=ry
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[16][0]
+        res=a
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[17][0]
+        res=49.50
+
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[18][0]
+        res=49.50
+
+        self.assertLess(abs(un-res)/res,0.003)        
+
+
+        un=check[19][0]
+        res=lambda_x
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[20][0]
+        res=lambda_y
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[21][0]
+        res=1.195*2/3.14
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[22][0]
+        res=3.14/2
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[23][0]
+        res=1.195
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[24][0]
+        res=1.195*2/3.14
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[25][0]
+        res=3.14/2
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[26][0]
+        res=1.195
+        self.assertLess(abs(un-res)/res,0.001)        
+
+#СП
+
+        basa=basa_sort.BasaSort()
+
+        code=QtCore.QString(u'СП16.13330.2011')
+        type_element=QtCore.QString(u'Ферма')
+        typ_sec=QtCore.QString(u'Труба')
+        gost=QtCore.QString(u"ГОСТ 10704-91 Трубы электросварные прямошовные")
+        num_sect=QtCore.QString(u'1420x20.0')
+        stl=QtCore.QString(u'C245')
+        inp=[1,0.95,600,4,2]        
+        check=basa.output_simple(code, type_element, typ_sec, gost, num_sect, stl, inp) 
+
+#        print check
+
+    
+        ry=240*100/9.81
+        a=879.65
+        lambda_x=600*4/49.5
+        lambda_y=lambda_x/2
+        phix=0.916
+        phiy=0.98
+        ru=360*100/9.81
+        e=2.1*10**6
+
+        un=check[0][0]
+        res=phix*ry*a*0.95
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[1][0]
+        res=ry*a
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[2][0]
+        res=1.195*2/3.14
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[3][0]
+        res=phix
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[4][0]
+        res=phiy
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[5][0]
+        res='a'
+        self.assertEqual(un, res)        
+
+        un=check[6][0]
+        res='a'
+        self.assertEqual(un, res)        
+
+
+        un=check[7][0]
+        res=ry*a
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[8][0]
+        res=ru*a/1.3
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[9][0]
+        res=3.14*3.14*e*2155572.38/(600*4)**2
+
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[10][0]
+        res=3.14*3.14*e*2155572.38/(600*2)**2
+        self.assertLess(abs(un-res)/res,0.002)        
+
+
+        un=check[11][0]
+        res='-'
+        self.assertEqual(un, res)        
+
+        un=check[12][0]
+        res='-'
+        self.assertEqual(un, res)        
+
+        un=check[13][0]
+        res='-'
+        self.assertEqual(un, res)        
+
+        un=check[14][0]
+        res='-'
+        self.assertEqual(un, res)        
+
+        un=check[15][0]
+        res=1.3
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[16][0]
+        res=a*7850./100/100
+        self.assertLess(abs(un-res)/res,0.0012)        
+
+
+        un=check[17][0]
+        res=ry
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[18][0]
+        res=a
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[19][0]
+        res=49.50
+
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[20][0]
+        res=49.50
+
+        self.assertLess(abs(un-res)/res,0.003)        
+
+
+        un=check[21][0]
+        res=lambda_x
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[22][0]
+        res=lambda_y
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[23][0]
+        res=1.195*2/3.14
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[24][0]
+        res=3.14/2
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[25][0]
+        res=1.195
+        self.assertLess(abs(un-res)/res,0.002)        
+
+        un=check[26][0]
+        res=1.195*2/3.14
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[27][0]
+        res=3.14/2
+        self.assertLess(abs(un-res)/res,0.001)        
+
+        un=check[28][0]
+        res=1.195
+        self.assertLess(abs(un-res)/res,0.001)        
+        
+        print 41
         
 if __name__ == "__main__":
     unittest.main()

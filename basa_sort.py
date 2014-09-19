@@ -35,7 +35,7 @@ class BasaSort(object):
 
         self.__add_data_sostav={5:[u'dx, см'],6:[u'dx, см'],7:[u'dx, см', u'dy, см']}
         self.__list_elements=[[u'Ферма',0],[u'Балка',1],[u'Колонна',2]]
-        self.__list4elements=[[0,3,5,6,7],[0,1,3],[1,3]]
+        self.__list4elements=[[0,3,5,6,7,4],[0,1,3],[1,3]]
         
         self.pictures_list={0:'SortamentPicture/dvut.png'
         , 1:'SortamentPicture/shvel.png'
