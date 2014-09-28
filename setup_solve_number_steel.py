@@ -19,7 +19,7 @@ if sys.platform == "win32":
 
 setup(
         name = "SolveSectionNumber",
-        version = "0.1",
+        version = "0.2",
         options = {"build_exe" : {"includes" : "atexit" }},
         executables = [Executable("D:\\python_my\\Construct\\form_solve_number_steel.py", base = base)])
 

@@ -734,7 +734,233 @@ class snipn(normes):
 
 
     '''---------------------------------------------'''
+    def phi_e(self, typ):
+        '''определение phi_e для симметричных сечений  по СНиП и СП; выполняется учет phi>=phi_e
+        входные данные - typ - 1- относительно оси X, 2- Y
+        выходные - phi_e, mef, nau, lambda_'''
+    
+        mefm=self.mef(typ)
+        mef=mefm[0]
+        nau=mefm[1]
+        if typ==1:
+            lambda_=self.el.lambdax_()
+        if typ==2:
+            lambda_=self.el.lambday_()  
+        phi_e=self.phi_etable(mef, lambda_)
+        phi=self.phi_n(lambda_,typ-1)
+        if phi<phi_e:
+            phi_e=phi
+        return phi_e, mef, nau, lambda_
+        
+    def phi_etable(self, mef, lambda_):
+        '''определение phi_e по табличным данным;
+        входные данные - mef, lambda_
+        выходные - phi'''
+        
+        mef=float(mef)
+        lambda_=float(lambda_)
+        if mef<0.1:
+            mef=0.1
+        if mef>20:
+            mef=20
+        if lambda_<0.5:
+            lambda_=0.5
+        if lambda_<14:
+            
+            table=tables_csv('SolveData\\table_phi_n.csv', 'float_all')
+            phi=table.get_interpolate(mef, lambda_)
+        if lambda_>14:
+            phi=1/10.**10
+        phi=phi/1000.
+        
+        return phi
+        
+    def mef(self, typ):
+        '''определение mef для симметричных сечений  по СНиП и СП
+        входные данные - typ - 1- относительно оси X, 2- Y
+        выходные -  mef, nau'''
 
+        if typ==1:
+            e=self.force.mx/self.force.n
+            m=self.pr.a()/self.pr.wx()*e
+        if typ==2:
+            e=self.force.my/self.force.n
+            m=self.pr.a()/self.pr.wy()*e
+        nau=self.nau(m, typ)
+        mef=nau*m
+        return mef, nau
+                
+    def nau(self, m, typ):
+        '''определение nau для симметричных сечений  по СНиП и СП
+        входные данные - typ - 1- относительно оси X, 2- Y
+        выходные -  nau'''
+        n=10**10
+        n1=n
+        if self.pr.title()=='dvut' or self.pr.title()=='korob':
+            if typ==1:            
+                if 0<=self.el.lambdax_() and self.el.lambdax_()<=5:      
+                    if 0.1<=m and m<=5:
+                        n025=(1.45-0.05*m)-0.01*(5-m)*self.el.lambdax_()
+                        n05=(1.75-0.1*m)-0.02*(5-m)*self.el.lambdax_()
+                        n1=(1.9-0.1*m)-0.02*(6-m)*self.el.lambdax_()
+                    elif 5<m and m<=20: 
+                        n025=1.2
+                        n05=1.25
+                        n1=1.4-0.02*self.el.lambdax_()
+                elif self.el.lambdax_()>5:
+                    n025=1.2
+                    n05=1.25
+                    n1=1.3
+                afaw=self.pr.afaw ()
+#                print 'afaw - ', afaw
+#                print 'n025', n025
+#                print 'n05 ', n05
+#                print 'n1', n1
+#                print 'lambdax', self.el.lambdax_()
+                
+                if 0.25<=afaw and afaw<=0.5:
+                    n=(n05-n025)/(0.5-0.25)*(afaw-0.25)+n025
+                if 0.5<=afaw and afaw<=1:
+                    n=(n1-n05)/(1-0.5)*(afaw-0.5)+n05
+                if afaw>1:   
+                    n=n1
+
+            if typ==2:
+#                print 'm', m
+#                print 'lambday_', self.el.lambday_()
+                if self.pr.title()=='dvut':                
+                    if 0<=self.el.lambday_() and self.el.lambday_()<=5:      
+                        if 0.1<=m and m<=5:
+                            n025=(0.75+0.05*m)+0.01*(5-m)*self.el.lambday_()
+                            n05=(0.5+0.1*m)+0.02*(5-m)*self.el.lambday_()
+                            n1=(0.25+0.15*m)+0.03*(5-m)*self.el.lambday_()
+                        if 5<m and m<=20: 
+                            n025=1.0
+                            n05=1.0
+                            n1=1.0
+                    if self.el.lambday_()>5:
+                        n025=1.0
+                        n05=1.0
+                        n1=1.0
+                if self.pr.title()=='korob':
+                    if 0<=self.el.lambday_() and self.el.lambday_()<=5:      
+                        if 0.1<=m and m<=5:
+                            n025=(1.45-0.05*m)-0.01*(5-m)*self.el.lambday_()
+                            n05=(1.75-0.1*m)-0.02*(5-m)*self.el.lambday_()
+                            n1=(1.9-0.1*m)-0.02*(6-m)*self.el.lambday_()
+                        if 5<m and m<=20: 
+                            n025=1.2
+                            n05=1.25
+                            n1=1.4-0.02*self.el.lambday_()
+                    if self.el.lambday_()>5:
+                        n025=1.2
+                        n05=1.25
+                        n1=1.3
+                            
+                            
+#                print 'afaw - ', self.el.profile.s()*(self.el.profile.h()-2*self.el.profile.t())/(2*self.el.profile.t()*self.el.profile.b())
+#                print 'n025', n025
+#                print 'n05 ', n05
+#                print 'n1', n1
+#                print 'lambdax', self.el.lambday_()
+                
+                
+                if self.pr.title()=='korob':                                         
+                    afaw=self.pr.h()/(self.pr.b()-2*self.pr.s())/2.
+                elif self.pr.title()=='dvut':  
+                    afaw=1/(2.*self.pr.afaw())  
+                    
+                if 0.25<=afaw and afaw<=0.5:
+#                    print n05
+                    n=(n05-n025)/(0.5-0.25)*(afaw-0.25)+n025
+                elif 0.5<afaw and afaw<=1:
+                    n=(n1-n05)/(1-0.5)*(afaw-0.5)+n05
+                elif afaw>1:   
+                    n=n1   
+        return n
+        
+
+            
+    def c(self):
+            
+        e=self.force.mx/self.force.n
+        mx=self.pr.a()/self.pr.wx()*e
+        
+        if self.pr.title()=='dvut':
+            c_max=self.c_max()
+        if self.pr.title()=='korob':
+            c_max=1
+       
+            
+        if mx<=5:
+            c=self.b_c()/(1+self.a_c(mx)*mx)
+            if c>1:
+                c=1            
+        if mx>=10:
+            c=1/(1+mx*self.phiy()/self.phi_b(typ=1, typ1=2, typ2=3, typ3=1))
+        if 5<mx and mx<10:
+            c5=self.b_c()/(1+self.a_c(5)*5)
+            if c5>1:
+                c5=1
+            c10=1/(1+10*self.phiy()/self.phi_b(typ=1, typ1=2, typ2=3, typ3=1))
+            c=c5*(2-0.2*mx)+c10*(0.2*mx-1)
+#            print 'c5', c5, 'c10', c10
+        if self.el.lambday_()>3.14 and c>c_max:
+            c=c_max
+        if c>1:
+            c=1
+#        print c
+        return c, c_max, mx
+                
+            
+            
+    def a_c(self, mx):
+        if mx<=1:
+            a_c=0.7
+        if 1<mx and mx<=5:
+            a_c=0.65+0.05*mx
+        return a_c
+    def b_c(self):
+#        print self.el.lambday_()
+        if self.el.lambday_()<=3.14:
+            b_c=1
+        if self.el.lambday_()>3.14:
+            b_c=(self.phi_n(lambda_=3.14, typ=0)/self.phiy())**0.5
+        return b_c
+
+                
+    def c_max(self):
+        w=0.25
+#        print w
+        a=0.
+#        b=0.
+        h=self.pr.h()-self.pr.t()
+        p=(self.pr.jx()+self.pr.jy())/(self.pr.a()*h**2)+a**2
+#        print 'p',p
+#        print 'self.el.lambday_()',self.el.lambday()        
+        jt=self.pr.jt()/1.3
+#        print 'jt', jt
+        mu=8*w+0.156*jt*self.el.lambday()**2/(self.pr.a()*h**2)
+#        print 'mu', mu
+        ex=self.force.mx/self.force.n
+#        print 'ex', ex
+#        bb=1
+#        print 'bb', bb
+        delta=4*p/mu
+#        print 'delta', delta
+        cmax=2./(1.+delta+((1-delta)**2+16/mu*(a-ex/h)**2)**0.5)
+#        print cmax
+        return cmax
+            
+    def phi_exy(self):
+        c=self.c()[0]
+        phi_ey=self.phi_e(typ=2)[0]
+#        print 'c', c
+#        print 'phi_ey', phi_ey
+        phi_exy=phi_ey*(0.6*c**(1./3)+0.4*c**(1./4))
+        return phi_exy, phi_ey, c
+
+        '''_____________________________________________'''
 
         
     def local_buckl_h_m2(self, typ=1):
@@ -876,219 +1102,6 @@ class snipn(normes):
      
 
 
-    def phi_e(self, typ):
-#только для симметричных профилей   
-        mefm=self.mef(typ)
-        mef=mefm[0]
-        nau=mefm[1]
-        if typ==1:
-            lambda_=self.el.lambdax_()
-        if typ==2:
-            lambda_=self.el.lambday_()  
-        phi_e=self.phi_etable(mef, lambda_)
-        phi=self.phi_n(lambda_,typ-1)
-        if phi<phi_e:
-            phi_e=phi
-        return phi_e, mef, nau, lambda_
-        
-    def phi_etable(self, mef, lambda_):
-        mef=float(mef)
-        lambda_=float(lambda_)
-        if mef<0.1:
-            mef=0.1
-        if mef>20:
-            mef=20
-        if lambda_<0.5:
-            lambda_=0.5
-        if lambda_<14:
-            
-            table=tables_csv('table_phi_n.csv', 'float_all')
-            phi=table.get_interpolate(mef, lambda_)
-        if lambda_>14:
-            phi=1/10.**10
-        phi=phi/1000.
-        
-        return phi
-        
-    def mef(self, typ):
-        if typ==1:
-            e=self.force.mx/self.force.n
-            m=self.pr.a()/self.pr.wx()*e
-        if typ==2:
-            e=self.force.my/self.force.n
-            m=self.pr.a()/self.pr.wy()*e
-        nau=self.nau(m, typ)
-        mef=nau*m
-        return mef, nau
-                
-    def nau(self, m, typ):
-        #typ -1 -в главной плоскости, typ2  - в другой
-        n=10**10
-        n1=n
-        if self.pr.title()=='dvut' or self.pr.title()=='korob':
-            if typ==1:            
-                if 0<=self.el.lambdax_() and self.el.lambdax_()<=5:      
-                    if 0.1<=m and m<=5:
-                        n025=(1.45-0.05*m)-0.01*(5-m)*self.el.lambdax_()
-                        n05=(1.75-0.1*m)-0.02*(5-m)*self.el.lambdax_()
-                        n1=(1.9-0.1*m)-0.02*(6-m)*self.el.lambdax_()
-                    if 5<m and m<=20: 
-                        n025=1.2
-                        n05=1.25
-                        n1=1.4-0.02*self.el.lambdax_()
-                if self.el.lambdax_()>5:
-                    n025=1.2
-                    n05=1.25
-                    n1=1.3
-                afaw=self.pr.afaw ()
-#                print 'afaw - ', afaw
-#                print 'n025', n025
-#                print 'n05 ', n05
-#                print 'n1', n1
-#                print 'lambdax', self.el.lambdax_()
-                
-                if 0.25<=afaw and afaw<=0.5:
-                    n=(n05-n025)/(0.5-0.25)*(afaw-0.25)+n025
-                if 0.5<=afaw and afaw<=1:
-                    n=(n1-n05)/(1-0.5)*(afaw-0.5)+n05
-                if afaw>1:   
-                    n=n1
-
-            if typ==2:
-                if m<0.1:
-                    m=0.1
-#                print 'm', m
-#                print 'lambday_', self.el.lambday_()
-                if self.pr.title()=='dvut':                
-                    if 0<=self.el.lambday_() and self.el.lambday_()<=5:      
-                        if 0.1<=m and m<=5:
-                            n025=(0.75+0.05*m)+0.01*(5-m)*self.el.lambday_()
-                            n05=(0.5+0.1*m)+0.02*(5-m)*self.el.lambday_()
-                            n1=(0.25+0.15*m)+0.03*(5-m)*self.el.lambday_()
-                        if 5<m and m<=20: 
-                            n025=1.0
-                            n05=1.0
-                            n1=1.0
-                    if self.el.lambday_()>5:
-                        n025=1.0
-                        n05=1.0
-                        n1=1.0
-                if self.pr.title()=='korob':
-                    if 0<=self.el.lambday_() and self.el.lambday_()<=5:      
-                        if 0.1<=m and m<=5:
-                            n025=(1.45-0.05*m)-0.01*(5-m)*self.el.lambday_()
-                            n05=(1.75-0.1*m)-0.02*(5-m)*self.el.lambday_()
-                            n1=(1.9-0.1*m)-0.02*(6-m)*self.el.lambday_()
-                        if 5<m and m<=20: 
-                            n025=1.2
-                            n05=1.25
-                            n1=1.4-0.02*self.el.lambday_()
-                    if self.el.lambday_()>5:
-                        n025=1.2
-                        n05=1.25
-                        n1=1.3
-                            
-                            
-#                print 'afaw - ', self.el.profile.s()*(self.el.profile.h()-2*self.el.profile.t())/(2*self.el.profile.t()*self.el.profile.b())
-#                print 'n025', n025
-#                print 'n05 ', n05
-#                print 'n1', n1
-#                print 'lambdax', self.el.lambday_()
-                
-                
-                if self.pr.title()=='korob':                                         
-                    afaw=self.pr.h()/(self.pr.b()-2*self.pr.s())/2
-                if self.pr.title()=='dvut':  
-                    afaw=1/(2*self.pr.afaw())                    
-                if 0.25<=afaw and afaw<=0.5:
-#                    print n05
-                    n=(n05-n025)/(0.5-0.25)*(afaw-0.25)+n025
-                if 0.5<afaw and afaw<=1:
-                    n=(n1-n05)/(1-0.5)*(afaw-0.5)+n05
-                if afaw>1:   
-                    n=n1   
-        return n
-        
-
-            
-    def c(self):
-            
-        e=self.force.mx/self.force.n
-        mx=self.pr.a()/self.pr.wx()*e
-        
-        if self.pr.title()=='dvut':
-            c_max=self.c_max()
-        if self.pr.title()=='korob':
-            c_max=1
-       
-            
-        if mx<=5:
-            c=self.b_c()/(1+self.a_c(mx)*mx)
-            if c>1:
-                c=1            
-        if mx>=10:
-            c=1/(1+mx*self.phiy()/self.phi_b(typ=1, typ1=2, typ2=3, typ3=1))
-        if 5<mx and mx<10:
-            c5=self.b_c()/(1+self.a_c(5)*5)
-            if c5>1:
-                c5=1
-            c10=1/(1+10*self.phiy()/self.phi_b(typ=1, typ1=2, typ2=3, typ3=1))
-            c=c5*(2-0.2*mx)+c10*(0.2*mx-1)
-#            print 'c5', c5, 'c10', c10
-        if self.el.lambday_()>3.14 and c>c_max:
-            c=c_max
-        if c>1:
-            c=1
-#        print c
-        return c, c_max, mx
-                
-            
-            
-    def a_c(self, mx):
-        if mx<=1:
-            a_c=0.7
-        if 1<mx and mx<=5:
-            a_c=0.65+0.05*mx
-        return a_c
-    def b_c(self):
-#        print self.el.lambday_()
-        if self.el.lambday_()<=3.14:
-            b_c=1
-        if self.el.lambday_()>3.14:
-            b_c=(self.phi_n(lambda_=3.14, typ=0)/self.phiy())**0.5
-        return b_c
-
-                
-    def c_max(self):
-        w=0.25
-#        print w
-        a=0.
-#        b=0.
-        h=self.pr.h()-self.pr.t()
-        p=(self.pr.jx()+self.pr.jy())/(self.pr.a()*h**2)+a**2
-#        print 'p',p
-#        print 'self.el.lambday_()',self.el.lambday()        
-        jt=self.pr.jt()/1.3
-#        print 'jt', jt
-        mu=8*w+0.156*jt*self.el.lambday()**2/(self.pr.a()*h**2)
-#        print 'mu', mu
-        ex=self.force.mx/self.force.n
-#        print 'ex', ex
-#        bb=1
-#        print 'bb', bb
-        delta=4*p/mu
-#        print 'delta', delta
-        cmax=2./(1.+delta+((1-delta)**2+16/mu*(a-ex/h)**2)**0.5)
-#        print cmax
-        return cmax
-            
-    def phi_exy(self):
-        c=self.c()[0]
-        phi_ey=self.phi_e(typ=2)[0]
-#        print 'c', c
-#        print 'phi_ey', phi_ey
-        phi_exy=phi_ey*(0.6*c**(1./3)+0.4*c**(1./4))
-        return phi_exy, phi_ey, c
             
      
     #typ - 1 в главной плоскости, 2- в другой
