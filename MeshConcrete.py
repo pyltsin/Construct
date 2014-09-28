@@ -44,16 +44,6 @@ def functionCircles(d,x,y):
     jy=a*x**2
     return [x,y,a,jx,jy]
 
-class Circles():
-    def __init__(self, d, x, y):
-        self.__d=d
-        self.__x=x
-        self.__y=y
-    def mesh(self):
-        a=3.1415*(self.__d/2.)**2
-        jx=a*self.__y**2
-        jy=a*self.__x**2
-        return [self.__x,self.__y, a, jx, jy]
 
 def functionMeshSolidCircles(d,x,y,nx):
     lst=[]
@@ -94,3 +84,23 @@ if __name__ == "__main__":
         jy+=i[4]
     print a, jx, jy
     print 3.14*(d/2.)**2, 3.1415*d** 4 / 64 
+    
+    h=3000.
+    b=1000.
+    nx=1000
+    ny=1000
+    meshLst=functionRectangles(h,b,0,0,ny,nx)
+
+    a=0
+    jx=0
+    jy=0
+    print 'tut2'
+    for i in meshLst:
+        a+=i[2]
+        jx+=i[3]
+        jy+=i[4]
+    print a, jx, jy
+    print h*b, h**3*b/12.,b**3*h/12. 
+    
+
+    
