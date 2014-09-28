@@ -747,10 +747,33 @@ class snipn(normes):
         if typ==2:
             lambda_=self.el.lambday_()  
         phi_e=self.phi_etable(mef, lambda_)
-        phi=self.phi_n(lambda_,typ-1)
+        
+#        print lambda_, typ
+        phi=self.phi_n(lambda_,typ)[0]
+#        print 'phi', phi,phi_e
         if phi<phi_e:
             phi_e=phi
+#            print 'point 1'
         return phi_e, mef, nau, lambda_
+
+    def phi_e_old(self, typ):
+        mefm=self.mef(typ)
+        mef=mefm[0]
+        nau=mefm[1]
+        if typ==1:
+            lambda_=self.el.lambdax_()
+        if typ==2:
+            lambda_=self.el.lambday_()  
+        phi_e=self.phi_etable(mef, lambda_)
+        
+        phi=self.phi_n_old(lambda_)
+#        print 'phi', phi,phi_e
+
+        if phi<phi_e:
+            phi_e=phi
+#            print 'point 2'
+        return phi_e, mef, nau, lambda_
+
         
     def phi_etable(self, mef, lambda_):
         '''определение phi_e по табличным данным;
@@ -767,13 +790,16 @@ class snipn(normes):
             lambda_=0.5
         if lambda_<14:
             
-            table=tables_csv('SolveData\\table_phi_n.csv', 'float_all')
+            table=tables_csv('SolveSteelData\\table_phi_n.csv', 'float_all')
             phi=table.get_interpolate(mef, lambda_)
         if lambda_>14:
             phi=1/10.**10
         phi=phi/1000.
         
         return phi
+
+    def phi_etable_old(self, mef, lambda_):
+        return self.phi_etable(mef, lambda_)
         
     def mef(self, typ):
         '''определение mef для симметричных сечений  по СНиП и СП
@@ -789,41 +815,63 @@ class snipn(normes):
         nau=self.nau(m, typ)
         mef=nau*m
         return mef, nau
-                
+
+    def mef_old(self, typ):
+        return self. mef(typ)  
+              
     def nau(self, m, typ):
         '''определение nau для симметричных сечений  по СНиП и СП
         входные данные - typ - 1- относительно оси X, 2- Y
+        m вводится в рамки - 0,1 - 20 
         выходные -  nau'''
         n=10**10
         n1=n
+        if m<0.1:
+            m=0.1
+        elif m>20:
+            m=20
         if self.pr.title()=='dvut' or self.pr.title()=='korob':
             if typ==1:            
                 if 0<=self.el.lambdax_() and self.el.lambdax_()<=5:      
                     if 0.1<=m and m<=5:
+#                        print 'point 1'
                         n025=(1.45-0.05*m)-0.01*(5-m)*self.el.lambdax_()
                         n05=(1.75-0.1*m)-0.02*(5-m)*self.el.lambdax_()
                         n1=(1.9-0.1*m)-0.02*(6-m)*self.el.lambdax_()
                     elif 5<m and m<=20: 
+#                        print 'point 2'
+
                         n025=1.2
                         n05=1.25
                         n1=1.4-0.02*self.el.lambdax_()
                 elif self.el.lambdax_()>5:
+#                    print 'point 3'
+
                     n025=1.2
                     n05=1.25
                     n1=1.3
                 afaw=self.pr.afaw ()
+#                print 'afaw', afaw
 #                print 'afaw - ', afaw
 #                print 'n025', n025
 #                print 'n05 ', n05
 #                print 'n1', n1
 #                print 'lambdax', self.el.lambdax_()
-                
+                if afaw<0.25:
+                    afaw=0.25
+
                 if 0.25<=afaw and afaw<=0.5:
+#                    print 'point 4'
+
                     n=(n05-n025)/(0.5-0.25)*(afaw-0.25)+n025
                 if 0.5<=afaw and afaw<=1:
+#                    print 'point 5'
+
                     n=(n1-n05)/(1-0.5)*(afaw-0.5)+n05
                 if afaw>1:   
                     n=n1
+#                    print 'point 6'
+
 
             if typ==2:
 #                print 'm', m
@@ -831,28 +879,40 @@ class snipn(normes):
                 if self.pr.title()=='dvut':                
                     if 0<=self.el.lambday_() and self.el.lambday_()<=5:      
                         if 0.1<=m and m<=5:
+#                            print 'point 7'
+
                             n025=(0.75+0.05*m)+0.01*(5-m)*self.el.lambday_()
                             n05=(0.5+0.1*m)+0.02*(5-m)*self.el.lambday_()
                             n1=(0.25+0.15*m)+0.03*(5-m)*self.el.lambday_()
-                        if 5<m and m<=20: 
+                        if 5<m and m<=20:
+#                            print 'point 8'
+
                             n025=1.0
                             n05=1.0
                             n1=1.0
                     if self.el.lambday_()>5:
+#                        print 'point 9'
+
                         n025=1.0
                         n05=1.0
                         n1=1.0
                 if self.pr.title()=='korob':
                     if 0<=self.el.lambday_() and self.el.lambday_()<=5:      
                         if 0.1<=m and m<=5:
+#                            print 'point 10'
+
                             n025=(1.45-0.05*m)-0.01*(5-m)*self.el.lambday_()
                             n05=(1.75-0.1*m)-0.02*(5-m)*self.el.lambday_()
                             n1=(1.9-0.1*m)-0.02*(6-m)*self.el.lambday_()
-                        if 5<m and m<=20: 
+                        if 5<m and m<=20:
+#                            print 'point 11'
+
                             n025=1.2
                             n05=1.25
                             n1=1.4-0.02*self.el.lambday_()
                     if self.el.lambday_()>5:
+#                        print 'point 12'
+
                         n025=1.2
                         n05=1.25
                         n1=1.3
@@ -865,20 +925,33 @@ class snipn(normes):
 #                print 'lambdax', self.el.lambday_()
                 
                 
-                if self.pr.title()=='korob':                                         
+                if self.pr.title()=='korob':
+#                    print 'point 13'
+                                         
                     afaw=self.pr.h()/(self.pr.b()-2*self.pr.s())/2.
                 elif self.pr.title()=='dvut':  
                     afaw=1/(2.*self.pr.afaw())  
-                    
+#                    print 'point 14'
+                if afaw<0.25:
+                    afaw=0.25
+
                 if 0.25<=afaw and afaw<=0.5:
 #                    print n05
+#                    print 'point 15'
+
                     n=(n05-n025)/(0.5-0.25)*(afaw-0.25)+n025
                 elif 0.5<afaw and afaw<=1:
+#                    print 'point 16'
+
                     n=(n1-n05)/(1-0.5)*(afaw-0.5)+n05
-                elif afaw>1:   
+                elif afaw>1:
+#                    print 'point 17'
+
                     n=n1   
         return n
-        
+    
+    def nau_old(self, m, typ):
+        return self.nau(m, typ)
 
             
     def c(self):

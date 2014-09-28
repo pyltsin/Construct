@@ -4279,5 +4279,375 @@ class Test_code_beam(unittest.TestCase):
         
         print 41
         
+        
+class Test_column(unittest.TestCase):
+    def test_nau_dvutavr(self):    
+
+        pr1=dvut(h=520, b=100, t=20, s=8, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C245',pr1)
+        #, mux=0, muy=0, mub=0, lfact=0
+        el=elements(s, pr1, mux=3500, muy=700, mub=8000, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+
+        self.assertLess(abs(sol.nau(10.,1)-1.25574)/1.25574,0.001)  
+#
+#        print sol.nau(4.,1)        
+        self.assertLess(abs(sol.nau(4,1)-1.344)/1.344,0.001) 
+
+
+        pr1=dvut(h=520, b=50, t=20, s=8, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C245',pr1)
+        el=elements(s, pr1, mux=3500, muy=700, mub=8000, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+
+
+        self.assertLess(abs(sol.nau(10.,1)-1.20208)/1.20208,0.001)  
+#
+#        print sol.nau(4.,1)        
+        self.assertLess(abs(sol.nau(4,1)-1.2474)/1.2474,0.001)      
+
+        pr1=dvut(h=520, b=50, t=20, s=8, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C245',pr1)
+        el=elements(s, pr1, mux=70000, muy=700, mub=8000, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+
+        self.assertLess(abs(sol.nau(10.,1)-1.20208)/1.20208,0.001)  
+#
+#        print sol.nau(4.,1)        
+        self.assertLess(abs(sol.nau(4,1)-1.20208)/1.20208,0.001)  
+
+
+        pr1=dvut(h=520, b=100, t=20, s=8, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C245',pr1)
+        el=elements(s, pr1, mux=70000, muy=700, mub=8000, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+
+        self.assertLess(abs(sol.nau(10.,1)-1.25208)/1.25208,0.001)  
+#
+#        print sol.nau(4.,1)        
+        self.assertLess(abs(sol.nau(4,1)-1.25208)/1.25208,0.001)  
+
+
+        pr1=dvut(h=520, b=400, t=20, s=8, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C245',pr1)
+        el=elements(s, pr1, mux=70000, muy=700, mub=8000, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+
+        self.assertLess(abs(sol.nau(10.,1)-1.3)/1.3,0.001)  
+#
+#        print sol.nau(4.,1)        
+        self.assertLess(abs(sol.nau(4,1)-1.3)/1.3,0.001)
+
+#nau 2
+        pr1=dvut(h=520, b=200, t=20, s=8, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C245',pr1)
+        el=elements(s, pr1, mux=3500, muy=700, mub=8000, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+
+        self.assertLess(abs(sol.nau(10.,2)-1.)/1.,0.001)  
+#
+#        print sol.nau(4.,2)        
+        self.assertLess(abs(sol.nau(4,2)-0.91366)/0.91366,0.001) 
+        
+        
+
+
+        pr1=dvut(h=520, b=100, t=20, s=8, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C245',pr1)
+        el=elements(s, pr1, mux=3500, muy=700, mub=8000, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+
+        self.assertLess(abs(sol.nau(10.,2)-1)/1,0.001)  
+#
+#        print sol.nau(4.,2)        
+        self.assertLess(abs(sol.nau(4,2)-0.88773)/0.88773,0.001) 
+
+
+        pr1=dvut(h=520, b=50, t=20, s=8, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C245',pr1)
+        el=elements(s, pr1, mux=3500, muy=700, mub=8000, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+
+
+        self.assertLess(abs(sol.nau(10.,2)-1.)/1.,0.001)  
+#
+#        print sol.nau(4.,2)        
+        self.assertLess(abs(sol.nau(4,2)-0.932848)/0.932848,0.001)      
+
+        pr1=dvut(h=520, b=50, t=20, s=8, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C245',pr1)
+        el=elements(s, pr1, mux=70000, muy=700, mub=8000, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+
+        self.assertLess(abs(sol.nau(10.,2)-1.)/1.,0.001)  
+#
+#        print sol.nau(4.,2)        
+        self.assertLess(abs(sol.nau(4,2)-0.932848)/0.932848,0.001)  
+
+
+        pr1=dvut(h=520, b=100, t=20, s=8, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C245',pr1)
+        el=elements(s, pr1, mux=70000, muy=700, mub=8000, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+
+        self.assertLess(abs(sol.nau(10.,2)-1.)/1.,0.001)  
+#
+#        print sol.nau(4.,2)        
+        self.assertLess(abs(sol.nau(4,2)-0.88773)/0.88773,0.001)  
+
+
+        pr1=dvut(h=520, b=350, t=20, s=8, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C245',pr1)
+        el=elements(s, pr1, mux=70000, muy=700, mub=8000, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+
+        self.assertLess(abs(sol.nau(10.,2)-1.)/1.,0.001)  
+#
+#        print sol.nau(4.,2)        
+        self.assertLess(abs(sol.nau(4,2)-0.94807)/0.94807,0.001)          
+
+
+        pr1=dvut(h=520, b=50, t=20, s=8, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C245',pr1)
+        el=elements(s, pr1, mux=700, muy=700000, mub=8000, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+
+        self.assertLess(abs(sol.nau(10.,2)-1.)/1.,0.001)  
+#
+#        print sol.nau(4.,2)        
+        self.assertLess(abs(sol.nau(4,2)-1)/1,0.001)  
+
+
+        pr1=dvut(h=520, b=100, t=20, s=8, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C245',pr1)
+        el=elements(s, pr1, mux=700, muy=700000, mub=8000, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+
+        self.assertLess(abs(sol.nau(10.,2)-1.)/1.,0.001)  
+#
+#        print sol.nau(4.,2)        
+        self.assertLess(abs(sol.nau(4,2)-1)/1,0.001)  
+
+
+        pr1=dvut(h=520, b=350, t=20, s=8, r1=0, r2=0, a1=0)
+        s=steel_snip20107n('C245',pr1)
+        el=elements(s, pr1,mux=700, muy=700000, mub=8000, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+
+        self.assertLess(abs(sol.nau(10.,2)-1.)/1.,0.001)  
+#
+#        print sol.nau(4.,2)        
+        self.assertLess(abs(sol.nau(4,2)-1)/1,0.001)           
+        
+        print 42
+
+    def test_nau_korob(self): 
+        pr1=truba_pryam(h=14.0,	b=6.,	t=0.5,	r1=0.5,	r2=1)
+        s=steel_snip1987('C235',pr1, dim=1)
+        el=elements(s, pr1, mux=600, muy=600, mub=600, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+
+        self.assertLess(abs(sol.nau(5.658,1)-1.20)/1.20,0.001)  
+
+
+        pr1=truba_pryam(h=14.0,	b=6.,	t=0.5,	r1=0.5,	r2=1)
+        s=steel_snip1987('C235',pr1, dim=1)
+        el=elements(s, pr1, mux=600, muy=600, mub=600, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+        self.assertLess(abs(sol.nau(9.287,2)-1.3)/1.3,0.001)  
+
+        pr1=truba_pryam(h=14.0,	b=6.,	t=0.5,	r1=0.5,	r2=1)
+        s=steel_snip1987('C235',pr1, dim=1)
+        el=elements(s, pr1, mux=300, muy=300, mub=300, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+        self.assertLess(abs(sol.nau(4.334,2)-1.331)/1.331,0.001)  
+
+        pr1=truba_pryam(h=14.0,	b=6.,	t=0.5,	r1=0.5,	r2=1)
+        s=steel_snip1987('C235',pr1, dim=1)
+        el=elements(s, pr1, mux=300, muy=300, mub=300, lfact=1) 
+        forc=force()        
+        sol=snipn(el,forc,1)
+        self.assertLess(abs(sol.nau(7.43,2)-1.319)/1.319,0.001)  
+
+        
+        print 43
+
+    def test_mef(self):
+        pr1=truba_pryam(h=14.0,	b=6.,	t=0.5,	r1=0.5,	r2=1)
+        s=steel_snip1987('C235',pr1, dim=1)
+        el=elements(s, pr1, mux=600, muy=600, mub=600, lfact=1) 
+        forc=force(n=10000,mx=100000,my=100000)        
+        sol=snipn(el,forc,1)
+#        print sol.mef(1)
+        self.assertLess(abs(sol.mef(1)[0]-3.671)/3.671,0.001)  
+        self.assertLess(abs(sol.mef(1)[1]-1.2166)/1.2166,0.001)  
+        
+        pr1=truba_pryam(h=14.0,	b=6.,	t=0.5,	r1=0.5,	r2=1)
+        s=steel_snip1987('C235',pr1, dim=1)
+        el=elements(s, pr1, mux=300, muy=600, mub=300, lfact=1) 
+        forc=force(n=10000,mx=150000,my=100000)        
+        sol=snipn(el,forc,1)
+#        print sol.mef(2)
+        self.assertLess(abs(sol.mef(2)[0]-6.440)/6.440,0.001)  
+        self.assertLess(abs(sol.mef(2)[1]-1.3)/1.3,0.001)  
+
+        print 44
+    def test_table_phi_e(self):
+        pr1=truba_pryam(h=14.0,	b=6.,	t=0.5,	r1=0.5,	r2=1)
+        s=steel_snip1987('C235',pr1, dim=1)
+        el=elements(s, pr1, mux=600, muy=600, mub=600, lfact=1) 
+        forc=force(n=10000,mx=100000,my=100000)        
+        sol=snipn(el,forc,1)
+        res=sol.phi_etable(6.535, 121.9*(230./206./1000)**0.5)   
+        self.assertLess(abs(res-0.133)/0.133,0.001)
+        
+        res=sol.phi_etable(6.535, 15)   
+#        print res
+        self.assertLess(abs(res-1/10.**13)/(1/10.**13),0.001)  
+
+
+
+        res=sol.phi_etable(0.5, 0.3)   
+#        print res
+        self.assertLess(abs(res-0.85)/(0.85),0.001)  
+
+        res=sol.phi_etable(0.0, 4)   
+#        print res
+        self.assertLess(abs(res-0.505)/(0.505),0.001)  
+
+
+        res=sol.phi_etable(21, 4)   
+#        print res
+        self.assertLess(abs(res-0.057)/(0.057),0.001)  
+
+        print 45
+
+    def test_phi_e(self):
+        pr1=truba_pryam(h=14.0,	b=6.,	t=0.5,	r1=0.5,	r2=1)
+        s=steel_snip1987('C235',pr1, dim=1)
+        el=elements(s, pr1, mux=300, muy=300, mub=300, lfact=1) 
+        forc=force(n=10000,mx=100000,my=100000)        
+        sol=snipn(el,forc,1)
+        res=sol.phi_e(1)[0]
+        check=0.267
+        self.assertLess(abs(res-check)/(check),0.001)  
+
+        res=sol.phi_e(1)[1]
+        check=3.796
+        self.assertLess(abs(res-check)/(check),0.001)  
+
+        res=sol.phi_e(1)[2]
+        check=1.258
+        self.assertLess(abs(res-check)/(check),0.001)  
+
+        res=sol.phi_e(1)[3]
+        check=62.3*(230./206./1000)**0.5
+        self.assertLess(abs(res-check)/(check),0.001)  
+
+#        print sol.phi_e(2)
+
+
+        res=sol.phi_e(2)[0]
+        check=0.133
+        self.assertLess(abs(res-check)/(check),0.001)  
+
+        res=sol.phi_e(2)[1]
+        check=6.53
+        self.assertLess(abs(res-check)/(check),0.001)  
+
+        res=sol.phi_e(2)[2]
+        check=1.319
+        self.assertLess(abs(res-check)/(check),0.001)  
+
+        res=sol.phi_e(2)[3]
+        check=121.9*(230./206./1000)**0.5
+        self.assertLess(abs(res-check)/(check),0.001)  
+
+        pr1=truba_pryam(h=14.0,	b=6.,	t=0.5,	r1=0.5,	r2=1)
+        s=steel_snip20107n('C255',pr1, dim=1)
+        el=elements(s, pr1, mux=300, muy=300, mub=300, lfact=1) 
+        forc=force(n=10000.,mx=10.,my=10.) 
+        sol=snipn(el,forc,1)
+
+#        print el.lambday_()  
+#        print sol.phi_e(2)
+#        print sol.phi_n(121.9*(240./206./1000)**0.5,2)
+        res=sol.phi_e(2)[0]
+        check=0.439
+        self.assertLess(abs(res-check)/(check),0.001)  
+
+        print 46
+
+    def test_phi_e_old(self):
+        pr1=truba_pryam(h=14.0,	b=6.,	t=0.5,	r1=0.5,	r2=1)
+        s=steel_snip1987('C235',pr1, dim=1)
+        el=elements(s, pr1, mux=300, muy=300, mub=300, lfact=1) 
+        forc=force(n=10000,mx=100000,my=100000)        
+        sol=snipn(el,forc,1)
+        res=sol.phi_e_old(1)[0]
+        check=0.267
+        self.assertLess(abs(res-check)/(check),0.001)  
+
+        res=sol.phi_e_old(1)[1]
+        check=3.796
+        self.assertLess(abs(res-check)/(check),0.001)  
+
+        res=sol.phi_e_old(1)[2]
+        check=1.258
+        self.assertLess(abs(res-check)/(check),0.001)  
+
+        res=sol.phi_e_old(1)[3]
+        check=62.3*(230./206./1000)**0.5
+        self.assertLess(abs(res-check)/(check),0.001)  
+
+#        print sol.phi_e(2)
+
+
+        res=sol.phi_e_old(2)[0]
+        check=0.133
+        self.assertLess(abs(res-check)/(check),0.001)  
+
+        res=sol.phi_e_old(2)[1]
+        check=6.53
+        self.assertLess(abs(res-check)/(check),0.001)  
+
+        res=sol.phi_e_old(2)[2]
+        check=1.319
+        self.assertLess(abs(res-check)/(check),0.001)  
+
+        res=sol.phi_e_old(2)[3]
+        check=121.9*(230./206./1000)**0.5
+        self.assertLess(abs(res-check)/(check),0.001)  
+
+        pr1=truba_pryam(h=14.0,	b=6.,	t=0.5,	r1=0.5,	r2=1)
+        s=steel_snip1987('C235',pr1, dim=1)
+        el=elements(s, pr1, mux=300, muy=300, mub=300, lfact=1) 
+        forc=force(n=10000,mx=10,my=0)       
+#        print sol.phi_e_old(1)
+        
+        res=sol.phi_e_old(1)[0]
+        check=0.79937
+        self.assertLess(abs(res-check)/(check),0.001)  
+
+        print 47
+
+        
 if __name__ == "__main__":
     unittest.main()
