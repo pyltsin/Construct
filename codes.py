@@ -757,14 +757,14 @@ class snipn(normes):
         return phi_e, mef, nau, lambda_
 
     def phi_e_old(self, typ):
-        mefm=self.mef(typ)
+        mefm=self.mef_old(typ)
         mef=mefm[0]
         nau=mefm[1]
         if typ==1:
             lambda_=self.el.lambdax_()
         if typ==2:
             lambda_=self.el.lambday_()  
-        phi_e=self.phi_etable(mef, lambda_)
+        phi_e=self.phi_etable_old(mef, lambda_)
         
         phi=self.phi_n_old(lambda_)
 #        print 'phi', phi,phi_e
@@ -954,8 +954,43 @@ class snipn(normes):
         return self.nau(m, typ)
 
             
-    def c(self):
+    def c_old(self):
+        """Определение коэффициента c по СНиП (формула 56)
+        возвращает с, с_max, mx"""
+        
+        e=self.force.mx/self.force.n
+        mx=self.pr.a()/self.pr.wx()*e
+        
+        if self.pr.title()=='dvut':
+            c_max=self.c_max_old()
+        if self.pr.title()=='korob':
+            c_max=1
+       
             
+        if mx<=5:
+            c=self.b_c_old()/(1+self.a_c_old(mx)*mx)
+#            if c>1:
+#                c=1            
+        if mx>=10:
+            c=1/(1+mx*self.phiy_old()/self.phi_b_old(typ=1, typ1=2, typ2=3, typ3=1))
+        if 5<mx and mx<10:
+            c5=self.b_c_old()/(1+self.a_c_old(5)*5)
+#            if c5>1:
+#                c5=1
+            c10=1/(1+10*self.phiy_old()/self.phi_b_old(typ=1, typ1=2, typ2=3, typ3=1))
+            c=c5*(2-0.2*mx)+c10*(0.2*mx-1)
+#            print 'c5', c5, 'c10', c10
+        if self.el.lambday_()>3.14 and c>c_max:
+            c=c_max
+#        if c>1:
+#            c=1
+#        print c
+        return c, c_max, mx
+                
+    def c(self):
+        """Определение коэффициента c по СП (формула 111)
+        возвращает с, с_max, mx"""
+        
         e=self.force.mx/self.force.n
         mx=self.pr.a()/self.pr.wx()*e
         
@@ -980,20 +1015,40 @@ class snipn(normes):
 #            print 'c5', c5, 'c10', c10
         if self.el.lambday_()>3.14 and c>c_max:
             c=c_max
-        if c>1:
-            c=1
+#        if c>1:
+#            c=1
 #        print c
         return c, c_max, mx
-                
+
             
             
-    def a_c(self, mx):
-        if mx<=1:
-            a_c=0.7
-        if 1<mx and mx<=5:
-            a_c=0.65+0.05*mx
+    def a_c_old(self, mx):
+        """Определение a_c по СНиП"""
+        if self.pr.title()=='korob':
+            if mx<=1:
+                a_c=0.6
+            elif 1<mx and mx<=5:
+                a_c=0.55+0.05*mx
+
+        elif self.pr.title()=='dvut':
+            if mx<=1:
+                a_c=0.7
+            elif 1<mx and mx<=5:
+                a_c=0.65+0.05*mx
         return a_c
+        
+    def a_c(self, mx):
+        """Определение a_c по СП"""
+        if self.pr.title()=='dvut':
+            if mx<=1:
+                a_c=0.7
+            elif 1<mx and mx<=5:
+                a_c=0.65+0.05*mx
+        return a_c
+        
     def b_c(self):
+        """Определение b_c по СП"""
+
 #        print self.el.lambday_()
         if self.el.lambday_()<=3.14:
             b_c=1
@@ -1001,8 +1056,24 @@ class snipn(normes):
             b_c=(self.phi_n(lambda_=3.14, typ=0)/self.phiy())**0.5
         return b_c
 
+    def b_c_old(self):
+        """Определение b_c по СНиП"""
+        return self.b_c()
                 
+    def c_max_old(self):
+        """определение по СНиП"""
+        e=self.force.mx/self.force.n
+        h=self.pr.h()-self.pr.t()
+        jt=0.433*(2*self.pr.b()*self.pr.t()+self.pr.h()*self.pr.s())
+        mu=2+0.156*jt/(self.pr.a()+h()**2)*self.el.lambday_**2
+        p=(self.pr.jx()+self.pr.jy())/(self.pr.a()*h**2)
+        delta=4*p/mu
+        c_max=2./(1.+delta+((1-delta)**2+16/mu*(e/h)**2)**0.5)
+#        print cmax
+        return c_max
+
     def c_max(self):
+        """определение по СП"""
         w=0.25
 #        print w
         a=0.
@@ -1011,7 +1082,7 @@ class snipn(normes):
         p=(self.pr.jx()+self.pr.jy())/(self.pr.a()*h**2)+a**2
 #        print 'p',p
 #        print 'self.el.lambday_()',self.el.lambday()        
-        jt=self.pr.jt()/1.3
+        jt=1./3.*(2*self.pr.b()*self.pr.t()+self.pr.h()*self.pr.s())
 #        print 'jt', jt
         mu=8*w+0.156*jt*self.el.lambday()**2/(self.pr.a()*h**2)
 #        print 'mu', mu
@@ -1024,14 +1095,34 @@ class snipn(normes):
         cmax=2./(1.+delta+((1-delta)**2+16/mu*(a-ex/h)**2)**0.5)
 #        print cmax
         return cmax
+
             
+    def phi_exy_old(self):
+        '''определение по снип. БЕЗ УЧЕТА требования mefy<mx и lambdax>lambday;
+        выходные данные:
+        phi_exy
+        phi_ey
+        c'''
+        c=self.c_old()[0]
+        phi_ey=self.phi_e_old(typ=2)[0]
+#        print 'c', c
+#        print 'phi_ey', phi_ey
+        phi_exy=phi_ey*(0.6*c**(1./3)+0.4*c**(1./4))
+        return phi_exy, phi_ey, c
+
     def phi_exy(self):
+        '''определение по сп. БЕЗ УЧЕТА требования mefy<mx и lambdax>lambday;
+        выходные данные:
+        phi_exy
+        phi_ey
+        c'''
         c=self.c()[0]
         phi_ey=self.phi_e(typ=2)[0]
 #        print 'c', c
 #        print 'phi_ey', phi_ey
         phi_exy=phi_ey*(0.6*c**(1./3)+0.4*c**(1./4))
         return phi_exy, phi_ey, c
+
 
         '''_____________________________________________'''
 
