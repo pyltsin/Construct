@@ -969,17 +969,22 @@ class snipn(normes):
             
         if mx<=5:
             c=self.b_c_old()/(1+self.a_c_old(mx)*mx)
+#            print 'c 1'
 #            if c>1:
 #                c=1            
         if mx>=10:
-            c=1/(1+mx*self.phiy_old()/self.phi_b_old(typ=1, typ1=2, typ2=3, typ3=1))
+            c=1/(1+mx*self.phiy_old()/self.phi_b_old(typ=1, typ1=2, typ2=3, typ3=1)[0])
+#            print self.phiy_old(), 'phi_y'
+#            print 'c 2'
         if 5<mx and mx<10:
+#            print 'c 3'
             c5=self.b_c_old()/(1+self.a_c_old(5)*5)
 #            if c5>1:
 #                c5=1
-            c10=1/(1+10*self.phiy_old()/self.phi_b_old(typ=1, typ1=2, typ2=3, typ3=1))
+            c10=1/(1+10*self.phiy_old()/self.phi_b_old(typ=1, typ1=2, typ2=3, typ3=1)[0])
             c=c5*(2-0.2*mx)+c10*(0.2*mx-1)
 #            print 'c5', c5, 'c10', c10
+#        print 'c', c
         if self.el.lambday_()>3.14 and c>c_max:
             c=c_max
 #        if c>1:
@@ -989,7 +994,8 @@ class snipn(normes):
                 
     def c(self):
         """Определение коэффициента c по СП (формула 111)
-        возвращает с, с_max, mx"""
+        возвращает с, с_max, mx
+        Для mx<5 проверяется доп. условие C<1 (проверки нет - сложно поймать)"""
         
         e=self.force.mx/self.force.n
         mx=self.pr.a()/self.pr.wx()*e
@@ -1002,15 +1008,21 @@ class snipn(normes):
             
         if mx<=5:
             c=self.b_c()/(1+self.a_c(mx)*mx)
+#            print 'c 1'
+
             if c>1:
                 c=1            
         if mx>=10:
-            c=1/(1+mx*self.phiy()/self.phi_b(typ=1, typ1=2, typ2=3, typ3=1))
+            c=1/(1+mx*self.phiy()[0]/self.phi_b(typ=1, typ1=2, typ2=3, typ3=1)[0])
+#            print 'c 2'
+
         if 5<mx and mx<10:
+#            print 'c 3'
+
             c5=self.b_c()/(1+self.a_c(5)*5)
             if c5>1:
                 c5=1
-            c10=1/(1+10*self.phiy()/self.phi_b(typ=1, typ1=2, typ2=3, typ3=1))
+            c10=1/(1+10*self.phiy()[0]/self.phi_b(typ=1, typ1=2, typ2=3, typ3=1)[0])
             c=c5*(2-0.2*mx)+c10*(0.2*mx-1)
 #            print 'c5', c5, 'c10', c10
         if self.el.lambday_()>3.14 and c>c_max:
@@ -1032,9 +1044,11 @@ class snipn(normes):
 
         elif self.pr.title()=='dvut':
             if mx<=1:
+#                print 'a_c 1'
                 a_c=0.7
             elif 1<mx and mx<=5:
                 a_c=0.65+0.05*mx
+#                print 'a_c 2'
         return a_c
         
     def a_c(self, mx):
@@ -1042,8 +1056,10 @@ class snipn(normes):
         if self.pr.title()=='dvut':
             if mx<=1:
                 a_c=0.7
+#                print 'a 1'
             elif 1<mx and mx<=5:
                 a_c=0.65+0.05*mx
+#                print 'a 2'
         return a_c
         
     def b_c(self):
@@ -1051,25 +1067,40 @@ class snipn(normes):
 
 #        print self.el.lambday_()
         if self.el.lambday_()<=3.14:
+#            print 'b_c 1'
             b_c=1
         if self.el.lambday_()>3.14:
-            b_c=(self.phi_n(lambda_=3.14, typ=0)/self.phiy())**0.5
+#            print 'b_c 2'
+            b_c=(self.phi_n(lambda_=3.14, typ=0)[0]/self.phiy()[0])**0.5
+#            print self.phi_n(lambda_=3.14, typ=0)[0], self.phiy()[0]
         return b_c
 
     def b_c_old(self):
         """Определение b_c по СНиП"""
-        return self.b_c()
+        if self.el.lambday_()<=3.14:
+#            print 'b_c 1'
+            b_c=1
+        if self.el.lambday_()>3.14:
+#            print 'b_c 2'
+            b_c=(self.phi_n_old(lambda_=3.14)/self.phiy_old())**0.5
+        return b_c
                 
     def c_max_old(self):
         """определение по СНиП"""
         e=self.force.mx/self.force.n
         h=self.pr.h()-self.pr.t()
-        jt=0.433*(2*self.pr.b()*self.pr.t()+self.pr.h()*self.pr.s())
-        mu=2+0.156*jt/(self.pr.a()+h()**2)*self.el.lambday_**2
+        jt=self.pr.jt()
+        mu=2.+0.156*jt/(self.pr.a()*h**2)*self.el.lambday()**2
         p=(self.pr.jx()+self.pr.jy())/(self.pr.a()*h**2)
-        delta=4*p/mu
-        c_max=2./(1.+delta+((1-delta)**2+16/mu*(e/h)**2)**0.5)
-#        print cmax
+        delta=4.*p/mu
+        c_max=2./(1.+delta+((1.-delta)**2+16./mu*(e/h)**2)**0.5)
+#        print e, 'e'
+#        print h, 'h'
+#        print jt, 'jt'
+#        print mu, 'mu'
+#        print p, 'p'
+#        print delta, 'delta'        
+#        print c_max, 'c_max'
         return c_max
 
     def c_max(self):
@@ -1082,7 +1113,7 @@ class snipn(normes):
         p=(self.pr.jx()+self.pr.jy())/(self.pr.a()*h**2)+a**2
 #        print 'p',p
 #        print 'self.el.lambday_()',self.el.lambday()        
-        jt=1./3.*(2*self.pr.b()*self.pr.t()+self.pr.h()*self.pr.s())
+        jt=self.pr.jt()/1.3
 #        print 'jt', jt
         mu=8*w+0.156*jt*self.el.lambday()**2/(self.pr.a()*h**2)
 #        print 'mu', mu
@@ -1092,7 +1123,7 @@ class snipn(normes):
 #        print 'bb', bb
         delta=4*p/mu
 #        print 'delta', delta
-        cmax=2./(1.+delta+((1-delta)**2+16/mu*(a-ex/h)**2)**0.5)
+        cmax=2./(1.+delta+((1-delta)**2+16./mu*(a-ex/h)**2)**0.5)
 #        print cmax
         return cmax
 
