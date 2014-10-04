@@ -89,6 +89,19 @@
      <item row="0" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
+        <widget class="QLabel" name="text_type">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Тип элемента</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QComboBox" name="type_element">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -104,8 +117,12 @@
          </property>
         </widget>
        </item>
+      </layout>
+     </item>
+     <item row="1" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QLabel" name="text_type">
+        <widget class="QLabel" name="text_section">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -113,14 +130,10 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Тип элемента</string>
+          <string>Тип сечения  </string>
          </property>
         </widget>
        </item>
-      </layout>
-     </item>
-     <item row="1" column="0">
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
         <widget class="QComboBox" name="type_section">
          <property name="sizePolicy">
@@ -137,33 +150,10 @@
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="QLabel" name="text_section">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Тип сечения</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </item>
      <item row="1" column="2">
       <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QComboBox" name="type_code">
-         <property name="minimumSize">
-          <size>
-           <width>150</width>
-           <height>30</height>
-          </size>
-         </property>
-        </widget>
-       </item>
        <item>
         <widget class="QLabel" name="text_code">
          <property name="sizePolicy">
@@ -177,10 +167,39 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QComboBox" name="type_code">
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>30</height>
+          </size>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
      <item row="0" column="2">
       <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <item>
+        <widget class="QLabel" name="number_element">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>116</width>
+           <height>59</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Количество элементов</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QSpinBox" name="number">
          <property name="sizePolicy">
@@ -203,25 +222,6 @@
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="QLabel" name="number_element">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>116</width>
-           <height>59</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Количество элементов</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </item>
      <item row="0" column="1">
@@ -234,7 +234,7 @@
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>20</width>
+         <width>25</width>
          <height>10</height>
         </size>
        </property>
@@ -250,7 +250,7 @@
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>20</width>
+         <width>25</width>
          <height>20</height>
         </size>
        </property>

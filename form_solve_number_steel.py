@@ -88,7 +88,8 @@ class MyWindow(QtGui.QWidget):
         self.word_button.setEnabled(False)
         self.save_button.setEnabled(False)
         self.text_error.clear()
-
+        self.output_table.clear()
+        self.output_table.setRowCount(0)
         self.text_error.insert(u'Расчет не выполнен')
 
     def keyPressEvent(self, e):
@@ -358,6 +359,7 @@ class MyWindow(QtGui.QWidget):
         lst_sort=self.basa.output_list_sortament(self.type_section.currentText())
         self.load_combobox(self.combobox_sort[i], lst_sort)
         self.input_table.setCellWidget(1,i,self.combobox_sort[i])
+        self.combobox_sort[i].currentIndexChanged.connect(self.changed_input_data)
         
         
         
@@ -368,6 +370,9 @@ class MyWindow(QtGui.QWidget):
         self.input_table.setCellWidget(2,i,self.combobox_num_sect[i])            
 
         self.combobox_sort[i].currentIndexChanged.connect(self.load_section_number(i, self))
+
+        self.combobox_num_sect[i].currentIndexChanged.connect(self.changed_input_data)
+
 # сталь
 
 
@@ -379,6 +384,10 @@ class MyWindow(QtGui.QWidget):
         self.load_combobox(self.combobox_steel[i], lst_steel)
 
         self.input_table.setCellWidget(3,i,self.combobox_steel[i]) 
+
+        self.combobox_steel[i].currentIndexChanged.connect(self.changed_input_data)
+
+
 #Только для балок
 
         if self.type_element.currentText()==u'Балка':
@@ -394,15 +403,21 @@ class MyWindow(QtGui.QWidget):
 
             self.load_combobox(self.combobox_buckl_typ[i], lst1)
             self.input_table.setCellWidget(8,i,self.combobox_buckl_typ[i])
+            self.combobox_buckl_typ[i].currentIndexChanged.connect(self.changed_input_data)
+
 
             self.load_combobox(self.combobox_buckl_fix[i], lst2)
             self.input_table.setCellWidget(9,i,self.combobox_buckl_fix[i])
+            self.combobox_buckl_fix[i].currentIndexChanged.connect(self.changed_input_data)
+
 
             self.load_combobox(self.combobox_buckl_load[i], lst3)
             self.input_table.setCellWidget(10,i,self.combobox_buckl_load[i])
+            self.combobox_buckl_load[i].currentIndexChanged.connect(self.changed_input_data)
 
             self.load_combobox(self.combobox_buckl_place[i], lst4)
             self.input_table.setCellWidget(11,i,self.combobox_buckl_place[i])
+            self.combobox_buckl_place[i].currentIndexChanged.connect(self.changed_input_data)
                     
     def change_column_table(self, i):
         self.input_table.setColumnCount(i)

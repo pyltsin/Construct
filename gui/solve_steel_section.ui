@@ -65,51 +65,11 @@
        <attribute name="title">
         <string>Общие исходные данные</string>
        </attribute>
-       <widget class="QTableWidget" name="tableWidget">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>20</y>
-          <width>241</width>
-          <height>161</height>
-         </rect>
-        </property>
-        <row>
-         <property name="text">
-          <string>Объект</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>Элемент</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>Нормы</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>Тип расчета</string>
-         </property>
-        </row>
-        <column>
-         <property name="text">
-          <string/>
-         </property>
-        </column>
-        <item row="2" column="0">
-         <property name="text">
-          <string/>
-         </property>
-        </item>
-       </widget>
        <widget class="QLabel" name="Picture">
         <property name="geometry">
          <rect>
-          <x>420</x>
-          <y>50</y>
+          <x>10</x>
+          <y>330</y>
           <width>151</width>
           <height>121</height>
          </rect>
@@ -118,30 +78,15 @@
          <string>Picture</string>
         </property>
        </widget>
-       <widget class="QTableWidget" name="tableWidget_5">
+       <widget class="QTableWidget" name="tableWidget_6">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>190</y>
+          <x>230</x>
+          <y>10</y>
           <width>261</width>
-          <height>311</height>
+          <height>241</height>
          </rect>
         </property>
-        <row>
-         <property name="text">
-          <string>Сортамент</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>№ сечения</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>Сталь</string>
-         </property>
-        </row>
         <row>
          <property name="text">
           <string>Расчетная длина (Lx), м</string>
@@ -177,6 +122,190 @@
           <string/>
          </property>
         </column>
+       </widget>
+       <widget class="QLabel" name="labelCode">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>20</y>
+          <width>46</width>
+          <height>13</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Нормы</string>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="boxCode">
+        <property name="geometry">
+         <rect>
+          <x>80</x>
+          <y>20</y>
+          <width>101</width>
+          <height>22</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="labelElement">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>61</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Элементы</string>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="boxElement">
+        <property name="geometry">
+         <rect>
+          <x>80</x>
+          <y>50</y>
+          <width>101</width>
+          <height>22</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="labelTypeSolve">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>80</y>
+          <width>61</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Тип расчета</string>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="boxTypeSolve">
+        <property name="geometry">
+         <rect>
+          <x>80</x>
+          <y>80</y>
+          <width>101</width>
+          <height>22</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="labelTypeSection">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>120</y>
+          <width>61</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Тип сечения</string>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="boxTypeSection">
+        <property name="geometry">
+         <rect>
+          <x>80</x>
+          <y>120</y>
+          <width>101</width>
+          <height>22</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="boxSortament">
+        <property name="geometry">
+         <rect>
+          <x>80</x>
+          <y>160</y>
+          <width>101</width>
+          <height>22</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="labelSortament">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>160</y>
+          <width>61</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Сортамент</string>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="boxNumberSection">
+        <property name="geometry">
+         <rect>
+          <x>80</x>
+          <y>200</y>
+          <width>101</width>
+          <height>22</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="labelNumbeSection">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>200</y>
+          <width>61</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>№ элемента</string>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="boxSteel">
+        <property name="geometry">
+         <rect>
+          <x>80</x>
+          <y>240</y>
+          <width>101</width>
+          <height>22</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="labelSteel">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>240</y>
+          <width>61</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Сталь</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="labelCode_2">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>280</y>
+          <width>71</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Имя элемента</string>
+        </property>
+       </widget>
+       <widget class="QTextEdit" name="textEdit">
+        <property name="geometry">
+         <rect>
+          <x>90</x>
+          <y>270</y>
+          <width>71</width>
+          <height>31</height>
+         </rect>
+        </property>
        </widget>
       </widget>
       <widget class="QWidget" name="tab_2">
