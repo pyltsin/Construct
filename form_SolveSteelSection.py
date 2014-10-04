@@ -39,6 +39,12 @@ class MyWindow(QtGui.QWidget):
         self.loadTypeSection()
         self.boxTypeSection.currentIndexChanged.connect(self.changeTypeSection)
 
+        #загружаем тип расчета и связываем его изменение
+
+        self.loadFormSection()
+        self.boxFormSection.currentIndexChanged.connect(self.changeFormSection)
+
+
         #загружаем сортаменты и связываем его изменение
 
         self.loadSortament()
@@ -53,6 +59,12 @@ class MyWindow(QtGui.QWidget):
 
         self.loadSteel()
         self.boxSteel.currentIndexChanged.connect(self.changeSteel)
+        
+        #загружаем таблицу и связываем его изменение
+
+        self.loadTableInput()
+        self.tableInput.currentItemChanged.connect(self.changeTableInput)
+        
 
     def loadComboBox(self, widget, lst):
         '''load ComboBox'''
@@ -86,22 +98,47 @@ class MyWindow(QtGui.QWidget):
 
     def changeElement(self):
         '''делаем когда изменился тип элемента:
-        1. меняем список типов сечения
+        1. меняем список форму сечения
         2. меняем таблицу входных данных
         3. делаем стандартные дейтсивя'''
-        pass
+        
+        self.loadFormSection()
+        self.loadTableInput()
+        self.changeInputData()
 
     def loadTypeSolve(self):
-        pass
+        '''загружаем и ставим список расчетов - подбор и проверка'''
+        lst=[u'Проверка', u'Подбор']
+        self.loadComboBox(self.boxTypeSolve, lst)
 
     def changeTypeSolve(self):
-        pass
+        '''делаем когда изменился тип расчета:
+        1. если подбор - заблокировать выбор номера сечения
+        2. делаем стандартные дейтсивя'''
+        flag=self.boxTypeSolve.currentIndex()
+        if flag==0:
+            self.boxNumberSection.setEnabled(True)
+        elif flag==1:
+            self.boxNumberSection.setEnabled(False)
+        self.changeInputData()
 
     def loadTypeSection(self):
-        pass
+        '''загружаем и ставим тип сечения'''
+        lst=[u'Прокат']
+        self.loadComboBox(self.boxTypeSection, lst)
+
 
     def changeTypeSection(self):
         pass
+
+    def loadFormSection(self):
+        element=self.boxElement.currentText()
+        lst=self.basa.output_list_section(element)
+        self.loadComboBox(self.boxFormSection, lst)
+
+    def changeFormSection(self):
+        pass
+
 
     def loadSortament(self):
         pass
@@ -127,6 +164,12 @@ class MyWindow(QtGui.QWidget):
     def changeSteel(self):
         pass
 
+    def loadTableInput(self):
+        pass
+    
+    def changeTableInput(self):
+        pass
+    
 if __name__=="__main__":
     app=QtGui.QApplication(sys.argv)
     window=MyWindow()
