@@ -129,9 +129,12 @@ class MyWindow(QtGui.QWidget):
 
 
     def changeTypeSection(self):
+        'Пока ничего не делаем'
         pass
 
     def loadFormSection(self):
+        '''загружаем и ставим форму сечения'''
+
         element=self.boxElement.currentText()
         lst=self.basa.output_list_section(element)
         self.loadComboBox(self.boxFormSection, lst)
