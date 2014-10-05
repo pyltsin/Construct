@@ -33,7 +33,12 @@ class BasaSort(object):
         ,8:profiles.rectangle(1,1).input_data()
         }
 
-        self.__add_data_sostav={5:[u'dx, см'],6:[u'dx, см'],7:[u'dx, см', u'dy, см']}
+        self.__add_data_sostav={
+        5:[[u'dx, см [0; 10]'],[0, 10]],
+        6:[[u'dx, см [0; 10]'],[0, 10]],
+        7:[[u'dx, см [0; 10]', u'dy, см [0; 10]'],[0, 10]]
+        }
+        
         self.__list_elements=[[u'Ферма',0],[u'Балка',1],[u'Колонна',2]]
         self.__list4elements=[[0,3,5,6,7,4],[0,1,3],[0,3]]
         
@@ -158,33 +163,37 @@ class BasaSort(object):
         elif code==QtCore.QString(self.__list_code[1]):
             s=steel.steel_snip20107n(str(stl), pr,dim=1)
         
+        if s.ry()!=0:
 #        print s.ry()
-        forc=codes.force()
-        
-        if type_element== QtCore.QString(self.__list_elements[0][0]    ):
-            el=codes.elements(s, pr, mux=inp[-2], muy=inp[-1], lfact=inp[-3]) 
-#            print inp[-1],inp[-2]
-            sol=codes.ferma(el,forc,[inp[-5],inp[-4]])
-
-            if code==QtCore.QString(self.__list_code[0]):
-                out=sol.output_data_all_snip_old()
-            elif code==QtCore.QString(self.__list_code[1]):
-                out=sol.output_data_all_snip_n()
-
-
-        elif  type_element== QtCore.QString(self.__list_elements[1][0]    ):
-            el=codes.elements(s, pr, mub=inp[-5], lfact=inp[-6]) 
-#            print inp[-1],inp[-2]
-            sol=codes.beam(el,forc,yc=[inp[-8]],ycb=inp[-7])
-
-            if code==QtCore.QString(self.__list_code[0]):
-                out=sol.output_data_all_snip_old(inp[-4],inp[-3],inp[-2],inp[-1])
-            elif code==QtCore.QString(self.__list_code[1]):
-                out=sol.output_data_all_snip_n(inp[-4],inp[-3],inp[-2],inp[-1])
+            forc=codes.force()
+            
+            if type_element== QtCore.QString(self.__list_elements[0][0]    ):
+                el=codes.elements(s, pr, mux=inp[-2], muy=inp[-1], lfact=inp[-3]) 
+    #            print inp[-1],inp[-2]
+                sol=codes.ferma(el,forc,[inp[-5],inp[-4]])
     
+                if code==QtCore.QString(self.__list_code[0]):
+                    out=sol.output_data_all_snip_old()
+                elif code==QtCore.QString(self.__list_code[1]):
+                    out=sol.output_data_all_snip_n()
+    
+    
+            elif  type_element== QtCore.QString(self.__list_elements[1][0]    ):
+                el=codes.elements(s, pr, mub=inp[-5], lfact=inp[-6]) 
+    #            print inp[-1],inp[-2]
+                sol=codes.beam(el,forc,yc=[inp[-8]],ycb=inp[-7])
+    
+                if code==QtCore.QString(self.__list_code[0]):
+                    out=sol.output_data_all_snip_old(inp[-4],inp[-3],inp[-2],inp[-1])
+                elif code==QtCore.QString(self.__list_code[1]):
+                    out=sol.output_data_all_snip_n(inp[-4],inp[-3],inp[-2],inp[-1])
         
-        
-        return out
+            
+            
+            return out
+        else:
+            out=0
+            return out
 
 
             

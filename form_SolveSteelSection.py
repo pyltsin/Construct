@@ -65,14 +65,29 @@ class MyWindow(QtGui.QWidget):
         self.loadTableInput()
         self.tableInput.currentItemChanged.connect(self.changeTableInput)
         
+        #загружаем таблицу усилий и связываем его изменение
+        self.loadTableLoad()
+        self.tableLoad.currentItemChanged.connect(self.changeTableInput)
 
+        #загружаем рисунок
+        self.loadPicture()
+        
+        #на всякий случай сбрасываем выходные данные
+        self.changeInputData()
+        
+        #связываем счетчик с дейтсвиями
+        self.boxCountLoad.valueChanged.connect(self.changeCountTableLoad)
+        self.boxCountLoad.setValue(1)
+        self.changeCountTableLoad()
+        
     def loadComboBox(self, widget, lst):
         '''load ComboBox'''
         widget.clear()
         widget.addItems(lst)
     def changeInputData(self):
         '''Делать, когда изменились данные'''
-        pass
+        self.tabOutputData.setEnabled(False)
+        self.tabGeneralOutputData.setEnabled(False)
     
     def loadCode(self):
         '''загружаем и ставим список норм'''
@@ -100,10 +115,12 @@ class MyWindow(QtGui.QWidget):
         '''делаем когда изменился тип элемента:
         1. меняем список форму сечения
         2. меняем таблицу входных данных
-        3. делаем стандартные дейтсивя'''
+        3. меняем таблицу усилий
+        4. делаем стандартные дейтсивя'''
         
         self.loadFormSection()
         self.loadTableInput()
+        self.loadTableLoad()
         self.changeInputData()
 
     def loadTypeSolve(self):
@@ -118,8 +135,10 @@ class MyWindow(QtGui.QWidget):
         flag=self.boxTypeSolve.currentIndex()
         if flag==0:
             self.boxNumberSection.setEnabled(True)
+            self.loadNumberSection()
         elif flag==1:
             self.boxNumberSection.setEnabled(False)
+            self.boxNumberSection.clear()
         self.changeInputData()
 
     def loadTypeSection(self):
@@ -140,20 +159,42 @@ class MyWindow(QtGui.QWidget):
         self.loadComboBox(self.boxFormSection, lst)
 
     def changeFormSection(self):
-        pass
+        '''делаем когда изменился тип расчета:
+        1. загрузить список сортаментов
+        2. меняем рисунок
+        3. делаем стандартные дейтсивя'''
+        self.loadSortament()        
+        self.loadPicture()        
+        self.changeInputData()
+        
 
 
     def loadSortament(self):
-        pass
+        '''загружаем и ставим список сортаментов'''
+        formSection=self.boxFormSection.currentText()
+        lstSortament=self.basa.output_list_sortament(formSection)
+        self.loadComboBox(self.boxSortament, lstSortament)
+
 
     def changeSortament(self):
-        pass
+        '''делаем когда изменился тип расчета:
+        1. загрузить список сортаментов
+        2. делаем стандартные дейтсивя'''
+        self.loadNumberSection()
+        self.changeInputData()
 
     def loadNumberSection(self):
-        pass
+        '''загружаем и ставим список профилей, если элемент активен'''
+        if self.boxNumberSection.isEnabled():
+            formSection=self.boxFormSection.currentText()
+            sortament=self.boxSortament.currentText()
+            lstNumberSection=self.basa.output_list_sect_num(sortament, formSection)
+            self.loadComboBox(self.boxNumberSection, lstNumberSection)
 
     def changeNumberSection(self):
-        pass
+        '''делаем когда изменился номер профиоя:
+        1. делаем стандартные дейтсивя'''
+        self.changeInputData()
     
         
         
@@ -165,14 +206,41 @@ class MyWindow(QtGui.QWidget):
         self.loadComboBox(self.boxSteel, lstSteel)
 
     def changeSteel(self):
-        pass
+        '''делаем когда изменилась сталь:
+        1. делаем стандартные дейтсивя'''
+        self.changeInputData()
 
     def loadTableInput(self):
+        '''загружаем входные данные - НЕ РЕАЛИЗОВАНО'''
         pass
     
     def changeTableInput(self):
-        pass
-    
+        '''делаем когда изменилась таблица:
+        1. делаем стандартные дейтсивя'''
+        self.changeInputData()
+
+    def loadTableLoad(self):
+        '''загружаем таблицу усилий - НЕ РЕАЛИЗОВАНО'''
+
+    def changeTableLoad(self):
+        '''делаем когда изменилась таблица:
+        1. делаем стандартные дейтсивя'''
+        self.changeInputData()
+
+
+    def loadPicture(self):
+        '''загружаем рисунок'''
+        lab=self.boxFormSection.currentText()
+        if lab!="":
+#            print lab
+            pict=self.basa.pict(lab)
+            self.labelPicture.setPixmap(QtGui.QPixmap(pict))    
+
+    def changeCountTableLoad(self):
+        '''изменяем кол-во строк при изенении счетчика'''
+        i=self.boxCountLoad.value()
+        self.tableLoad.setRowCount(i)
+        
 if __name__=="__main__":
     app=QtGui.QApplication(sys.argv)
     window=MyWindow()

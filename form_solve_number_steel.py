@@ -280,6 +280,8 @@ class MyWindow(QtGui.QWidget):
             self.flag_current_type_element=  current_type_element 
             self.flag_current_section=current_section
             add_data=self.basa.add_data_sostav(current_section)
+            if add_data!=[]:
+                add_data=add_data[0]
             
             self.data_lst=self.basa.data_solve(current_type_element)
 
@@ -433,13 +435,19 @@ class MyWindow(QtGui.QWidget):
     def solve(self):
 #сбор исходных данных
         class error_data():pass
+        class error_steel():pass
             
         current_code=self.type_code.currentText()
         current_count=self.number.value()
         current_type_element=self.type_element.currentText()
         current_section=self.type_section.currentText()
-        add_data=self.basa.add_data_sostav(current_section)            
-        sdv=len(add_data)+4
+        add_data=self.basa.add_data_sostav(current_section) 
+        if add_data!=[]:
+            sdv_sostav=len(add_data[0])
+        else:
+            sdv_sostav=0
+            add_data=[[],[1,100]]
+        sdv=sdv_sostav+4
 
         lst_gen=[]
         
@@ -465,14 +473,18 @@ class MyWindow(QtGui.QWidget):
                             num=float(num)
                             
 #                            print j
-#                            print self.data_lst[j-sdv][1][0], self.data_lst[j-sdv][1][0], sdv, num
-                            
+#                            print self.data_lst[j-sdv][1][0], self.data_lst[j-sdv][1][0], sdv, sdv_sostav, num
+#                            print add_data[1][0], add_data[1][1]
+                            #проверка данных балок/ферм
                             if j>=sdv and self.data_lst[j-sdv][1][0]<=num and self.data_lst[j-sdv][1][1]>=num:
                                 lst.append(num)
-                            elif j<sdv:
-                                lst.append(num)                                                        
+                            elif j<sdv-sdv_sostav:
+                                lst.append(num)  
+                            elif j>=sdv-sdv_sostav and j<sdv and num>=add_data[1][0] and num<=add_data[1][1]:                                                           
+                                lst.append(num)  
                             else:
                                 raise error_data()
+                                
                     else:
                         if j<4:
                             wid=self.input_table.cellWidget(j,i)
@@ -489,6 +501,9 @@ class MyWindow(QtGui.QWidget):
                 inp=lst[4:]
     #            print current_code, current_type_element, current_section, current_gost, current_num_sect, current_steel, inp
                 out=self.basa.output_simple(current_code, current_type_element, current_section, current_gost, current_num_sect, current_steel, inp)
+                if out==0:
+                    raise error_steel()
+                    
                 lst_gen.append(out)
     #ставим данные
                 self.output_table.setColumnCount(current_count)
@@ -521,6 +536,12 @@ class MyWindow(QtGui.QWidget):
             self.changed_input_data()
             self.text_error.clear()
             self.text_error.insert(u'Ошибка исходных данных')
+
+        except error_steel:
+            self.changed_input_data()
+            self.text_error.clear()
+            self.text_error.insert(u'Толщина элемента выходит за границы применимости стали')
+
             
         else:
             self.word_button.setEnabled(True)

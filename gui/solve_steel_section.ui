@@ -58,18 +58,21 @@
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QTabWidget" name="tabWidget">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="tab">
+      <widget class="QWidget" name="tabInputData">
        <attribute name="title">
         <string>Общие исходные данные</string>
        </attribute>
-       <widget class="QLabel" name="Picture">
+       <widget class="QLabel" name="labelPicture">
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>330</y>
+          <y>360</y>
           <width>151</width>
           <height>121</height>
          </rect>
@@ -81,7 +84,7 @@
        <widget class="QTableWidget" name="tableInput">
         <property name="geometry">
          <rect>
-          <x>230</x>
+          <x>450</x>
           <y>10</y>
           <width>261</width>
           <height>241</height>
@@ -141,7 +144,7 @@
          <rect>
           <x>80</x>
           <y>20</y>
-          <width>101</width>
+          <width>231</width>
           <height>22</height>
          </rect>
         </property>
@@ -164,7 +167,7 @@
          <rect>
           <x>80</x>
           <y>50</y>
-          <width>101</width>
+          <width>231</width>
           <height>22</height>
          </rect>
         </property>
@@ -187,7 +190,7 @@
          <rect>
           <x>80</x>
           <y>80</y>
-          <width>101</width>
+          <width>231</width>
           <height>22</height>
          </rect>
         </property>
@@ -210,7 +213,7 @@
          <rect>
           <x>80</x>
           <y>160</y>
-          <width>101</width>
+          <width>231</width>
           <height>22</height>
          </rect>
         </property>
@@ -220,7 +223,7 @@
          <rect>
           <x>80</x>
           <y>200</y>
-          <width>101</width>
+          <width>231</width>
           <height>22</height>
          </rect>
         </property>
@@ -243,7 +246,7 @@
          <rect>
           <x>80</x>
           <y>240</y>
-          <width>101</width>
+          <width>231</width>
           <height>22</height>
          </rect>
         </property>
@@ -266,7 +269,7 @@
          <rect>
           <x>80</x>
           <y>280</y>
-          <width>101</width>
+          <width>231</width>
           <height>22</height>
          </rect>
         </property>
@@ -325,17 +328,17 @@
          <rect>
           <x>80</x>
           <y>120</y>
-          <width>101</width>
+          <width>231</width>
           <height>22</height>
          </rect>
         </property>
        </widget>
       </widget>
-      <widget class="QWidget" name="tab_2">
+      <widget class="QWidget" name="tabLoad">
        <attribute name="title">
         <string>Нагрузки</string>
        </attribute>
-       <widget class="QTableWidget" name="tableWidget_2">
+       <widget class="QTableWidget" name="tableLoad">
         <property name="geometry">
          <rect>
           <x>0</x>
@@ -346,32 +349,32 @@
         </property>
         <row>
          <property name="text">
-          <string>Новая строка</string>
+          <string>1</string>
          </property>
         </row>
         <row>
          <property name="text">
-          <string>Новая строка</string>
+          <string>2</string>
          </property>
         </row>
         <row>
          <property name="text">
-          <string>Новая строка</string>
+          <string>3</string>
          </property>
         </row>
         <row>
          <property name="text">
-          <string>Новая строка</string>
+          <string>4</string>
          </property>
         </row>
         <row>
          <property name="text">
-          <string>Новая строка</string>
+          <string>5</string>
          </property>
         </row>
         <row>
          <property name="text">
-          <string>Новая строка</string>
+          <string>6</string>
          </property>
         </row>
         <column>
@@ -410,7 +413,7 @@
          </property>
         </column>
        </widget>
-       <widget class="QSpinBox" name="spinBox">
+       <widget class="QSpinBox" name="boxCountLoad">
         <property name="geometry">
          <rect>
           <x>10</x>
@@ -430,7 +433,10 @@
         </property>
        </widget>
       </widget>
-      <widget class="QWidget" name="tab_3">
+      <widget class="QWidget" name="tabOutputData">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <attribute name="title">
         <string>Вывод по значениям</string>
        </attribute>
@@ -445,7 +451,7 @@
         </property>
        </widget>
       </widget>
-      <widget class="QWidget" name="tab_5">
+      <widget class="QWidget" name="tabGeneralOutputData">
        <attribute name="title">
         <string>Общий вывод</string>
        </attribute>
