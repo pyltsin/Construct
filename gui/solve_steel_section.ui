@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>944</width>
+    <width>1239</width>
     <height>675</height>
    </rect>
   </property>
@@ -18,7 +18,7 @@
     <rect>
      <x>180</x>
      <y>20</y>
-     <width>681</width>
+     <width>781</width>
      <height>21</height>
     </rect>
    </property>
@@ -26,7 +26,7 @@
   <widget class="QPushButton" name="folder_change">
    <property name="geometry">
     <rect>
-     <x>870</x>
+     <x>1000</x>
      <y>20</y>
      <width>51</width>
      <height>21</height>
@@ -51,7 +51,7 @@
     <rect>
      <x>180</x>
      <y>70</y>
-     <width>751</width>
+     <width>1041</width>
      <height>551</height>
     </rect>
    </property>
@@ -84,9 +84,9 @@
        <widget class="QTableWidget" name="tableInput">
         <property name="geometry">
          <rect>
-          <x>450</x>
-          <y>10</y>
-          <width>261</width>
+          <x>380</x>
+          <y>20</y>
+          <width>341</width>
           <height>241</height>
          </rect>
         </property>
@@ -440,7 +440,7 @@
        <attribute name="title">
         <string>Вывод по значениям</string>
        </attribute>
-       <widget class="QTableWidget" name="tableWidget_3">
+       <widget class="QTableWidget" name="tableOutLoad">
         <property name="geometry">
          <rect>
           <x>0</x>
@@ -449,13 +449,58 @@
           <height>521</height>
          </rect>
         </property>
+        <row>
+         <property name="text">
+          <string>Новая строка</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>Новая строка</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>Новая строка</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>Новая строка</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>Новая строка</string>
+         </property>
+        </row>
+        <column>
+         <property name="text">
+          <string>Новый столбец</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Новый столбец</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Новый столбец</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Новый столбец</string>
+         </property>
+        </column>
        </widget>
       </widget>
       <widget class="QWidget" name="tabGeneralOutputData">
        <attribute name="title">
         <string>Общий вывод</string>
        </attribute>
-       <widget class="QTableWidget" name="tableWidget_4">
+       <widget class="QTableWidget" name="tableOut">
         <property name="geometry">
          <rect>
           <x>0</x>
@@ -470,7 +515,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QPushButton" name="solve">
+  <widget class="QPushButton" name="buttonSolve">
    <property name="geometry">
     <rect>
      <x>600</x>

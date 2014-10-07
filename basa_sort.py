@@ -317,6 +317,30 @@ class BasaSort(object):
         y=self.list_input[x]
         return y
 
+    def lstPP(self, code, element):
+        '''возвращает недосозданных класс элементов'''
+        if code==QtCore.QString(self.__list_code[0]) or code==QtCore.QString(self.__list_code[1]):
+            if element==QtCore.QString(self.__list_elements[0][0]):
+                el=codes.FermaPP()
+            elif element==QtCore.QString(self.__list_elements[1][0]):
+#                el=[1,[1,2]]
+                el=codes.BeamPP()
+            elif element==QtCore.QString(self.__list_elements[2][0]):
+                el=codes.ColumnPP()
+        return el
+    def lstInputDataPP(self, code, element):
+        '''Возвращает список данных для расчета с ограничителями'''
+#                el=[1,[1,2]]
+        el=self.lstPP(code, element)
+        lst=el.addData()
+        return lst
+
+    def lstLoadDataPP(self, code, element):
+        '''Возвращает список данных для усилий'''
+        el=self.lstPP(code, element)
+        lst=el.lstForce()
+        return lst
+
 
     def key_sortament(self):
         return self.list_sort

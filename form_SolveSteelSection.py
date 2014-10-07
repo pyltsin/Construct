@@ -79,6 +79,22 @@ class MyWindow(QtGui.QWidget):
         self.boxCountLoad.valueChanged.connect(self.changeCountTableLoad)
         self.boxCountLoad.setValue(1)
         self.changeCountTableLoad()
+
+        self.buttonSolve.clicked.connect(self.solve)
+    
+    def solve(self):
+        lst=[]
+        rowCount=self.tableLoad.rowCount()
+        for i in range(rowCount):
+            it=self.tableLoad.item(i, 0).text()
+#            print it
+            lst.append(int(it))
+        print sum(lst)
+
+    def keyPressEvent(self, e):
+        """обеспечивает возможность копирования, вставить"""
+        copy_past(e, [window.tableInput, window.tableLoad], [], window)
+
         
     def loadComboBox(self, widget, lst):
         '''load ComboBox'''
@@ -211,8 +227,30 @@ class MyWindow(QtGui.QWidget):
         self.changeInputData()
 
     def loadTableInput(self):
-        '''загружаем входные данные - НЕ РЕАЛИЗОВАНО'''
-        pass
+        '''загружаем данные в таблицу'''
+        self.tableInput.clear()
+        code=self.boxCode.currentText()
+        element=self.boxElement.currentText()
+        lst=self.basa.lstInputDataPP(code, element)
+#        print lst
+        ln=len(lst)
+        self.tableInput.setRowCount(ln)
+        i=-1
+        name=[]
+        for num in lst:
+            i+=1
+            if type(num[1][0])==type(0.10) or type(num[1][0])==type(1):
+                self.tableInput.setItem(i, 0, QtGui.QTableWidgetItem(""))
+            else:
+#                print num[1]
+                userWidget=QtGui.QComboBox()
+                self.loadComboBox(userWidget, num[1])
+                self.tableInput.setCellWidget(i,0,userWidget)
+                
+            name.append(num[0])
+        self.tableInput.setVerticalHeaderLabels(name)
+            
+
     
     def changeTableInput(self):
         '''делаем когда изменилась таблица:
@@ -220,7 +258,14 @@ class MyWindow(QtGui.QWidget):
         self.changeInputData()
 
     def loadTableLoad(self):
-        '''загружаем таблицу усилий - НЕ РЕАЛИЗОВАНО'''
+        '''загружаем таблицу усилий '''
+
+        self.tableLoad.clear()
+        code=self.boxCode.currentText()
+        element=self.boxElement.currentText()
+        lst=self.basa.lstLoadDataPP(code, element)
+        self.tableLoad.setColumnCount(len(lst))
+        self.tableLoad.setHorizontalHeaderLabels(lst)
 
     def changeTableLoad(self):
         '''делаем когда изменилась таблица:
