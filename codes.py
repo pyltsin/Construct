@@ -537,9 +537,10 @@ class snipn(normes):
             typ2 - 1 - сосредоточенная нагрузка в центре, 2 - сосредоточенная в четверти, 3 - равномерная
             typ3 - 1 - нагрузка приложена к сжатому поясу, 2- к расстянутому
             typ4 - 1-расчет по СП!!!'''
+        pr=self.element.profile
+        el=self.element
         if  self.element.lb()!=0:
-            pr=self.element.profile
-            el=self.element
+
             if pr.title()=='dvut' or pr.title()=='shvel':
     
                 if pr.title2()=='prokat':
