@@ -108,6 +108,19 @@ class BasaSort(object):
             sol=codes.beam(el,forc,[1,1])
         
         return sol.add_data()
+    def solvePP(self, code, element, typeSolve,typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce):
+        '''Возвращает данные сложного расчета.
+        Сложный расчет состоят из 2 частей - подбор и проверка., сначала пишем проверку'''
+            if typeSolve==QtCore.QString(u'Проверка'):
+                out=self.checkPP(code, element,typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce)
+            elif typeSolve==QtCore.QString(u'Подбор'): 
+                out=self.findPP(code, element,typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce)
+            return out
+    def checkPP(self, code, element, typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce):
+        pass
+    def findPP(self, code, element, typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce):
+        pass        
+                
     def output_simple(self, code, type_element, typ_sec, gost, num_sect, stl, inp):
         """ Возвращает список выходных данных простого расчета,
             исходные данные:
