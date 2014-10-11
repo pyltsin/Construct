@@ -204,6 +204,9 @@ class BasaSort(object):
                     number=self.dict_sort[x]
                     break
             if number in self.dict_sostav_sort:
+#                print self.__add_data_sostav
+#                print number
+#                print self.__add_data_sostav[number], 'tut'
                 return self.__add_data_sostav[number]
             else:
                 return []

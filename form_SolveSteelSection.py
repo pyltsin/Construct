@@ -83,13 +83,107 @@ class MyWindow(QtGui.QWidget):
         self.buttonSolve.clicked.connect(self.solve)
     
     def solve(self):
-        lst=[]
-        rowCount=self.tableLoad.rowCount()
-        for i in range(rowCount):
-            it=self.tableLoad.item(i, 0).text()
-#            print it
-            lst.append(int(it))
-        print sum(lst)
+        """Расчет сам: выход в два списка - один в таблицу решения, один в общий вывод"""
+        #собираем все данные
+        code=self.boxCode.currentText()
+        element=self.boxElement.currentText()
+        typeSolve=self.boxTypeSolve.currentText()
+        typeSection=self.boxTypeSection.currentText() 
+        formSection=self.boxFormSection.currentText() 
+        sortament=self.boxSortament.currentText() 
+        numberSection=self.boxNumberSection.currentText() 
+        steel=self.boxSteel.currentText() 
+        addData=self.basa.add_data_sostav(formSection) 
+        if addData!=[]:         
+            lenAddData=len(addData[0])
+        else:
+            lenAddData=0
+
+#        print formSection
+#        print addData
+
+
+        #простые данные собрали, теперь собираем данные из таблиц и обрабатываем, если что - экстеншин
+
+        class errorData():pass 
+            
+        try:
+            #сначала собираем данные для addData
+            lstAddData=[]
+
+            if lenAddData>0:
+                for i in range(lenAddData):
+                    
+                    text=self.tableInput.item(i,0).text()
+                    if "," in text:
+                        text=text.replace(',','.')
+                    text=float(text)
+                    self.tableInput.item(i,0).setText(str(text))
+
+                    if text>=addData[1][0] and  text<=addData[1][1]:
+                        lstAddData.append(text)
+                    else:
+                        raise(errorData)
+            
+            #собираем остальные данные
+            inputData=self.basa.lstInputDataPP(code, element)
+            lenInputData=len(inputData)
+            lstInputData=[]
+            for i in range(lenInputData):
+                j=i+lenAddData
+                #сначала widget
+                print self.tableInput.cellWidget(j,0)
+                if self.tableInput.cellWidget(j,0)!=None:
+                    wid=self.tableInput.cellWidget(j,0)
+                    lstInputData.append(wid.currentIndex()+1)
+                else:
+                    print j, i, lenAddData
+                    #потом остальное
+                    text=self.tableInput.item(j,0).text()
+                    if "," in text:
+                        text=text.replace(',','.')
+                    text=float(text)
+                    self.tableInput.item(j,0).setText(str(text))
+
+#                    print text
+                    if text>=inputData[i][1][0] and  text<=inputData[i][1][1]:
+                        lstInputData.append(text)
+                    else:
+                        raise(errorData)
+            
+#            print lstInputData, lstAddData
+
+#            '''собираем нагрузки'''
+            lstForce=[]
+            countColumnLoad=self.tableLoad.columnCount()            
+            countRowLoad=self.tableLoad.rowCount() 
+            for i in range(countRowLoad):
+                lstRow=[]
+                for j in range(countColumnLoad):
+                    if self.tableLoad.item(i,j)==None:
+                        self.tableLoad.setItem(i, j, QtGui.QTableWidgetItem(""))
+                        self.tableLoad.item(i,j).setText('0')
+                    text=self.tableLoad.item(i,j).text()
+                    if "," in text:
+                        text=text.replace(',','.')
+                    text=float(text)
+                    self.tableLoad.item(i,j).setText(str(text))
+
+                    lstRow.append(text)
+                lstForce.append(lstRow)                    
+                    
+            lstIn=code, element, typeSolve,typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce
+            print lstIn
+#            out=self.basa.solvePP(lstIn)
+        
+        except errorData:
+            self.labelComment.setText(u'Выход за границы допустимых значений')
+        except ValueError:
+            self.labelComment.setText(u'Недопустимые исходные данные')
+            
+            
+
+        
 
     def keyPressEvent(self, e):
         """обеспечивает возможность копирования, вставить"""
@@ -100,6 +194,7 @@ class MyWindow(QtGui.QWidget):
         '''load ComboBox'''
         widget.clear()
         widget.addItems(lst)
+        
     def changeInputData(self):
         '''Делать, когда изменились данные'''
         self.tabOutputData.setEnabled(False)
@@ -182,6 +277,7 @@ class MyWindow(QtGui.QWidget):
         self.loadSortament()        
         self.loadPicture()        
         self.changeInputData()
+        self.loadTableInput()
         
 
 
@@ -227,16 +323,24 @@ class MyWindow(QtGui.QWidget):
         self.changeInputData()
 
     def loadTableInput(self):
+        
         '''загружаем данные в таблицу'''
         self.tableInput.clear()
         code=self.boxCode.currentText()
         element=self.boxElement.currentText()
         lst=self.basa.lstInputDataPP(code, element)
+        formSection=self.boxFormSection.currentText()
+        
+        addDataForm=self.basa.add_data_sostav(formSection)
 #        print lst
-        ln=len(lst)
-        self.tableInput.setRowCount(ln)
+#        ln=len(lst)
         i=-1
-        name=[]
+        
+        if addDataForm!=[]:
+            name=addDataForm[0][:]
+        else:
+            name=[]
+            
         for num in lst:
             i+=1
             if type(num[1][0])==type(0.10) or type(num[1][0])==type(1):
@@ -248,6 +352,9 @@ class MyWindow(QtGui.QWidget):
                 self.tableInput.setCellWidget(i,0,userWidget)
                 
             name.append(num[0])
+
+        self.tableInput.setRowCount(len(name))
+            
         self.tableInput.setVerticalHeaderLabels(name)
             
 
