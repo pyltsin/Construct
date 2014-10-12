@@ -64,10 +64,10 @@ class MyWindow(QtGui.QWidget):
 
         self.loadTableInput()
         self.tableInput.currentItemChanged.connect(self.changeTableInput)
-        
         #загружаем таблицу усилий и связываем его изменение
         self.loadTableLoad()
-        self.tableLoad.currentItemChanged.connect(self.changeTableInput)
+        self.tableLoad.currentItemChanged.connect(self.changeTableLoad)
+        self.tableLoad.itemChanged.connect(self.changeTableLoad)
 
         #загружаем рисунок
         self.loadPicture()
@@ -78,9 +78,11 @@ class MyWindow(QtGui.QWidget):
         #связываем счетчик с дейтсвиями
         self.boxCountLoad.valueChanged.connect(self.changeCountTableLoad)
         self.boxCountLoad.setValue(1)
+        
         self.changeCountTableLoad()
 
         self.buttonSolve.clicked.connect(self.solve)
+        
     
     def solve(self):
         """Расчет сам: выход в два списка - один в таблицу решения, один в общий вывод"""
@@ -498,6 +500,7 @@ class MyWindow(QtGui.QWidget):
         '''изменяем кол-во строк при изенении счетчика'''
         i=self.boxCountLoad.value()
         self.tableLoad.setRowCount(i)
+        self.changeInputData()
         
 if __name__=="__main__":
     app=QtGui.QApplication(sys.argv)
