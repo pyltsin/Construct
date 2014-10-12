@@ -57,7 +57,7 @@ class elements(object):
             typ=0
         return lambda_, typ
 class force(object):
-    def __init__(self, n=0, mx=0, my=0, w=0, qx=0, qy=0, t=0, sr=0, floc=0):
+    def __init__(self, n=0, mx=0, my=0, w=0, qx=0, qy=0, t=0, sr=0, floc=0, lstForce=[]):
         force.n=n
         force.mx=mx
         force.my=my 
@@ -66,7 +66,8 @@ class force(object):
         force.qy=qy 
         force.t=t
         force.sr=sr  
-        force.floc=floc     
+        force.floc=floc
+        force.lstForce=lstForce
               
 class normes(object):
     def __init__(self, element, forces, yc, ycb=0):
@@ -2022,7 +2023,7 @@ class ferma(snipn):
     def nplus(self):
         """максимальная несущая способность (расстяжение) по СП"""
 
-        return self.nplus_old
+        return self.nplus_old()
         
     def nminus_old(self):
         """максимальная несущая способность (сжатие) по СНиПП"""
@@ -2346,25 +2347,254 @@ class FermaPP(ferma):
 
     def __init__(self):
         pass
-#        self.element=element
-#        self.el=self.element
-#        self.force=forces
-#        self.__yc=yc
-#        self.__ycb=ycb
-#        self.pr=self.element.profile
+    
+    def reinit(self, element, forces, yc, ycb=0):
+        super(FermaPP, self).__init__(element, forces, yc, ycb)
     
     def addData(self):
-        '''Дополнительные данные - вытаскиваем из обычного класса фермы - быстрее'''
-        return self.add_data()
+        lst=[[u'yc1(+) [0.1; 1.]',[0.1,1.]]
+        , [u'yc2(-) [0.1; 1.]',[0.1,1.]]
+        ,[u'l, см [0.; 3000.]', [0., 3000.]]
+        ,[u'mu_x [0.; 4.]',[0.,4.]]
+        ,[u'mu_y [0.; 4.]',[0.,4.]]
+        ,[u'Lambda + [1.,400.]',[1.,400.]]
+        ,[u'Lambda - [1.,300.]',[1.,300.]]]
+        return  lst   
+        
     def lstForce(self):
         lst=[u'N, т ("-" сжатие)']
         return lst
+
+
+
+    def outDataOld(self, lambdaP, lambdaM):
+        '''общий вывод по старому снип. 
+        Входные данные - нет
+        Выходные данные:
+        4 списка - 
+            1 - список - 1 - самый большой коэффициент использования, 2 - расстяжение, 3 - устойчивость
+            4 -гибкость растяжение, 5 - гибкость сжатие
+            6 - устойчивость стенки, 7 - полки, пример: [1,1,1,1,1,5,1]
+            
+            2- список усилий:
+                1- усилие
+                2 - коэффициент использование максимальное
+                3 - коэффициент использование на расстяжение
+                4 - устойчивость сжатие
+                если проверка НЕ выполняется - '-'
+                
+            3 - общие исходные данные:
+                1- повтор 1 с указанием № усилия [1- коэффициент, 1 - коэффициент, 1 - номер усилия и т.д.]
+                2 - +180-60alpha
+                +210-60alpha - alpha max из 2 списка
+                
+            4 - output_data_snip_old_all'''
+        
+        #собрали исходные данные        
+        localData=self.output_data_snip_old_local()
+        globalData=self.output_data_snip_old_global()
+        sectionData=self.output_data()
+        
+        nPMax=self.nplus_old()
+        nMMax=self.nminus_old()
+
+        # Организуем список № 2 и заодно находим общий плохой случай и по п.
+        lst2=[]
+        lst2Header=[u'Усилия, т', u'КиспMax',u'Kисп+ (п.5.1,2)',u'Kисп- (п.5.3)']
+        
+        lst2.append(lst2Header)
+        
+        
+        for i in self.force.lstForce:
+            if i[0]>=0:
+                kP=i[0]*1000./nPMax
+                kM=u'-'
+                kG=kP
+            else:
+                kP=u'-'
+                kM=abs(i[0])*1000./nMMax
+                kG=kM
+            lstTemp=[i[0],kG,kP, kM]
+            lst2.append(lstTemp)
+        
+        #Организуем 1 список
+        lst1=[]
+        
+        lst17=localData[3][0]
+        lst16=localData[0][0]
+        lambdaxy=max(self.el.lambdax(),self.el.lambday())
+        lst15=lambdaxy/lambdaM
+        lst14=lambdaxy/lambdaP
+        
+        lst13=0
+        lst12=0
+        iP=0
+        iM=0
+        j=0
+        for i in lst2[1:]:
+            j=j+1
+            if i[2]!=u'-' and lst12<i[2]:
+                lst12=i[2]
+                iP=j
+            if i[3]!=u'-' and lst13<i[3]:
+                lst13=i[3]
+                iM=j
+        
+        lst11=max(lst12,lst13,lst14,lst15,lst16,lst17)
+#        print lst11, 'lst11'
+#        print lst12
+#        print lst13
+#        print lst14
+#        print lst15
+#        print lst16
+#        print lst17
+        lst1=[lst11,lst12,lst13,lst14,lst15,lst16,lst17]
+
+    #формируем 3 список
+        lst31=[[u'Kmax', lst11],
+              [u'Kmax +', lst12],
+              [u'№ усил', iP],
+              [u'Kmax -', lst13],
+              [u'№ усил', iM],
+              [u'Kгибкость +', lst14],
+              [u'Kгибкость -', lst15],
+              [u'Kуст.стенки', lst16],
+              [u'Kуст.полки', lst17]]
+        
+        alpha=lst13
+        if alpha<0.5:
+            alpha=0.5
+        elif alpha>1:
+            alpha=1
+            
+        lst32=[[u'180-60*a', 180-60.*alpha],
+               [u'210-60*a', 210-60.*alpha]]
+        
+        lst33=[[u'N-(п.5.3), т',nMMax/1000],[u'N+(п.5.1,2), т',nPMax/1000]]
+        lst3=lst31+lst32+lst33 
+        
+        lst4=globalData+localData+sectionData
+        
+#        print lst1
+#        print lst2
+#        print lst3
+#        print lst4
+        
+        return [lst1, lst2, lst3, lst4]
+        
+    def outDataN(self, lambdaP, lambdaM):
+        '''общий вывод по новому снип. 
+        Входные данные - нет
+        Выходные данные:
+        4 списка - 
+            1 - список - 1 - самый большой коэффициент использования, 2 - расстяжение, 3 - устойчивость
+            4 -гибкость растяжение, 5 - гибкость сжатие
+            6 - устойчивость стенки, 7 - полки, пример: [1,1,1,1,1,5,1]
+            
+            2- список усилий:
+                1- усилие
+                2 - коэффициент использование максимальное
+                3 - коэффициент использование на расстяжение
+                4 - устойчивость сжатие
+                если проверка НЕ выполняется - '-'
+                
+            3 - общие исходные данные:
+                1- повтор 1 с указанием № усилия [1- коэффициент, 1 - коэффициент, 1 - номер усилия и т.д.]
+                2 - +180-60alpha
+                +210-60alpha - alpha max из 2 списка
+                
+            4 - output_data_snip_old_all'''
+        
+        #собрали исходные данные        
+        localData=self.output_data_snip_n_local()
+        globalData=self.output_data_snip_n_global()
+        sectionData=self.output_data()
+        
+        nPMax=self.nplus()
+        nMMax=self.nminus()
+        print 'nPMax', nPMax
+        # Организуем список № 2 и заодно находим общий плохой случай и по п.
+        lst2=[]
+        lst2Header=[u'Усилия, т', u'КиспMax',u'Kисп+ (п.7.1.1,2)',u'Kисп- (п.7.1.3.(7))']
+        
+        lst2.append(lst2Header)
+        
+        
+        for i in self.force.lstForce:
+            if i[0]>=0:
+                kP=i[0]*1000./nPMax
+                kM=u'-'
+                kG=kP
+            else:
+                kP=u'-'
+                kM=abs(i[0])*1000./nMMax
+                kG=kM
+            lstTemp=[i[0],kG,kP, kM]
+            lst2.append(lstTemp)
+        
+        #Организуем 1 список
+        lst1=[]
+        
+        lst17=localData[3][0]
+        lst16=localData[0][0]
+        lambdaxy=max(self.el.lambdax(),self.el.lambday())
+        lst15=lambdaxy/lambdaM
+        lst14=lambdaxy/lambdaP
+        
+        lst13=0
+        lst12=0
+        iP=1
+        iM=1
+        j=0
+        for i in lst2[1:]:
+            j=j+1
+            if i[2]!=u'-' and lst12<i[2]:
+                lst12=i[2]
+                iP=j
+            if i[3]!=u'-' and lst13<i[3]:
+                lst13=i[3]
+                iM=j
+        
+        lst11=max(lst12,lst13,lst14,lst15,lst16,lst17)
+        
+        lst1=[lst11,lst12,lst13,lst14,lst15,lst16,lst17]
+
+    #формируем 3 список
+        lst31=[[u'Kmax', lst11],
+              [u'Kmax +', lst12],
+              [u'№ усил', iP],
+              [u'Kmax -', lst13],
+              [u'№ усил', iM],
+              [u'Kгибкость +', lst14],
+              [u'Kгибкость -', lst15],
+              [u'Kуст.стенки', lst16],
+              [u'Kуст.полки', lst17]]
+        
+        alpha=lst13
+        if alpha<0.5:
+            alpha=0.5
+        elif alpha>1:
+            alpha=1
+            
+        lst32=[[u'180-60*a', 180-60.*alpha],
+               [u'210-60*a', 210-60.*alpha]]
+        
+        lst33=[[u'N-(п.7.1.3), т',nMMax/1000],[u'N+(п.7.1.1,2), т',nPMax/1000]]
+        lst3=lst31+lst32+lst33 
+        
+        lst4=globalData+localData+sectionData
+        
+        return [lst1, lst2, lst3, lst4]
+
+
+
         
 class BeamPP(beam):
     '''Класс для расчета балок. Усилия списком'''
 
     def __init__(self):
         pass
+#    def reinit(self, ):
 #        self.element=element
 #        self.el=self.element
 #        self.force=forces
@@ -2378,7 +2608,6 @@ class BeamPP(beam):
     def lstForce(self):
         lst=[u'Mx, т*м', u'My, т*м',u'W', u'Qx, т', u'Qy, т', u'Floc, т', u'b, м']
         return lst
-        
 class ColumnPP(ferma):
     '''Класс для расчета колонн. Усилия списком'''
     def __init__(self):

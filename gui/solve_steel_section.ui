@@ -449,63 +449,28 @@
           <height>521</height>
          </rect>
         </property>
-        <row>
-         <property name="text">
-          <string>Новая строка</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>Новая строка</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>Новая строка</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>Новая строка</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>Новая строка</string>
-         </property>
-        </row>
-        <column>
-         <property name="text">
-          <string>Новый столбец</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Новый столбец</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Новый столбец</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Новый столбец</string>
-         </property>
-        </column>
        </widget>
       </widget>
       <widget class="QWidget" name="tabGeneralOutputData">
        <attribute name="title">
         <string>Общий вывод</string>
        </attribute>
-       <widget class="QTableWidget" name="tableOut">
+       <widget class="QTableWidget" name="tableOutK">
         <property name="geometry">
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>741</width>
+          <width>441</width>
+          <height>531</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QTableWidget" name="tableOutGeneral">
+        <property name="geometry">
+         <rect>
+          <x>450</x>
+          <y>0</y>
+          <width>441</width>
           <height>531</height>
          </rect>
         </property>
@@ -564,7 +529,13 @@
     </rect>
    </property>
    <property name="text">
-    <string>Сталь</string>
+    <string/>
+   </property>
+   <property name="scaledContents">
+    <bool>false</bool>
+   </property>
+   <property name="wordWrap">
+    <bool>false</bool>
    </property>
   </widget>
  </widget>

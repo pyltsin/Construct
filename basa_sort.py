@@ -111,13 +111,113 @@ class BasaSort(object):
     def solvePP(self, code, element, typeSolve,typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce):
         '''Возвращает данные сложного расчета.
         Сложный расчет состоят из 2 частей - подбор и проверка., сначала пишем проверку'''
-            if typeSolve==QtCore.QString(u'Проверка'):
-                out=self.checkPP(code, element,typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce)
-            elif typeSolve==QtCore.QString(u'Подбор'): 
-                out=self.findPP(code, element,typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce)
+        if typeSolve==QtCore.QString(u'Проверка'):
+            out=self.checkPP(code, element,typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce)
+        elif typeSolve==QtCore.QString(u'Подбор'): 
+            out=self.findPP(code, element,typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce)
+        return out
+            
+            
+    def checkPP(self, code, element, typeSection,formSection,sortament,numberSection,stl,lstAddData, lstInputData, lstForce):
+        '''Проверка сечений - для начала загружаем все даные и отправляем их в codes, 
+        Исходные данные - отправляем в QString
+        code -  имя норм (СНиП II-23-81*)
+        element - название типа элемента (Ферма), 
+        typeSection- название типа сечения (пока только ПРОКАТ)
+        formSection - название сечения (Уголки в тавр (длинные стор. - вверх))
+        sortament - текстом (QString) названия ГОСТа соратмента (ГОСТ 8509-93 Уголки равнополочные)
+        numberSection - номер сечения (L20x20x3)
+        steel - текстом (QString) сталь (C235)
+        lstAddData - для сечения
+        lstInputData - для расчета
+        lstForce - усилия'''
+        
+        #Ставим флаг в фальш
+        flag_sostav=False
+        
+        #записываем в typ_sec - название формы сечения, в y записываем номер сечения 
+        for x in self.dict_sort:
+            if QtCore.QString(x)==formSection:
+                y=self.dict_sort[x]
+                typ_sec=x #меняем текст на номер
+                break
+        
+        #если номер в списке - меняем флаг
+        if y in self.dict_sostav_sort:
+            y=self.dict_sostav_sort[y]
+            flag_sostav=True
+
+        #ищем путь к искомому сортаменту
+        for i in self.__list4sortament[1+y]:
+            if QtCore.QString(i[0])==sortament:
+                path=i[1]
+                break
+
+        #загружаем в табл дата данные сортаментов
+        table=tables.tables_csv(path, 'float')
+        table_data=table.get_table()
+
+
+        #загружаем список исходных данных для ПРОФИЛЯ!!! - т.е. h, b, s, t, и т.д.
+        
+        input_data=self.input_data4sortament(self.dict_sort[typ_sec])
+        len_input_data=len(input_data)
+        
+
+        for x in table_data[1:]:
+            if numberSection==QtCore.QString(x[0]):
+                if flag_sostav==False:
+                    pr=self.output_data(typ_sec, x[1:-3])
+                else:
+                    add_ln=len_input_data-len(x[1:-3])
+                    lst=x[1:-3]+lstAddData
+                    pr=self.output_data(typ_sec, lst)
+                break
+        
+        #загружаем сталь
+        if code==QtCore.QString(self.__list_code[0]):
+            s=steel.steel_snip1987(str(stl), pr,dim=1, typ_steel='prokat')
+        elif code==QtCore.QString(self.__list_code[1]):
+            s=steel.steel_snip20107n(str(stl), pr,dim=1)
+        
+        if s.ry()!=0:
+#        print s.ry()
+        
+            #НЕ раскидываем услия и передаем как список
+            forc=codes.force(lstForce=lstForce)
+            
+            #создаем элемент ферма 
+            if element== QtCore.QString(self.__list_elements[0][0]    ):
+                el=codes.elements(s, pr, mux=lstInputData[-4], muy=lstInputData[-3], lfact=lstInputData[-5]) 
+    #            print inp[-1],inp[-2]
+                sol=codes.FermaPP()
+                sol.reinit(el,forc,yc=[lstInputData[-7],lstInputData[-6]])
+    
+                if code==QtCore.QString(self.__list_code[0]):
+                    out=sol.outDataOld(lstInputData[-2],lstInputData[-1])
+                elif code==QtCore.QString(self.__list_code[1]):
+                    out=sol.outDataN(lstInputData[-2],lstInputData[-1])
+    
+            #создаем элемент балка
+            elif  element== QtCore.QString(self.__list_elements[1][0]    ):
+                el=codes.elements(s, pr, mub=lstInputData[-5], lfact=lstInputData[-6]) 
+    #            print inp[-1],inp[-2]
+                sol=codes.BeamPP()
+                sol.reinit(el,forc,yc=[lstInputData[-8]],ycb=lstInputData[-7])
+    
+                if code==QtCore.QString(self.__list_code[0]):
+                    out=sol.output_data_all_snip_old(lstInputData[-4],lstInputData[-3],lstInputData[-2],lstInputData[-1])
+                elif code==QtCore.QString(self.__list_code[1]):
+                    out=sol.output_data_all_snip_n(lstInputData[-4],lstInputData[-3],lstInputData[-2],lstInputData[-1])
+        
+            
+            
             return out
-    def checkPP(self, code, element, typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce):
-        pass
+        else:
+            out=0
+            return out
+
+
     def findPP(self, code, element, typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce):
         pass        
                 

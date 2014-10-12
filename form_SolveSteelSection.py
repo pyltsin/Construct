@@ -93,7 +93,9 @@ class MyWindow(QtGui.QWidget):
         sortament=self.boxSortament.currentText() 
         numberSection=self.boxNumberSection.currentText() 
         steel=self.boxSteel.currentText() 
-        addData=self.basa.add_data_sostav(formSection) 
+        addData=self.basa.add_data_sostav(formSection)
+        
+
         if addData!=[]:         
             lenAddData=len(addData[0])
         else:
@@ -106,6 +108,7 @@ class MyWindow(QtGui.QWidget):
         #простые данные собрали, теперь собираем данные из таблиц и обрабатываем, если что - экстеншин
 
         class errorData():pass 
+        class errorSteel():pass 
             
         try:
             #сначала собираем данные для addData
@@ -160,7 +163,7 @@ class MyWindow(QtGui.QWidget):
             for i in range(countRowLoad):
                 lstRow=[]
                 for j in range(countColumnLoad):
-                    if self.tableLoad.item(i,j)==None:
+                    if self.tableLoad.item(i,j)==None or self.tableLoad.item(i,j).text()=='':
                         self.tableLoad.setItem(i, j, QtGui.QTableWidgetItem(""))
                         self.tableLoad.item(i,j).setText('0')
                     text=self.tableLoad.item(i,j).text()
@@ -172,14 +175,114 @@ class MyWindow(QtGui.QWidget):
                     lstRow.append(text)
                 lstForce.append(lstRow)                    
                     
-            lstIn=code, element, typeSolve,typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce
-            print lstIn
-#            out=self.basa.solvePP(lstIn)
-        
+#            lstIn=code, element, typeSolve,typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce
+#            print lstIn
+            out=self.basa.solvePP(code, element, typeSolve,typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce)
+#            print out
+            
+            if out==0:
+                raise errorSteel
+            #заполняем таблицу усилий
+            self.tabOutputData.setEnabled(True)
+            numColumn=len(out[1][0])
+            numRow=len(out[1])-1
+            self.tableOutLoad.setColumnCount(numColumn)
+            self.tableOutLoad.setRowCount(numRow)
+#            print out[1]
+            self.tableOutLoad.setHorizontalHeaderLabels(out[1][0])
+            
+            for i in range(numRow):
+                for j in range(numColumn):
+                    if type(out[1][i+1][j])==type(1.0) or type(out[1][i+1][j])==type(1):
+                        txt="%.2f"%(out[1][i+1][j])
+                    else:
+                        txt=out[1][i+1][j]
+#                    print i, j
+                    self.tableOutLoad.setItem(i, j, QtGui.QTableWidgetItem(""))
+                    self.tableOutLoad.item(i,j).setText(txt)
+                    self.tableOutLoad.item(i,j).setFlags(QtCore.Qt.ItemFlags(1+2+4+8+6+12+64))
+
+
+        #заполняем таблицу K исп
+            self.tabGeneralOutputData.setEnabled(True)
+            self.tabWidget.setCurrentIndex(3)
+            
+            numRow=len(out[2])
+            verticalHeader=[]
+            for i in out[2]:
+                verticalHeader.append(i[0])
+#            print verticalHeader
+            self.tableOutK.setRowCount(numRow)
+            self.tableOutK.setColumnCount(1)
+            self.tableOutK.setVerticalHeaderLabels(verticalHeader)
+            self.tableOutK.setHorizontalHeaderLabels([''])
+            
+#            print out[2]
+            j=-1
+            for i in out[2]:
+                j+=1                
+#                print i
+                if type(i[1])==type(1.0):
+                    txt="%.2f"%(i[1])
+
+                elif type(i[1])==type(1):
+                    txt="%.0f"%(i[1])
+
+                else:
+                    txt=i[1]
+#                    print i, j
+                self.tableOutK.setItem(j, 0, QtGui.QTableWidgetItem(""))
+                self.tableOutK.item(j,0).setText(txt)
+                self.tableOutK.item(j,0).setFlags(QtCore.Qt.ItemFlags(1+2+4+8+6+12+64))
+            
+            #Ставим - проходит/не проходит сечение
+            if out[0][0]>1:
+                self.labelComment.setText(u'Требования норм НЕ обеспечены')
+                self.labelComment.setStyleSheet("background: red")
+            else:
+                self.labelComment.setText(u'Требования норм обеспечены')
+                self.labelComment.setStyleSheet("background: green")
+                
+            #заполняем последнюю таблицу
+            numRow=len(out[3])
+            verticalHeader=[]
+            for i in out[3]:
+                verticalHeader.append(i[1])
+#            print verticalHeader
+            self.tableOutGeneral.setRowCount(numRow)
+            self.tableOutGeneral.setColumnCount(1)
+            self.tableOutGeneral.setVerticalHeaderLabels(verticalHeader)
+            self.tableOutGeneral.setHorizontalHeaderLabels([''])
+            
+#            print out[2]
+            j=-1
+            for i in out[3]:
+                j+=1                
+#                print i
+                if type(i[0])==type(1.0):
+                    txt="%.2f"%(i[0])
+
+                elif type(i[0])==type(1):
+                    txt="%.0f"%(i[0])
+
+                else:
+                    txt=i[0]
+#                    print i, j
+                self.tableOutGeneral.setItem(j, 0, QtGui.QTableWidgetItem(""))
+                self.tableOutGeneral.item(j,0).setText(txt)
+                self.tableOutGeneral.item(j,0).setFlags(QtCore.Qt.ItemFlags(1+2+4+8+6+12+64))
+                
+                
+            
         except errorData:
             self.labelComment.setText(u'Выход за границы допустимых значений')
+            self.labelComment.setStyleSheet("background: yellow")
         except ValueError:
             self.labelComment.setText(u'Недопустимые исходные данные')
+            self.labelComment.setStyleSheet("background: yellow")
+        except errorSteel:
+            self.labelComment.setText(u'Не найдены значения стали для профиля')
+            self.labelComment.setStyleSheet("background: yellow")
             
             
 
@@ -198,7 +301,10 @@ class MyWindow(QtGui.QWidget):
     def changeInputData(self):
         '''Делать, когда изменились данные'''
         self.tabOutputData.setEnabled(False)
+        self.tableOutLoad.clear()
         self.tabGeneralOutputData.setEnabled(False)
+        self.labelComment.setText(u'Исходные данные изменились')
+        self.labelComment.setStyleSheet("background: white")
     
     def loadCode(self):
         '''загружаем и ставим список норм'''
