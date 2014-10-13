@@ -2188,7 +2188,7 @@ class beam(snipn):
 
         if  self.pr.title()!='korob':     
              
-            if self.element.lb()<self.element.lfact() :
+            if self.element.lb()<self.element.lfact() and self.element.lb()!=0:
                 n3=(self.pr.b()*self.pr.t()+0.25*(self.pr.h()-2*self.pr.t())*self.pr.s())*self.element.steel.ry()
                 lambda_=self.element.lb()/(self.pr.b()/12.**0.5)*(self.element.steel.ry()/self.element.steel.e())**0.5            
                 phi=self.phi_n_old(lambda_)
@@ -2250,7 +2250,7 @@ class beam(snipn):
         commentq=u'Q_fic (п.5.8., 5.16.), кг'
 
         if  self.pr.title()!='korob':     
-            if self.element.lb()<self.element.lfact() :
+            if self.element.lb()<self.element.lfact() and self.element.lb()!=0:
                 n3=(self.pr.b()*self.pr.t()+0.25*(self.pr.h()-2*self.pr.t())*self.pr.s())*self.element.steel.ry()
                 lambda_=self.element.lb()/(self.pr.b()/12.**0.5)*(self.element.steel.ry()/self.element.steel.e())**0.5            
                 phi=self.phi_n(lambda_, typ=0, typ_s='b')[0]
