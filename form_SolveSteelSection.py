@@ -83,7 +83,9 @@ class MyWindow(QtGui.QWidget):
 
         self.buttonSolve.clicked.connect(self.solve)
         
-    
+ # ставим тип сечения -фермаЖ
+        self.boxElement.setCurrentIndex(0)
+        self.loadTableInput()
     def solve(self):
         """Расчет сам: выход в два списка - один в таблицу решения, один в общий вывод"""
         #собираем все данные

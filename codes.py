@@ -1806,17 +1806,17 @@ class ferma(snipn):
         lst=[]        
         #Расчет на расстяжение
 #        print self.pr.a(),self.element.steel.ry(),self.yc1()
-        n1=self.pr.a()*self.element.steel.ry()*self.yc1()
-        comment1=u'N=An*Ry*yc (п.5.1.(5)), кг'         
+        n1=self.pr.a()*self.element.steel.ry()*self.yc1()/1000.
+        comment1=u'N=An*Ry*yc (п.5.1.(5)), т'         
 
-        n2=self.pr.a()*self.element.steel.ru()*self.yc1()/self.yu()
-        comment2=u'N=A*Ru*yc/yu (п.5.2.(6)), кг'         
+        n2=self.pr.a()*self.element.steel.ru()*self.yc1()/self.yu()/1000.
+        comment2=u'N=A*Ru*yc/yu (п.5.2.(6)), т'         
 
         if n1<n2:
             nmin=n1
         else:
             nmin=n2
-        commentnmin=u'N(+)min(п.5.1,п.5.2), кг'
+        commentnmin=u'N(+)min(п.5.1,п.5.2), т'
         #сжатие:
         phix_old=self.phix_old()
         commentpx=u'phix (п.5.3.)'
@@ -1825,9 +1825,9 @@ class ferma(snipn):
         commentpy=u'phiy (п.5.3.)'
 
         n3=self.nminus_old()
-        comment3=u'N=An*Ry*yc*phi (п.5.3.(7)), кг'
+        comment3=u'N=An*Ry*yc*phi (п.5.3.(7)), т'
 #        print self.output_data_snip_old_local()
-        if self.output_data_snip_old_local()[0][1]>self.output_data_snip_old_local()[3][1]:
+        if float(self.output_data_snip_old_local()[0][0])>float(self.output_data_snip_old_local()[3][0]):
             fact_local=self.output_data_snip_old_local()[0]
         else:
             fact_local=self.output_data_snip_old_local()[3]
@@ -1841,17 +1841,17 @@ class ferma(snipn):
              [n2, comment2]]
 
         if self.element.lx()!=0:
-            nelx=3.14**2*self.element.steel.e()*self.pr.jx()/self.element.lx()**2
+            nelx=3.14**2*self.element.steel.e()*self.pr.jx()/self.element.lx()**2/1000.
         else:
             nelx=0
 
         if self.element.ly()!=0:
-            nely=3.14**2*self.element.steel.e()*self.pr.jy()/self.element.ly()**2
+            nely=3.14**2*self.element.steel.e()*self.pr.jy()/self.element.ly()**2/1000.
         else:
             nely=0
 
-        lst.append([nelx, u'N_eilerx, кг'])
-        lst.append([nely, u'N_eilery, кг'])
+        lst.append([nelx, u'N_eilerx, т'])
+        lst.append([nely, u'N_eilery, т'])
 
 
         commentqx=u'Q_ficmaxx (п.5.8.(23)), кг'
@@ -1859,13 +1859,13 @@ class ferma(snipn):
 
              
         if self.element.lx()<self.element.lfact() :
-            q_ficmaxx=self.q_fic_old(n3,phix_old)
+            q_ficmaxx=self.q_fic_old(n3*1000.,phix_old)
             lst.append([q_ficmaxx, commentqx])
         else:
             lst.append(['-', commentqx])
             
         if self.element.ly()<self.element.lfact() :
-            q_ficmaxy=self.q_fic_old(n3,phiy_old)
+            q_ficmaxy=self.q_fic_old(n3*1000.,phiy_old)
             lst.append([q_ficmaxy, commentqy])
         else:
             lst.append(['-', commentqy])
@@ -1898,17 +1898,17 @@ class ferma(snipn):
 
         lst=[]        
         #Расчет на расстяжение
-        n1=self.pr.a()*self.element.steel.ry()*self.yc()
-        comment1=u'N=An*Ry*yc (п.7.1.1(5)), кг'         
+        n1=self.pr.a()*self.element.steel.ry()*self.yc()/1000.
+        comment1=u'N=An*Ry*yc (п.7.1.1(5)), т'         
 
-        n2=self.pr.a()*self.element.steel.ru()*self.yc()/self.yu()
-        comment2=u'N=A*Ru*yc/yu (п.7.1.1), кг'         
+        n2=self.pr.a()*self.element.steel.ru()*self.yc()/self.yu()/1000.
+        comment2=u'N=A*Ru*yc/yu (п.7.1.1), т'         
 
         if n1<n2:
             nmin=n1
         else:
             nmin=n2
-        commentnmin=u'N(+)min(п.7.1.1), кг'
+        commentnmin=u'N(+)min(п.7.1.1), т'
         #сжатие:
         
         phix, typx=self.phix()
@@ -1920,9 +1920,9 @@ class ferma(snipn):
         comment_typy=u'Тип сечения Y'
 
         n3=self.nminus()
-        comment3=u'N=An*Ry*yc*phi (п.7.1.3 (7)), кг'
+        comment3=u'N=An*Ry*yc*phi (п.7.1.3 (7)), т'
 
-        if self.output_data_snip_n_local()[0][1]>self.output_data_snip_n_local()[3][1]:
+        if float(self.output_data_snip_n_local()[0][0])>float(self.output_data_snip_n_local()[3][0]):
             fact_local=self.output_data_snip_n_local()[0]
         else:
             fact_local=self.output_data_snip_n_local()[3]
@@ -1939,29 +1939,29 @@ class ferma(snipn):
              [n2, comment2]]
             
         if self.element.lx()!=0:
-            nelx=3.14**2*self.element.steel.e()*self.pr.jx()/self.element.lx()**2
+            nelx=3.14**2*self.element.steel.e()*self.pr.jx()/self.element.lx()**2/1000.
         else:
             nelx=0
 
         if self.element.ly()!=0:
-            nely=3.14**2*self.element.steel.e()*self.pr.jy()/self.element.ly()**2
+            nely=3.14**2*self.element.steel.e()*self.pr.jy()/self.element.ly()**2/1000.
         else:
             nely=0
 
-        lst.append([nelx, u'N_eilerx, кг'])
-        lst.append([nely, u'N_eilery, кг'])
+        lst.append([nelx, u'N_eilerx, т'])
+        lst.append([nely, u'N_eilery, т'])
 
         commentqx=u'Q_ficmaxx (п.7.2.7(18)), кг'
         commentqy=u'Q_ficmaxy (п.7.2.7(18)), кг'
              
         if self.element.lx()<self.element.lfact() :
-            q_ficmaxx=self.q_fic(n3,phix)
+            q_ficmaxx=self.q_fic(n3*1000,phix)
             lst.append([q_ficmaxx, commentqx])
         else:
             lst.append(["-", commentqx])
 
         if self.element.ly()<self.element.lfact() :
-            q_ficmaxy=self.q_fic(n3,phiy)
+            q_ficmaxy=self.q_fic(n3*1000,phiy)
             lst.append([q_ficmaxy, commentqy])
         else:
             lst.append(["-", commentqy])
@@ -2016,27 +2016,27 @@ class ferma(snipn):
 
 
     def nminus(self):
-        """максимальная несущая способность (сжатие) по СП"""
-        n=self.pr.a()*self.element.steel.ry()*self.yc2()*self.phi()
+        """максимальная несущая способность (сжатие) по СП в Т"""
+        n=self.pr.a()*self.element.steel.ry()*self.yc2()*self.phi()/1000
         return n
 
     def nplus(self):
-        """максимальная несущая способность (расстяжение) по СП"""
+        """максимальная несущая способность (расстяжение) по СП  в Т"""
 
         return self.nplus_old()
         
     def nminus_old(self):
-        """максимальная несущая способность (сжатие) по СНиПП"""
+        """максимальная несущая способность (сжатие) по СНиПП  в Т"""
 
-        n=self.pr.a()*self.element.steel.ry()*self.yc2()*self.phi_old()
+        n=self.pr.a()*self.element.steel.ry()*self.yc2()*self.phi_old()/1000
         return n
         
     def nplus_old(self):
-        """максимальная несущая способность (расстяжение) по СНиП"""
+        """максимальная несущая способность (расстяжение) по СНиП  в Т"""
 
-        n1=self.pr.a()*self.element.steel.ry()*self.yc1()
+        n1=self.pr.a()*self.element.steel.ry()*self.yc1()/1000
 
-        n2=self.pr.a()*self.element.steel.ru()*self.yc1()/self.yu()
+        n2=self.pr.a()*self.element.steel.ru()*self.yc1()/self.yu()/1000
 
         if n1<n2:
             nmin=n1
@@ -2141,25 +2141,25 @@ class beam(snipn):
     def output_data_snip_old_global(self,typ,typ1,typ2,typ3):
         """Выходные основные расчетные данные по СНиП"""
 
-        if self.output_data_snip_old_local()[0][1]>self.output_data_snip_old_local()[3][1]:
+        if float(self.output_data_snip_old_local()[0][0])>float(self.output_data_snip_old_local()[3][0]):
             fact_local=self.output_data_snip_old_local()[0]
         else:
             fact_local=self.output_data_snip_old_local()[3]
 
-        
+#        print fact_local, self.output_data_snip_old_local()[0], self.output_data_snip_old_local()[3]
         lst=[]        
         
         mx_ult=self.mx_old()
-        commentmx=u'Mx=Wx*Ry*yc (п.5.12.(28)), кг*м'         
+        commentmx=u'Mx=Wx*Ry*yc (п.5.12.(28)), т*м'         
 
         my_ult=self.my_old()
-        commentmy=u'My=Wy*Ry*yc (п.5.12.(28)), кг*м'         
+        commentmy=u'My=Wy*Ry*yc (п.5.12.(28)), т*м'         
 
         
         phi_b=self.phi_b_old(typ,typ1,typ2,typ3) 
         
         mxb=self.mxb_old(typ,typ1,typ2,typ3)
-        commentmxb=u'My=Wy*Ry*ycb*phi (п.5.15.(34)), кг*м'         
+        commentmxb=u'Mxb=Wy*Ry*ycb*phi (п.5.15.(34)), т*м'         
         
         cxcy=self.cxcyn_old()
         
@@ -2178,8 +2178,8 @@ class beam(snipn):
              [cxcy[0],u'cx (табл. 66)'],
 
              [cxcy[1],u'cy (табл. 66)'],
-             [qx_ult,u'Qxult (п.5.12.(29)), кг'],
-             [qy_ult,u'Qyult (п.5.12.(29)), кг']]
+             [qx_ult,u'Qxult (п.5.12.(29)), т'],
+             [qy_ult,u'Qyult (п.5.12.(29)), т']]
 
 
 
@@ -2205,7 +2205,7 @@ class beam(snipn):
         """Выходные основные расчетные данные по СП"""        
 
 
-        if self.output_data_snip_n_local()[0][1]>self.output_data_snip_n_local()[3][1]:
+        if float(self.output_data_snip_n_local()[0][0])>float(self.output_data_snip_n_local()[3][0]):
             fact_local=self.output_data_snip_n_local()[0]
         else:
             fact_local=self.output_data_snip_n_local()[3]
@@ -2214,16 +2214,16 @@ class beam(snipn):
         lst=[]        
         
         mx_ult=self.mx()
-        commentmx=u'Mx=Wx*Ry*yc (п.8.21.), кг*м'         
+        commentmx=u'Mx=Wx*Ry*yc (п.8.21.), т*м'         
 
         my_ult=self.my()
-        commentmy=u'My=Wy*Ry*yc (п.8.21.), кг*м'         
+        commentmy=u'My=Wy*Ry*yc (п.8.21.), т*м'         
 
         
         phi_b=self.phi_b(typ,typ1,typ2,typ3) 
         
         mxb=self.mxb(typ,typ1,typ2,typ3)
-        commentmxb=u'My=Wy*Ry*ycb*phi (п.8.4.1.), кг*м'         
+        commentmxb=u'Mxb=Wy*Ry*ycb*phi (п.8.4.1.), т*м'         
         
         cxcy=self.cxcyn()
         
@@ -2242,8 +2242,8 @@ class beam(snipn):
              [cxcy[0],u'cx (табл. Е.1.)'],
 
              [cxcy[1],u'cy (табл. Е.1.)'],
-             [qx_ult,u'Qxult (п.8.21.), кг'],
-             [qy_ult,u'Qyult (п.8.21.), кг']]
+             [qx_ult,u'Qxult (п.8.21.), т'],
+             [qy_ult,u'Qyult (п.8.21.), т']]
 
 
         
@@ -2293,30 +2293,30 @@ class beam(snipn):
 
     def mxb_old(self,typ,typ1,typ2,typ3):
         """максимальная несущая способность устойчивость (изгиб Х) по СНиП"""
-        mxb=self.pr.wx()*self.element.steel.ry()*self.ycb()*self.phi_b_old(typ,typ1,typ2,typ3) [0]/100.
+        mxb=self.pr.wx()*self.element.steel.ry()*self.ycb()*self.phi_b_old(typ,typ1,typ2,typ3) [0]/100./1000.
         return mxb
 
 
     def mx_old(self):
         """максимальная несущая способность (изгиб Х) по СНиП"""
-        mx=self.pr.wx()*self.element.steel.ry()*self.yc1()/100.
+        mx=self.pr.wx()*self.element.steel.ry()*self.yc1()/100./1000.
         return mx
 
     def my_old(self):
         """максимальная несущая способность (изгиб Y) по СНиП"""
-        my=self.pr.wy()*self.element.steel.ry()*self.yc1()/100.
+        my=self.pr.wy()*self.element.steel.ry()*self.yc1()/100./1000.
         return my
 
     def qx_old(self):
         if self.pr.title()=='dvut' or self.pr.title()=='shvel':
-            qx=self.element.steel.rs()*self.yc1()*self.pr.s()*self.pr.jx()/self.pr.s2x()
+            qx=self.element.steel.rs()*self.yc1()*self.pr.s()*self.pr.jx()/self.pr.s2x()/1000.
 #            print self.element.steel.rs(),self.yc1(),self.pr.s(),self.pr.jx(),self.pr.s2x()
         elif self.pr.title()=='korob':
-            qx=self.element.steel.rs()*self.yc1()*(self.pr.s()*2)*self.pr.jx()/self.pr.s2x()
+            qx=self.element.steel.rs()*self.yc1()*(self.pr.s()*2)*self.pr.jx()/self.pr.s2x()/1000.
         return qx
 
     def qy_old(self):
-        qy=self.element.steel.rs()*self.yc1()*(self.pr.t()*2)*self.pr.jy()/self.pr.s2y()
+        qy=self.element.steel.rs()*self.yc1()*(self.pr.t()*2)*self.pr.jy()/self.pr.s2y()/1000.
         return qy
 
 
@@ -2324,7 +2324,7 @@ class beam(snipn):
 
     def mxb(self,typ,typ1,typ2,typ3):
         """максимальная несущая способность устойчивость (изгиб Х) по СП"""
-        mxb=self.pr.wx()*self.element.steel.ry()*self.ycb()*self.phi_b(typ,typ1,typ2,typ3) [0]/100.
+        mxb=self.pr.wx()*self.element.steel.ry()*self.ycb()*self.phi_b(typ,typ1,typ2,typ3) [0]/100./1000.
         return mxb
 
 
@@ -2358,6 +2358,7 @@ class FermaPP(ferma):
         ,[u'mu_x [0.; 4.]',[0.,4.]]
         ,[u'mu_y [0.; 4.]',[0.,4.]]
         ,[u'Lambda + [1.,400.]',[1.,400.]]
+        ,[u'Lambda - ',[u'180-60a',u'210-60a',u'Другое']]
         ,[u'Lambda - [1.,300.]',[1.,300.]]]
         return  lst   
         
@@ -2367,9 +2368,9 @@ class FermaPP(ferma):
 
 
 
-    def outDataOld(self, lambdaP, lambdaM):
+    def outDataOld(self, lambdaP, lambdaML, lambdaM):
         '''общий вывод по старому снип. 
-        Входные данные - нет
+        Входные данные - предельные лямбда для расстяжения и сжатия
         Выходные данные:
         4 списка - 
             1 - список - 1 - самый большой коэффициент использования, 2 - расстяжение, 3 - устойчивость
@@ -2394,27 +2395,46 @@ class FermaPP(ferma):
         localData=self.output_data_snip_old_local()
         globalData=self.output_data_snip_old_global()
         sectionData=self.output_data()
+
+        lambdaxy=max(self.el.lambdax(),self.el.lambday())
         
         nPMax=self.nplus_old()
         nMMax=self.nminus_old()
 
         # Организуем список № 2 и заодно находим общий плохой случай и по п.
         lst2=[]
-        lst2Header=[u'Усилия, т', u'КиспMax',u'Kисп+ (п.5.1,2)',u'Kисп- (п.5.3)']
+        lst2Header=[u'Усилия, т', u'КиспMax',u'Kисп+ (п.5.1,2)',u'Kисп- (п.5.3)',u'Гибкость +', u'Гибкость -']
         
         lst2.append(lst2Header)
         
         
         for i in self.force.lstForce:
             if i[0]>=0:
-                kP=i[0]*1000./nPMax
+                kP=i[0]/nPMax
                 kM=u'-'
                 kG=kP
+                kLambdaP=lambdaxy/lambdaP
+                kLambdaM=u'-'
             else:
                 kP=u'-'
-                kM=abs(i[0])*1000./nMMax
+                kM=abs(i[0])/nMMax
                 kG=kM
-            lstTemp=[i[0],kG,kP, kM]
+                kLambdaP=u'-'
+                print lambdaML, 'ML'
+                if lambdaML==1 or lambdaML==2:
+                    aa=kM
+                    if aa<0.5:
+                        aa=0.5
+                    if lambdaML==1:
+                        lambdaMUlt=180-60*aa
+                    else:
+                        lambdaMUlt=210-60*aa
+                else:
+                    lambdaMUlt=lambdaM
+                    
+                kLambdaM=lambdaxy/lambdaMUlt
+
+            lstTemp=[i[0],kG,kP, kM, kLambdaP, kLambdaM]
             lst2.append(lstTemp)
         
         #Организуем 1 список
@@ -2422,12 +2442,14 @@ class FermaPP(ferma):
         
         lst17=localData[3][0]
         lst16=localData[0][0]
-        lambdaxy=max(self.el.lambdax(),self.el.lambday())
-        lst15=lambdaxy/lambdaM
-        lst14=lambdaxy/lambdaP
+        
+#        lst15=lambdaxy/lambdaM
+#        lst14=lambdaxy/lambdaP
         
         lst13=0
         lst12=0
+        lst14=0
+        lst15=0
         iP=0
         iM=0
         j=0
@@ -2436,9 +2458,11 @@ class FermaPP(ferma):
             if i[2]!=u'-' and lst12<i[2]:
                 lst12=i[2]
                 iP=j
+                lst14=i[4]
             if i[3]!=u'-' and lst13<i[3]:
                 lst13=i[3]
                 iM=j
+                lst15=i[5]
         
         lst11=max(lst12,lst13,lst14,lst15,lst16,lst17)
 #        print lst11, 'lst11'
@@ -2470,8 +2494,7 @@ class FermaPP(ferma):
         lst32=[[u'180-60*a', 180-60.*alpha],
                [u'210-60*a', 210-60.*alpha]]
         
-        lst33=[[u'N-(п.5.3), т',nMMax/1000],[u'N+(п.5.1,2), т',nPMax/1000]]
-        lst3=lst31+lst32+lst33 
+        lst3=lst31+lst32
         
         lst4=globalData+localData+sectionData
         
@@ -2482,9 +2505,9 @@ class FermaPP(ferma):
         
         return [lst1, lst2, lst3, lst4]
         
-    def outDataN(self, lambdaP, lambdaM):
+    def outDataN(self, lambdaP, lambdaML, lambdaM):
         '''общий вывод по новому снип. 
-        Входные данные - нет
+        Входные данные - предельные лямбда для расстяжения и сжатия
         Выходные данные:
         4 списка - 
             1 - список - 1 - самый большой коэффициент использования, 2 - расстяжение, 3 - устойчивость
@@ -2509,27 +2532,46 @@ class FermaPP(ferma):
         localData=self.output_data_snip_n_local()
         globalData=self.output_data_snip_n_global()
         sectionData=self.output_data()
+
+        lambdaxy=max(self.el.lambdax(),self.el.lambday())
+
         
         nPMax=self.nplus()
         nMMax=self.nminus()
         print 'nPMax', nPMax
         # Организуем список № 2 и заодно находим общий плохой случай и по п.
         lst2=[]
-        lst2Header=[u'Усилия, т', u'КиспMax',u'Kисп+ (п.7.1.1,2)',u'Kисп- (п.7.1.3.(7))']
+        lst2Header=[u'Усилия, т', u'КиспMax',u'Kисп+ (п.7.1.1,2)',u'Kисп- (п.7.1.3.(7))',u'Гибкость +', u'Гибкость -']
         
         lst2.append(lst2Header)
         
         
         for i in self.force.lstForce:
             if i[0]>=0:
-                kP=i[0]*1000./nPMax
+                kP=i[0]/nPMax
                 kM=u'-'
                 kG=kP
+                kLambdaP=lambdaxy/lambdaP
+                kLambdaM=u'-'
             else:
                 kP=u'-'
-                kM=abs(i[0])*1000./nMMax
+                kM=abs(i[0])/nMMax
                 kG=kM
-            lstTemp=[i[0],kG,kP, kM]
+                kLambdaP=u'-'
+                if lambdaML==1 or lambdaML==2:
+                    aa=kM
+                    if aa<0.5:
+                        aa=0.5
+                    if lambdaML==1:
+                        lambdaMUlt=180-60*aa
+                    else:
+                        lambdaMUlt=210-60*aa
+                else:
+                    lambdaMUlt=lambdaM
+                    
+                kLambdaM=lambdaxy/lambdaMUlt
+
+            lstTemp=[i[0],kG,kP, kM, kLambdaP, kLambdaM]
             lst2.append(lstTemp)
         
         #Организуем 1 список
@@ -2537,23 +2579,27 @@ class FermaPP(ferma):
         
         lst17=localData[3][0]
         lst16=localData[0][0]
-        lambdaxy=max(self.el.lambdax(),self.el.lambday())
-        lst15=lambdaxy/lambdaM
-        lst14=lambdaxy/lambdaP
+        
+#        lst15=lambdaxy/lambdaM
+#        lst14=lambdaxy/lambdaP
         
         lst13=0
         lst12=0
-        iP=1
-        iM=1
+        lst14=0
+        lst15=0
+        iP=0
+        iM=0
         j=0
         for i in lst2[1:]:
             j=j+1
             if i[2]!=u'-' and lst12<i[2]:
                 lst12=i[2]
                 iP=j
+                lst14=i[4]
             if i[3]!=u'-' and lst13<i[3]:
                 lst13=i[3]
                 iM=j
+                lst15=i[5]
         
         lst11=max(lst12,lst13,lst14,lst15,lst16,lst17)
         
@@ -2579,8 +2625,7 @@ class FermaPP(ferma):
         lst32=[[u'180-60*a', 180-60.*alpha],
                [u'210-60*a', 210-60.*alpha]]
         
-        lst33=[[u'N-(п.7.1.3), т',nMMax/1000],[u'N+(п.7.1.1,2), т',nPMax/1000]]
-        lst3=lst31+lst32+lst33 
+        lst3=lst31+lst32
         
         lst4=globalData+localData+sectionData
         
@@ -2594,20 +2639,267 @@ class BeamPP(beam):
 
     def __init__(self):
         pass
-#    def reinit(self, ):
-#        self.element=element
-#        self.el=self.element
-#        self.force=forces
-#        self.__yc=yc
-#        self.__ycb=ycb
-#        self.pr=self.element.profile
+    
+    def reinit(self, element, forces, yc, ycb=0):
+        super(BeamPP, self).__init__(element, forces, yc, ycb)
     
     def addData(self):
         '''Дополнительные данные - вытаскиваем из обычного класса фермы - быстрее'''
         return self.add_data()
     def lstForce(self):
-        lst=[u'Mx, т*м', u'My, т*м',u'W', u'Qx, т', u'Qy, т', u'Floc, т', u'b, м']
+        lst=[u'Mx, т*м', u'My, т*м', u'Qx, т', u'Qy, т']
         return lst
+        
+    def outDataOld(self, typ,typ1,typ2,typ3):
+        '''общий вывод по старому снип. 
+        Входные данные - нет
+        Выходные данные:
+        4 списка - 
+            1 - список - 1 - самый большой коэффициент использования, 2 - прочность 5/12, 3 - прочность 5/12, 4 - прочность -5/14, 5 - устойчивость
+            6 - устойчивость стенки, 7 - полки, пример: [1,1,1,1,1,5]
+            
+            2- список усилий:
+                1- усилие
+                2 - коэффициент использование максимальное
+                3 - прочность 5/12
+                4 - прочность 5/12
+                
+                5 - прочность 5/14
+                6 - устойчивость
+                если проверка НЕ выполняется - '-'
+                
+            3 - общие исходные данные:
+                1- повтор 1 с указанием № усилия [1- коэффициент, 1 - коэффициент, 1 - номер усилия и т.д.]
+                
+            4 - output_data_snip_old_all'''
+        
+        #собрали исходные данные        
+        localData=self.output_data_snip_old_local()
+        globalData=self.output_data_snip_old_global(typ,typ1,typ2,typ3)
+        sectionData=self.output_data()
+        
+        mxult=self.mx_old()
+        myult=self.my_old()
+        qxult=self.qx_old()
+        qyult=self.qy_old()
+        
+        mxbult=self.mxb_old(typ,typ1,typ2,typ3)
+        
+
+        # Организуем список № 2 и заодно находим общий плохой случай и по п.
+        lst2=[]
+        lst2Header=[u'Mx, т*м', u'My, т*м', u'Qx, т', u'Qy, т', u'КиспMax',u'Kпр (п.5.17 (38))',u'Kпр (п.5.12 (29))',u'Kпр (п.5.14 (33))',u'Kуст (п.5.15 (34))']
+        
+        lst2.append(lst2Header)
+        
+        
+        for i in self.force.lstForce:
+            mx, my, qx,qy=i           
+            kpr38=abs(mx/mxult)+abs(my/myult)
+            kpr29=((qx/qxult)**2+(qy/qyult)**2)**0.5
+            sx=mx/mxult*self.element.steel.ry()*self.yc()
+            sy=my/myult*self.element.steel.ry()*self.yc()
+            tx=qx/qxult*self.element.steel.rs()*self.yc()
+            ty=qy/qyult*self.element.steel.rs()*self.yc()
+            
+            kpr33=(sx**2+sy**2-sx*sy+3*tx**2+3*ty**2)**0.5/(1.15*self.element.steel.ry()*self.yc())
+            kust=abs(mx/mxbult)+abs(my/myult)
+            
+            kmax=max(kpr38,kpr29,kpr33, kust)
+            lstTemp=[i[0],i[1],i[2],i[3],kmax, kpr38, kpr29, kpr33, kust]
+            lst2.append(lstTemp)
+        
+        #Организуем 1 список
+        lst1=[]
+        
+        lst17=localData[3][0]
+        lst16=localData[0][0]
+        
+        lst12=0
+        lst13=0
+        lst14=0
+        lst15=0
+
+        i2=0
+        i3=0
+        i4=0
+        i5=0
+        
+        j=0
+        for i in lst2[1:]:
+            j=j+1
+            if i[5]!=u'-' and lst12<i[5]:
+                lst12=i[5]
+                i2=j
+            if i[6]!=u'-' and lst13<i[6]:
+                lst13=i[6]
+                i3=j
+            if i[7]!=u'-' and lst14<i[7]:
+                lst14=i[7]
+                i4=j
+            if i[8]!=u'-' and lst15<i[8]:
+                lst15=i[8]
+                i5=j
+        
+        lst11=max(lst12,lst13,lst14,lst15,lst16,lst17)
+#        print lst11, 'lst11'
+#        print lst12
+#        print lst13
+#        print lst14
+#        print lst15
+#        print lst16
+#        print lst17
+        lst1=[lst11,lst12,lst13,lst14,lst15,lst16,lst17]
+
+    #формируем 3 список
+        lst3=[[u'Kmax', lst11],
+              [u'Kпр (п.5.17 (38))', lst12],
+              [u'№ усил', i2],
+              [u'Kпр (п.5.12 (29))', lst13],
+              [u'№ усил', i3],
+              [u'Kпр (п.5.14 (33))', lst14],
+              [u'№ усил', i4],
+              [u'Kуст (п.5.15 (34))', lst15],
+              [u'№ усил', i5],
+
+              [u'Kуст.стенки', lst16],
+              [u'Kуст.полки', lst17]]
+        
+#u'Kпр (п.5.17 (38))',u'Kпр (п.5.12 (29))',u'Kпр (п.5.14 (33))',u'Kуст (п.5.15 (34))'        
+        lst4=globalData+localData+sectionData
+        
+#        print lst1
+#        print lst2
+#        print lst3
+#        print lst4
+#        
+        return [lst1, lst2, lst3, lst4]
+
+    def outDataN(self, typ,typ1,typ2,typ3):
+        '''общий вывод по новому снип. 
+        Входные данные - нет
+        Выходные данные:
+        4 списка - 
+            1 - список - 1 - самый большой коэффициент использования, 2 - прочность 5/12, 3 - прочность 5/12, 4 - прочность -5/14, 5 - устойчивость
+            6 - устойчивость стенки, 7 - полки, пример: [1,1,1,1,1,5]
+            
+            2- список усилий:
+                1- усилие
+                2 - коэффициент использование максимальное
+                3 - прочность 5/12
+                4 - прочность 5/12
+                
+                5 - прочность 5/14
+                6 - устойчивость
+                если проверка НЕ выполняется - '-'
+                
+            3 - общие исходные данные:
+                1- повтор 1 с указанием № усилия [1- коэффициент, 1 - коэффициент, 1 - номер усилия и т.д.]
+                
+            4 - output_data_snip_old_all'''
+        
+        #собрали исходные данные        
+        localData=self.output_data_snip_n_local()
+        globalData=self.output_data_snip_n_global(typ,typ1,typ2,typ3)
+        sectionData=self.output_data()
+        
+        mxult=self.mx()
+        myult=self.my()
+        qxult=self.qx()
+        qyult=self.qy()
+        
+        mxbult=self.mxb(typ,typ1,typ2,typ3)
+        
+
+        # Организуем список № 2 и заодно находим общий плохой случай и по п.
+        lst2=[]
+        lst2Header=[u'Mx, т*м', u'My, т*м', u'Qx, т', u'Qy, т', u'КиспMax',u'Kпр (п.8.2.1 (43))',u'Kпр (п.8.2.1 (42))',u'Kпр (п.8.2.1 (44))',u'Kуст (п.8.4.1 (70))']
+        
+        lst2.append(lst2Header)
+        
+        
+        for i in self.force.lstForce:
+            mx, my, qx,qy=i           
+            kpr38=abs(mx/mxult)+abs(my/myult)
+            kpr29=((qx/qxult)**2+(qy/qyult)**2)**0.5
+            sx=mx/mxult*self.element.steel.ry()*self.yc()
+            sy=my/myult*self.element.steel.ry()*self.yc()
+            tx=qx/qxult*self.element.steel.rs()*self.yc()
+            ty=qy/qyult*self.element.steel.rs()*self.yc()
+            
+            kpr33=(sx**2+sy**2-sx*sy+3*tx**2+3*ty**2)**0.5/(1.15*self.element.steel.ry()*self.yc())
+            kust=abs(mx/mxbult)+abs(my/myult)
+            
+            kmax=max(kpr38,kpr29,kpr33, kust)
+            lstTemp=[i[0],i[1],i[2],i[3],kmax, kpr38, kpr29, kpr33, kust]
+            lst2.append(lstTemp)
+        
+        #Организуем 1 список
+        lst1=[]
+        
+        lst17=localData[3][0]
+        lst16=localData[0][0]
+        
+        lst12=0
+        lst13=0
+        lst14=0
+        lst15=0
+
+        i2=0
+        i3=0
+        i4=0
+        i5=0
+        
+        j=0
+        for i in lst2[1:]:
+            j=j+1
+            if i[5]!=u'-' and lst12<i[5]:
+                lst12=i[5]
+                i2=j
+            if i[6]!=u'-' and lst13<i[6]:
+                lst13=i[6]
+                i3=j
+            if i[7]!=u'-' and lst14<i[7]:
+                lst14=i[7]
+                i4=j
+            if i[8]!=u'-' and lst15<i[8]:
+                lst15=i[8]
+                i5=j
+        
+        lst11=max(lst12,lst13,lst14,lst15,lst16,lst17)
+#        print lst11, 'lst11'
+#        print lst12
+#        print lst13
+#        print lst14
+#        print lst15
+#        print lst16
+#        print lst17
+        lst1=[lst11,lst12,lst13,lst14,lst15,lst16,lst17]
+
+    #формируем 3 список
+        lst3=[[u'Kmax', lst11],
+              [u'Kпр (п.8.2.1 (43))', lst12],
+              [u'№ усил', i2],
+              [u'Kпр (п.8.2.1 (42))', lst13],
+              [u'№ усил', i3],
+              [u'Kпр (п.8.2.1 (44))', lst14],
+              [u'№ усил', i4],
+              [u'Kуст (п.8.4.1 (70))', lst15],
+              [u'№ усил', i5],
+
+              [u'Kуст.стенки', lst16],
+              [u'Kуст.полки', lst17]]
+        
+#u'Kпр (п.5.17 (38))',u'Kпр (п.5.12 (29))',u'Kпр (п.5.14 (33))',u'Kуст (п.5.15 (34))'        
+        lst4=globalData+localData+sectionData
+        
+#        print lst1
+#        print lst2
+#        print lst3
+#        print lst4
+#        
+        return [lst1, lst2, lst3, lst4]
+
 class ColumnPP(ferma):
     '''Класс для расчета колонн. Усилия списком'''
     def __init__(self):

@@ -880,12 +880,12 @@ class Test_code_ferma(unittest.TestCase):
         e=2.1*10**6
 #дальше подряд все 24 штуки - проверка по старому снип
         un=check[0][0]
-        res=phiy*ry*a
+        res=phiy*ry*a/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
 
         un=check[1][0]
-        res=ry*a
+        res=ry*a/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[2][0]
@@ -901,19 +901,19 @@ class Test_code_ferma(unittest.TestCase):
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[5][0]
-        res=ry*a
+        res=ry*a/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[6][0]
-        res=ru*a/1.3
+        res=ru*a/1.3/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[7][0]
-        res=14093.9/9.81*1000
+        res=14093.9/9.81*1000/1000.
         self.assertLess(abs(un-res)/res,0.002)        
 
         un=check[8][0]
-        res=10685/9.81*1000
+        res=10685/9.81*1000/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
 
@@ -1010,11 +1010,11 @@ class Test_code_ferma(unittest.TestCase):
 
 
         un=check[0][0]
-        res=phiy*ry*a*2
+        res=phiy*ry*a*2/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[1][0]
-        res=ry*a
+        res=ry*a/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[2][0]
@@ -1038,19 +1038,19 @@ class Test_code_ferma(unittest.TestCase):
         self.assertEqual(un, res)        
 
         un=check[7][0]
-        res=ry*a
+        res=ry*a/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[8][0]
-        res=ru*a/1.3
+        res=ru*a/1.3/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[9][0]
-        res=869.3/9.81*1000
+        res=869.3/9.81*1000/1000.
         self.assertLess(abs(un-res)/res,0.002)        
 
         un=check[10][0]
-        res=323.7/9.81*1000
+        res=323.7/9.81*1000/1000.
         self.assertLess(abs(un-res)/res,0.002)        
 
 
@@ -1151,11 +1151,11 @@ class Test_code_ferma(unittest.TestCase):
 
 
         un=check[0][0]
-        res=phiy*ry*a*0.95
+        res=phiy*ry*a*0.95/1000.
         self.assertLess(abs(un-res)/res,0.007)        
 
         un=check[1][0]
-        res=ry*a*0.9
+        res=ry*a*0.9/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[2][0]
@@ -1172,19 +1172,19 @@ class Test_code_ferma(unittest.TestCase):
 
 
         un=check[5][0]
-        res=ry*a*0.9
+        res=ry*a*0.9/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[6][0]
-        res=ru/1.3*a*0.9
+        res=ru/1.3*a*0.9/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[7][0]
-        res=645.1*1000/9.81
+        res=645.1*1000/9.81/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[8][0]
-        res=14.5*1000/9.81
+        res=14.5*1000/9.81/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[9][0]
@@ -1278,11 +1278,11 @@ class Test_code_ferma(unittest.TestCase):
         e=2.1*10**6
 
         un=check[0][0]
-        res=phix*ry*a*0.95
+        res=phix*ry*a*0.95/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[1][0]
-        res=ry*a*0.9
+        res=ry*a*0.9/1000.
         self.assertLess(abs(un-res)/res,0.001)        
         
         un=check[2][0]
@@ -1298,19 +1298,19 @@ class Test_code_ferma(unittest.TestCase):
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[5][0]
-        res=ry*a*0.9
+        res=ry*a*0.9/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[6][0]
-        res=ru*a*0.9/1.3
+        res=ru*a*0.9/1.3/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[7][0]
-        res=21348*1000/9.81
+        res=21348*1000/9.81/1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[8][0]
-        res=29202*1000/9.81
+        res=29202*1000/9.81/1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[9][0]
@@ -1407,11 +1407,11 @@ class Test_code_ferma(unittest.TestCase):
         e=2.1*10**6
 
         un=check[0][0]
-        res=phiy*ry*a*0.8
+        res=phiy*ry*a*0.8/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[1][0]
-        res=ry*a*0.9
+        res=ry*a*0.9/1000.
         self.assertLess(abs(un-res)/res,0.001)        
         
         un=check[2][0]
@@ -1427,19 +1427,19 @@ class Test_code_ferma(unittest.TestCase):
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[5][0]
-        res=ry*a*0.9
+        res=ry*a*0.9/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[6][0]
-        res=ru*a*0.9/1.3
+        res=ru*a*0.9/1.3/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[7][0]
-        res=3.14*3.14*e*196.85/(0.8*300)**2
+        res=3.14*3.14*e*196.85/(0.8*300)**2/1000.
         self.assertLess(abs(un-res)/res,0.0015)        
 
         un=check[8][0]
-        res=3.14*3.14*e*131.88/(0.9*300)**2
+        res=3.14*3.14*e*131.88/(0.9*300)**2/1000.
         self.assertLess(abs(un-res)/res,0.0015)        
 
         un=check[9][0]
@@ -1536,11 +1536,11 @@ class Test_code_ferma(unittest.TestCase):
         e=2.1*10**6
 
         un=check[0][0]
-        res=phix*ry*a*0.8
+        res=phix*ry*a*0.8/1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[1][0]
-        res=ry*a*0.9
+        res=ry*a*0.9/1000.
         self.assertLess(abs(un-res)/res,0.0012)        
         
         un=check[2][0]
@@ -1556,19 +1556,19 @@ class Test_code_ferma(unittest.TestCase):
         self.assertLess(abs(un-res)/res,0.0015)        
 
         un=check[5][0]
-        res=ry*a*0.9
+        res=ry*a*0.9/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[6][0]
-        res=ru*a*0.9/1.3
+        res=ru*a*0.9/1.3/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[7][0]
-        res=3.14*3.14*e*61.17/(0.8*300)**2
+        res=3.14*3.14*e*61.17/(0.8*300)**2/1000.
         self.assertLess(abs(un-res)/res,0.0015)        
 
         un=check[8][0]
-        res=3.14*3.14*e*463.22/(0.9*300)**2
+        res=3.14*3.14*e*463.22/(0.9*300)**2/1000.
         self.assertLess(abs(un-res)/res,0.0015)        
 
         un=check[9][0]
@@ -1667,11 +1667,11 @@ class Test_code_ferma(unittest.TestCase):
         iy=2.62
 
         un=check[0][0]
-        res=phiy*ry*a*0.8
+        res=phiy*ry*a*0.8/1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[1][0]
-        res=ry*a*0.9
+        res=ry*a*0.9/1000.
         self.assertLess(abs(un-res)/res,0.0012)        
         
         un=check[2][0]
@@ -1687,19 +1687,19 @@ class Test_code_ferma(unittest.TestCase):
         self.assertLess(abs(un-res)/res,0.0015)        
 
         un=check[5][0]
-        res=ry*a*0.9
+        res=ry*a*0.9/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[6][0]
-        res=ru*a*0.9/1.3
+        res=ru*a*0.9/1.3/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[7][0]
-        res=3.14*3.14*e*ix**2*a/(0.8*300)**2
+        res=3.14*3.14*e*ix**2*a/(0.8*300)**2/1000.
         self.assertLess(abs(un-res)/res,0.002)        
 
         un=check[8][0]
-        res=3.14*3.14*e*iy**2*a/(0.9*300)**2
+        res=3.14*3.14*e*iy**2*a/(0.9*300)**2/1000.
         self.assertLess(abs(un-res)/res,0.002)        
 
         un=check[9][0]
@@ -1799,11 +1799,11 @@ class Test_code_ferma(unittest.TestCase):
 
 
         un=check[0][0]
-        res=phiy*ry*a*0.9
+        res=phiy*ry*a*0.9/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[1][0]
-        res=ry*a*0.95
+        res=ry*a*0.95/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[2][0]
@@ -1828,19 +1828,19 @@ class Test_code_ferma(unittest.TestCase):
 
 
         un=check[7][0]
-        res=ry*a*0.95
+        res=ry*a*0.95/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[8][0]
-        res=ru/1.3*a*0.95
+        res=ru/1.3*a*0.95/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[9][0]
-        res=62466*1000/9.81
+        res=62466*1000/9.81/1000.
         self.assertLess(abs(un-res)/res,0.0011)        
 
         un=check[10][0]
-        res=5611*1000/9.81
+        res=5611*1000/9.81/1000.
         self.assertLess(abs(un-res)/res,0.0011)        
 
         un=check[12][0]
@@ -1934,11 +1934,11 @@ class Test_code_ferma(unittest.TestCase):
         e=2.1*10**6
 
         un=check[0][0]
-        res=phix*ry*a*0.95
+        res=phix*ry*a*0.95/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[1][0]
-        res=ry*a*0.9
+        res=ry*a*0.9/1000.
         self.assertLess(abs(un-res)/res,0.001)        
         
         un=check[2][0]
@@ -1963,19 +1963,19 @@ class Test_code_ferma(unittest.TestCase):
 
 
         un=check[7][0]
-        res=ry*a*0.9
+        res=ry*a*0.9/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[8][0]
-        res=ru*a*0.9/1.3
+        res=ru*a*0.9/1.3/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[9][0]
-        res=21348*1000/9.81
+        res=21348*1000/9.81/1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[10][0]
-        res=29202*1000/9.81
+        res=29202*1000/9.81/1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[11][0]
@@ -2073,11 +2073,11 @@ class Test_code_ferma(unittest.TestCase):
         e=2.1*10**6
 
         un=check[0][0]
-        res=phiy*ry*a*0.8
+        res=phiy*ry*a*0.8/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[1][0]
-        res=ry*a*0.9
+        res=ry*a*0.9/1000.
         self.assertLess(abs(un-res)/res,0.001)        
         
         un=check[2][0]
@@ -2102,19 +2102,19 @@ class Test_code_ferma(unittest.TestCase):
 
         
         un=check[7][0]
-        res=ry*a*0.9
+        res=ry*a*0.9/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[8][0]
-        res=ru*a*0.9/1.3
+        res=ru*a*0.9/1.3/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[9][0]
-        res=3.14*3.14*e*196.85/(0.8*300)**2
+        res=3.14*3.14*e*196.85/(0.8*300)**2/1000.
         self.assertLess(abs(un-res)/res,0.0015)        
 
         un=check[10][0]
-        res=3.14*3.14*e*131.88/(0.9*300)**2
+        res=3.14*3.14*e*131.88/(0.9*300)**2/1000.
         self.assertLess(abs(un-res)/res,0.0015)        
 
         un=check[11][0]
@@ -2211,11 +2211,11 @@ class Test_code_ferma(unittest.TestCase):
         e=2.1*10**6
 
         un=check[0][0]
-        res=phix*ry*a*0.8
+        res=phix*ry*a*0.8/1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[1][0]
-        res=ry*a*0.9
+        res=ry*a*0.9/1000.
         self.assertLess(abs(un-res)/res,0.0012)        
         
         un=check[2][0]
@@ -2240,19 +2240,19 @@ class Test_code_ferma(unittest.TestCase):
 
 
         un=check[7][0]
-        res=ry*a*0.9
+        res=ry*a*0.9/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[8][0]
-        res=ru*a*0.9/1.3
+        res=ru*a*0.9/1.3/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[9][0]
-        res=3.14*3.14*e*61.17/(0.8*300)**2
+        res=3.14*3.14*e*61.17/(0.8*300)**2/1000.
         self.assertLess(abs(un-res)/res,0.0015)        
 
         un=check[10][0]
-        res=3.14*3.14*e*463.22/(0.9*300)**2
+        res=3.14*3.14*e*463.22/(0.9*300)**2/1000.
         self.assertLess(abs(un-res)/res,0.0015)        
 
         un=check[11][0]
@@ -2352,11 +2352,11 @@ class Test_code_ferma(unittest.TestCase):
         iy=2.62
 
         un=check[0][0]
-        res=phiy*ry*a*0.8
+        res=phiy*ry*a*0.8/1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[1][0]
-        res=ry*a*0.9
+        res=ry*a*0.9/1000.
         self.assertLess(abs(un-res)/res,0.0012)        
         
         un=check[2][0]
@@ -2380,19 +2380,19 @@ class Test_code_ferma(unittest.TestCase):
         self.assertEqual(un,res)
         
         un=check[7][0]
-        res=ry*a*0.9
+        res=ry*a*0.9/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[8][0]
-        res=ru*a*0.9/1.3
+        res=ru*a*0.9/1.3/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[9][0]
-        res=3.14*3.14*e*ix**2*a/(0.8*300)**2
+        res=3.14*3.14*e*ix**2*a/(0.8*300)**2/1000.
         self.assertLess(abs(un-res)/res,0.002)        
 
         un=check[10][0]
-        res=3.14*3.14*e*iy**2*a/(0.9*300)**2
+        res=3.14*3.14*e*iy**2*a/(0.9*300)**2/1000.
         self.assertLess(abs(un-res)/res,0.002)        
 
         un=check[11][0]
@@ -2916,15 +2916,15 @@ class Test_code_beam(unittest.TestCase):
         a=138
         
         un=check[0][0]
-        res=wx*ry*0.95/100.
+        res=wx*ry*0.95/100./1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[1][0]
-        res=wy*ry*0.95/100.
+        res=wy*ry*0.95/100./1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[2][0]
-        res=wx*ry*0.9/100.*phi
+        res=wx*ry*0.9/100.*phi/1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[3][0]
@@ -2956,12 +2956,12 @@ class Test_code_beam(unittest.TestCase):
         self.assertLess(abs(un-res)/res,0.002)        
 
         un=check[10][0]
-        res=rs*0.95*76810*1.2/1491
+        res=rs*0.95*76810*1.2/1491/1000.
         self.assertLess(abs(un-res)/res,0.002)        
 
 
         un=check[11][0]
-        res=rs*0.95*1725*1.78*2/156.05
+        res=rs*0.95*1725*1.78*2/156.05/1000.
         self.assertLess(abs(un-res)/res,0.002)        
     
         un=check[12][0]
@@ -3052,15 +3052,15 @@ class Test_code_beam(unittest.TestCase):
         phi=phi1*207.43/2900.78*(24./500.)**2*e/ry*0.7
         rs=ry*0.58
         un=check[0][0]
-        res=wx*ry*0.95/100.
+        res=wx*ry*0.95/100./1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[1][0]
-        res=wy*ry*0.95/100.
+        res=wy*ry*0.95/100./1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[2][0]
-        res=wx*ry*0.9/100.*phi
+        res=wx*ry*0.9/100.*phi/1000.
         self.assertLess(abs(un-res)/res,0.01)        
 
         un=check[3][0]
@@ -3092,12 +3092,12 @@ class Test_code_beam(unittest.TestCase):
         self.assertLess(abs(un-res)/res,0.002)        
 
         un=check[10][0]
-        res=rs*0.95*2901*0.56/138.76
+        res=rs*0.95*2901*0.56/138.76/1000.
         self.assertLess(abs(un-res)/res,0.01)        
 
 
         un=check[11][0]
-        res=rs*0.95*207*1.*2/34.14
+        res=rs*0.95*207*1.*2/34.14/1000.
         self.assertLess(abs(un-res)/res,0.003)        
     
         un=check[12][0]
@@ -3190,15 +3190,15 @@ class Test_code_beam(unittest.TestCase):
         rs=ry*0.58
         
         un=check[0][0]
-        res=wx*ry*0.95/100.
+        res=wx*ry*0.95/100./1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[1][0]
-        res=wy*ry*0.95/100.
+        res=wy*ry*0.95/100./1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[2][0]
-        res=wx*ry*0.9/100.*phi
+        res=wx*ry*0.9/100.*phi/1000.
         self.assertLess(abs(un-res)/res,0.01)        
 
         un=check[3][0]
@@ -3230,12 +3230,12 @@ class Test_code_beam(unittest.TestCase):
         self.assertLess(abs(un-res)/res,0.005)        
 
         un=check[10][0]
-        res=rs*0.95*70.05*0.3*2/10.58
+        res=rs*0.95*70.05*0.3*2/10.58/1000.
         self.assertLess(abs(un-res)/res,0.01)        
 
 
         un=check[11][0]
-        res=rs*0.95*44.89*0.3*2/8.69
+        res=rs*0.95*44.89*0.3*2/8.69/1000.
         self.assertLess(abs(un-res)/res,0.003)        
     
         un=check[12][0]
@@ -3322,15 +3322,15 @@ class Test_code_beam(unittest.TestCase):
         a=138
         
         un=check[0][0]
-        res=wx*ry*0.95/100.
+        res=wx*ry*0.95/100./1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[1][0]
-        res=wy*ry*0.95/100.
+        res=wy*ry*0.95/100./1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[2][0]
-        res=wx*ry*0.9/100.*phi
+        res=wx*ry*0.9/100.*phi/1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[3][0]
@@ -3362,12 +3362,12 @@ class Test_code_beam(unittest.TestCase):
         self.assertLess(abs(un-res)/res,0.002)        
 
         un=check[10][0]
-        res=rs*0.95*76810*1.2/1491
+        res=rs*0.95*76810*1.2/1491/1000.
         self.assertLess(abs(un-res)/res,0.003)        
 
 
         un=check[11][0]
-        res=rs*0.95*1725*1.78*2/156.05
+        res=rs*0.95*1725*1.78*2/156.05/1000.
         self.assertLess(abs(un-res)/res,0.003)        
     
         un=check[12][0]
@@ -3459,15 +3459,15 @@ class Test_code_beam(unittest.TestCase):
         rs=ry*0.58
         
         un=check[0][0]
-        res=wx*ry*0.95/100.
+        res=wx*ry*0.95/100./1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[1][0]
-        res=wy*ry*0.95/100.
+        res=wy*ry*0.95/100./1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[2][0]
-        res=wx*ry*0.9/100.*phi
+        res=wx*ry*0.9/100.*phi/1000.
         self.assertLess(abs(un-res)/res,0.01)        
 
         un=check[3][0]
@@ -3500,12 +3500,12 @@ class Test_code_beam(unittest.TestCase):
         self.assertLess(abs(un-res)/res,0.002)        
 
         un=check[10][0]
-        res=rs*0.95*2901*0.56/138.76
+        res=rs*0.95*2901*0.56/138.76/1000.
         self.assertLess(abs(un-res)/res,0.01)        
 
 
         un=check[11][0]
-        res=rs*0.95*207*1.*2/34.14
+        res=rs*0.95*207*1.*2/34.14/1000.
         self.assertLess(abs(un-res)/res,0.003)        
     
         un=check[12][0]
@@ -3598,15 +3598,15 @@ class Test_code_beam(unittest.TestCase):
         rs=ry*0.58
         
         un=check[0][0]
-        res=wx*ry*0.95/100.
+        res=wx*ry*0.95/100./1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[1][0]
-        res=wy*ry*0.95/100.
+        res=wy*ry*0.95/100./1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[2][0]
-        res=wx*ry*0.9/100.*phi
+        res=wx*ry*0.9/100.*phi/1000.
         self.assertLess(abs(un-res)/res,0.01)        
 
         un=check[3][0]
@@ -3638,12 +3638,12 @@ class Test_code_beam(unittest.TestCase):
         self.assertLess(abs(un-res)/res,0.005)        
 
         un=check[10][0]
-        res=rs*0.95*70.05*0.3*2/10.58
+        res=rs*0.95*70.05*0.3*2/10.58/1000.
         self.assertLess(abs(un-res)/res,0.01)        
 
 
         un=check[11][0]
-        res=rs*0.95*44.89*0.3*2/8.69
+        res=rs*0.95*44.89*0.3*2/8.69/1000.
         self.assertLess(abs(un-res)/res,0.003)        
     
         un=check[12][0]
@@ -3734,15 +3734,15 @@ class Test_code_beam(unittest.TestCase):
         a=186.81
         
         un=check[0][0]
-        res=wx*ry*0.95/100.
+        res=wx*ry*0.95/100./1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[1][0]
-        res=wy*ry*0.95/100.
+        res=wy*ry*0.95/100./1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[2][0]
-        res=wx*ry*0.9/100.*phi
+        res=wx*ry*0.9/100.*phi/1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[3][0]
@@ -3774,12 +3774,12 @@ class Test_code_beam(unittest.TestCase):
         self.assertLess(abs(un-res)/res,0.002)        
 
         un=check[10][0]
-        res=rs*0.95*56145*1.1/1559
+        res=rs*0.95*56145*1.1/1559/1000.
         self.assertLess(abs(un-res)/res,0.003)        
 
 
         un=check[11][0]
-        res=rs*0.95*18920*2*1.8/720
+        res=rs*0.95*18920*2*1.8/720/1000.
         self.assertLess(abs(un-res)/res,0.003)        
     
         un=check[12][0]
@@ -3869,15 +3869,15 @@ class Test_code_beam(unittest.TestCase):
         rs=186*100/9.81
         
         un=check[0][0]
-        res=wx*ry*0.95/100.
+        res=wx*ry*0.95/100./1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[1][0]
-        res=wy*ry*0.95/100.
+        res=wy*ry*0.95/100./1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[2][0]
-        res=wx*ry*0.9/100.*phi
+        res=wx*ry*0.9/100.*phi/1000.
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[3][0]
@@ -3909,12 +3909,12 @@ class Test_code_beam(unittest.TestCase):
         self.assertLess(abs(un-res)/res,0.002)        
 
         un=check[10][0]
-        res=rs*0.95*56145*1.1/1559
+        res=rs*0.95*56145*1.1/1559/1000.
         self.assertLess(abs(un-res)/res,0.003)        
 
 
         un=check[11][0]
-        res=rs*0.95*18920*2*1.8/720
+        res=rs*0.95*18920*2*1.8/720/1000.
         self.assertLess(abs(un-res)/res,0.003)        
     
         un=check[12][0]
@@ -4015,11 +4015,11 @@ class Test_code_beam(unittest.TestCase):
         lambda_uw=3.14/2
 
         un=check[0][0]
-        res=phix*ry*a*0.95
+        res=phix*ry*a*0.95/1000.
         self.assertLess(abs(un-res)/res,0.002)        
 
         un=check[1][0]
-        res=ry*a
+        res=ry*a/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[2][0]
@@ -4036,20 +4036,20 @@ class Test_code_beam(unittest.TestCase):
 
 
         un=check[5][0]
-        res=ry*a
+        res=ry*a/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[6][0]
-        res=ru*a/1.3
+        res=ru*a/1.3/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[7][0]
-        res=3.14*3.14*e*2155572.38/(600*4)**2
+        res=3.14*3.14*e*2155572.38/(600*4)**2/1000.
 
         self.assertLess(abs(un-res)/res,0.002)        
 
         un=check[8][0]
-        res=3.14*3.14*e*2155572.38/(600*2)**2
+        res=3.14*3.14*e*2155572.38/(600*2)**2/1000.
         self.assertLess(abs(un-res)/res,0.002)        
 
 
@@ -4155,11 +4155,11 @@ class Test_code_beam(unittest.TestCase):
         e=2.1*10**6
 
         un=check[0][0]
-        res=phix*ry*a*0.95
+        res=phix*ry*a*0.95/1000.
         self.assertLess(abs(un-res)/res,0.002)        
 
         un=check[1][0]
-        res=ry*a
+        res=ry*a/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[2][0]
@@ -4184,20 +4184,20 @@ class Test_code_beam(unittest.TestCase):
 
 
         un=check[7][0]
-        res=ry*a
+        res=ry*a/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[8][0]
-        res=ru*a/1.3
+        res=ru*a/1.3/1000.
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[9][0]
-        res=3.14*3.14*e*2155572.38/(600*4)**2
+        res=3.14*3.14*e*2155572.38/(600*4)**2/1000.
 
         self.assertLess(abs(un-res)/res,0.002)        
 
         un=check[10][0]
-        res=3.14*3.14*e*2155572.38/(600*2)**2
+        res=3.14*3.14*e*2155572.38/(600*2)**2/1000.
         self.assertLess(abs(un-res)/res,0.002)        
 
 

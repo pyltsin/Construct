@@ -188,15 +188,15 @@ class BasaSort(object):
             
             #создаем элемент ферма 
             if element== QtCore.QString(self.__list_elements[0][0]    ):
-                el=codes.elements(s, pr, mux=lstInputData[-4], muy=lstInputData[-3], lfact=lstInputData[-5]) 
+                el=codes.elements(s, pr, mux=lstInputData[-5], muy=lstInputData[-4], lfact=lstInputData[-6]) 
     #            print inp[-1],inp[-2]
                 sol=codes.FermaPP()
-                sol.reinit(el,forc,yc=[lstInputData[-7],lstInputData[-6]])
+                sol.reinit(el,forc,yc=[lstInputData[-8],lstInputData[-7]])
     
                 if code==QtCore.QString(self.__list_code[0]):
-                    out=sol.outDataOld(lstInputData[-2],lstInputData[-1])
+                    out=sol.outDataOld(lstInputData[-3],lstInputData[-2],lstInputData[-1])
                 elif code==QtCore.QString(self.__list_code[1]):
-                    out=sol.outDataN(lstInputData[-2],lstInputData[-1])
+                    out=sol.outDataN(lstInputData[-3],lstInputData[-2],lstInputData[-1])
     
             #создаем элемент балка
             elif  element== QtCore.QString(self.__list_elements[1][0]    ):
@@ -206,9 +206,9 @@ class BasaSort(object):
                 sol.reinit(el,forc,yc=[lstInputData[-8]],ycb=lstInputData[-7])
     
                 if code==QtCore.QString(self.__list_code[0]):
-                    out=sol.output_data_all_snip_old(lstInputData[-4],lstInputData[-3],lstInputData[-2],lstInputData[-1])
+                    out=sol.outDataOld(lstInputData[-4],lstInputData[-3],lstInputData[-2],lstInputData[-1])
                 elif code==QtCore.QString(self.__list_code[1]):
-                    out=sol.output_data_all_snip_n(lstInputData[-4],lstInputData[-3],lstInputData[-2],lstInputData[-1])
+                    out=sol.outDataN(lstInputData[-4],lstInputData[-3],lstInputData[-2],lstInputData[-1])
         
             
             
