@@ -161,6 +161,11 @@ if __name__ == "__main__":
 
     time_start=time.time()    
 
+    meshLst=None
+    meshLstNP=None
+
+    gc.collect()
+
     meshLst=functionRectangles(h,b,0,0,ny,nx)
 
     a=0
@@ -182,6 +187,12 @@ if __name__ == "__main__":
 
     print h*b, h**3*b/12.,b**3*h/12. 
 
+
+    meshLst=None
+    meshLstNP=None
+
+    gc.collect()
+
     time_start=time.time()    
     
     meshLstNP=functionRectanglesNP(h,b,0,0,ny,nx)
@@ -198,8 +209,15 @@ if __name__ == "__main__":
 
 
     d=2000.
-    nx=1500
+    nx=2000
+
+    meshLst=None
+    meshLstNP=None
+
+    gc.collect()
+
     time_start=time.time()    
+
 
     meshLst=functionMeshSolidCircles(d,0,0,nx)
     a=0
@@ -217,6 +235,11 @@ if __name__ == "__main__":
 
     time_start=time.time()    
 
+    meshLst=None
+    meshLstNP=None
+
+    gc.collect()
+    
     meshLstNP=functionMeshSolidCirclesNP(d,0,0,nx)
     aNP=meshLstNP[2].sum()
     jxNP=meshLstNP[3].sum()
