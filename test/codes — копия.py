@@ -3257,4 +3257,3 @@ class ColumnPP(ferma):
 
         n1=self.pr.a()*self.element.steel.ry()*self.yc()/1000
 
-        return n1
