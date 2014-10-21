@@ -8,10 +8,253 @@ Created on Fri Sep 19 23:19:35 2014
 import numpy as np
 import time
 import gc
+from scipy import interpolate
+#пусть материалы есть в виде функций и есть матрица материалов, 
+"""v=ones(numberElements)
+e=e
+x
+y
+a
+
+da=a*v*e
+
+dsx=da*x
+dsy=da*y
+
+djx=dsx*x
+djy=dsy*y
+
+djxy=dsx*y
+
+d11=djx.sum()
+d22=djy.sum()
+d12=djxy.sum()
+d12=dsx.sum()
+d23=dsy.sum()
+d33=da.sum()
+
+
+
+"""
+
+def reinforcedPropertiesSP52(a):
+    pass
+
+def reinforcedPropertiesSP63(a):
+    pass
+
+def concretePropertiesSP(a):
+    pass
+
+def functDiaConcrete(lst, typDia, typPS, typTime, typR, typRT, typFun):
+    '''Отдача функции расчета sigma по e или v по e'''
+    if typDia==1:
+        x=lst[0]
+        y=lst[1]
+    if typDia==2 or typDia==3:
+        rbn,rb,rbtn,rbt,eb, eb0, eb2, eb1red, ebt0, ebt2, ebt1red, ebl0, ebl2, ebl1red, eblt0, eblt2, eblt1red, phi_crc=lst
+        if typPS==1:
+            r=rb
+            rt=rbt
+        elif typPS==2:
+            r=rbn
+            rt=rbtn
+        if typTime=='short':
+
+            e0=eb0
+            et0=ebt0
+
+            e2=eb2
+            et2=ebt2
+
+            e1red=eb1red
+            et1red=ebt1red
+        elif typTime=='long':
+
+            r=r*0.9
+            rt=rt*0.9
+            
+
+            e0=ebl0
+            et0=eblt0
+
+            e2=ebl2
+            et2=eblt2
+
+            e1red=ebl1red
+            et1red=eblt1red
+
+        
+        if typDia==2:
+            x=[-e2,-e1red,0,et1red,et2]
+            y=[-r,-r,0,r,r]
+        elif typDia==3:
+            x=[-e2,-e0,-0.6*r/eb,0,0.6*rt/eb,et0,et2]
+            y=[-r,-r,-0.6*r,0,0.6*r,r,r]
+
+    if typR==True:
+        n=0
+        for i in x:
+           if i<0:
+               y[n]=0
+           n+=1
+    else:
+        x.insert(0,x[0]*1.001)
+        y.insert(0,0)
+           
+    if typRT==True:
+        n=0
+        for i in x:
+           if i>0:
+               y[n]=0
+           n+=1
+    else:
+        x.append(x[0]*1.001)
+        y.append(0)
+    
+    x.append(x[-1]*1000000.)
+    y.append(y[-1])
+
+    x.insert(0,x[0]*1000000.)
+    y.insert(0,y[0])
+
+    
+    x=np.array(x)
+    y=np.array(y)        
+
+    
+    if typFun=='sigma':
+        fun=interpolate.interp1d(x,y, kind='linear')
+    elif typFun=='v':
+        v=y/x/eb
+        fun=interpolate.interp1d(x,v, kind='linear')
+    return fun
+        
+    
+            
+        
+def reinforcedPropertiesApproxSP(a, ys):
+    '''аппроксимирующие функции определния характеристик бетона с A240'''
+    rsn=a*100/9.81
+    rs=rsn/ys
+    es=2.1*10**6
+    if a>=600:
+        es0=rs/es+0.002
+        es2=0.015
+    else:
+        es0=rs/es
+        es2=0.025
+        
+    rsw=rs*0.8
+    if rsw>=300*100/9.81:
+        rsw=300*100/9.81
+    
+    return rsn,rs,rsw, es, es0, es2
+
+    
+
+def concretePropertiesApproxSP(b, phi):
+    '''аппроксимирующие функции определния характеристик бетона с В10'''
+    if b>=70:
+        ybb=1/(360-b)*300
+    else:
+        ybb=1
+    yb1=1.3*ybb
+    ybt1=1.5*ybb
+
+    rbn=max(b*(0.765-0.001*b),0.71*b)
+    rb=rbn/yb1
+    
+    rbtn=0.232*b**(2./3)*0.776
+    rbt=rbtn/ybt1
+    
+    eb=55000*b/(18/0.9+b/0.9)/1000*1.05
+    
+    eb0=0.002
+    ebt0=0.0001
+    
+    if b<=60:
+        eb2=0.0035
+    else:
+        eb2=(0.0033-0.0028)/(70-100)*(b-100)+0.0028
+    
+    eb1red=0.0015
+    
+    ebt2=0.00015
+    ebt1red=0.00008
+    
+    if phi>75:
+        ebl0=3
+        ebl2=4.2
+        ebl1red=2.4
+        
+        eblt0=0.21
+        eblt2=0.27
+        eblt1red=0.19
+    elif phi<=75 and phi>=40:
+        ebl0=3.4
+        ebl2=4.8
+        ebl1red=2.8
+        
+        eblt0=0.24
+        eblt2=0.31
+        eblt1red=0.22
+    else:
+        ebl0=4
+        ebl2=5.6
+        ebl1red=3.4
+        
+        eblt0=0.28
+        eblt2=0.36
+        eblt1red=0.26
+
+    ebl0/=1000.
+    ebl2/=1000.
+    ebl1red/=1000.
+    
+    eblt0/=1000.
+    eblt2/=1000.
+    eblt1red/=1000.
+    
+    linMatrB=np.array([10,15,20,25,30,35,40,45,50,55,60])
+    linMatr75=np.array([2.8,2.4,2.,1.8,1.6,1.5,1.4,1.3,1.2,1.1,1.])    
+    linMatr4075=np.array([3.9,3.4,2.8,2.5,2.3,2.1,1.9,1.8,1.6,1.5,1.4])    
+    linMatr40=np.array([5.6,4.8,4.0,3.6,3.2,3.,2.8,2.6,2.4,2.2,2.])   
+    funPhi75=interpolate.interp1d(linMatrB,linMatr75, kind='linear')
+    funPhi4075=interpolate.interp1d(linMatrB,linMatr4075, kind='linear')
+    funPhi40=interpolate.interp1d(linMatrB,linMatr40, kind='linear')
+    
+    if b>60:
+        if phi>75:
+            phi_crc=1.
+        elif phi<=75 and phi>=40:
+            phi_crc=1.4
+        else:
+            phi_crc=2.0
+    else:
+        if phi>75:
+            phi_crc=funPhi75(b)
+        elif phi<=75 and phi>=40:
+            phi_crc=funPhi4075(b)
+        else:
+            phi_crc=funPhi40(b)
+            
+    rbn*=(100./9.81)
+    rb*=(100./9.81)
+    rbtn*=(100./9.81)
+    rbt*=(100./9.81)
+    eb*=10000.
+    
+    return rbn,rb,rbtn,rbt,eb, eb0, eb2, eb1red, ebt0, ebt2, ebt1red, ebl0, ebl2, ebl1red, eblt0, eblt2, eblt1red, phi_crc
+        
+   
+        
+        
+    
 def functionMeshCells(h,b,x,y):
     a=h*b
     jx0=a*h*h/12.
-    jx=jx0+a*y*y
+    jx=jx0+a*y*yscipy.interpolate.interp1d
     jy0=a*b*b/12.
     jy=jy0+a*x*x
     return [x,y, a, jx, jy]
@@ -22,8 +265,8 @@ def functionRectanglesNP(h,b,x,y,nx,ny):
     db=b/nx
     dh=h/ny
     a=db*dh
-    jx0=a*db*db/12.
-    jy0=a*dh*dh/12.
+#    jx0=a*db*db/12.
+#    jy0=a*dh*dh/12.
     dx=db/2.-b/2.
     dy=dh/2.-h/2.
 
@@ -48,11 +291,15 @@ def functionRectanglesNP(h,b,x,y,nx,ny):
 
     amatr=np.ones(nx*ny)
     amatr*=a
+
+#    jx=ymatr*ymatr*amatr
+#    jy=xmatr*xmatr*amatr
+
     
-    jx=ymatr*ymatr*amatr+jx0
-    jy=xmatr*xmatr*amatr+jy0
+#    jx=ymatr*ymatr*amatr+jx0
+#    jy=xmatr*xmatr*amatr+jy0
     
-    lst=np.vstack((xmatr,ymatr,amatr, jx, jy))
+    lst=np.vstack((xmatr,ymatr,amatr))
     
     return lst
     
@@ -92,11 +339,10 @@ def functionMeshSolidCirclesNP(d,x,y,nx):
     h=b
     r=d/2.
     a=b*h
-    jx0=a*h*h/12.
-    jy0=a*b*b/12.
+#    jx0=a*h*h/12.
+#    jy0=a*b*b/12.
 
     dx=b/2.-r
-    dy=h/2.-r
     r2=r*r
 
     xone=np.ones(nx)
@@ -108,21 +354,24 @@ def functionMeshSolidCirclesNP(d,x,y,nx):
     xmatr=xmatr.flatten()
     ymatr=ymatr.flatten()
     
-    rmatr=xmatr*xmatr+ymatr*ymatr
+    rmatr=np.square(xmatr)+np.square(ymatr)
     rbool=(rmatr<=r2)
 
-    amatr=np.ones(nx*nx)
+    amatr=rbool
     amatr*=a
-    amatr*=rbool
+
+#    jx=ymatr*ymatr*amatr
+#    jy=xmatr*xmatr*amatr
+
     
-    jx=ymatr*ymatr*amatr+jx0
-    jx*=rbool
-    jy=xmatr*xmatr*amatr+jy0
-    jy*=rbool
+#    jx=ymatr*ymatr*amatr+jx0
+#    jx*=rbool
+#    jy=xmatr*xmatr*amatr+jy0
+#    jy*=rbool
 
 #    gc.collect()
 
-    lst=np.vstack((xmatr,ymatr,amatr, jx, jy))
+    lst=np.vstack((xmatr,ymatr,amatr))
     
     return lst
         
@@ -151,6 +400,7 @@ def functionMeshSolidCircles(d,x,y,nx):
                 cell=[xCell,yCell,a,jx,jy]
                 lst.append(cell)
     return lst
+
 
 if __name__ == "__main__":
 
@@ -198,13 +448,13 @@ if __name__ == "__main__":
     meshLstNP=functionRectanglesNP(h,b,0,0,ny,nx)
     
     aNP=meshLstNP[2].sum()
-    jxNP=meshLstNP[3].sum()
-    jyNP=meshLstNP[4].sum()
-
+#    jxNP=meshLstNP[3].sum()
+#    jyNP=meshLstNP[4].sum()
+#
     time_stop1=time.time()    
 
 #    print u'NumPy'
-    print aNP, jxNP, jyNP,  time_stop1-time_start
+    print aNP,   time_stop1-time_start
 
 
 
@@ -242,8 +492,9 @@ if __name__ == "__main__":
     
     meshLstNP=functionMeshSolidCirclesNP(d,0,0,nx)
     aNP=meshLstNP[2].sum()
-    jxNP=meshLstNP[3].sum()
-    jyNP=meshLstNP[4].sum()
     time_stop1=time.time()    
 
-    print aNP, jxNP, jyNP,  time_stop1-time_start
+    print aNP, time_stop1-time_start
+    
+    print concretePropertiesApproxSP(25,74)
+    print concretePropertiesApproxSP(12.5,74)
