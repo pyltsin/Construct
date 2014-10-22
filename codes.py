@@ -1770,7 +1770,7 @@ class ferma(snipn):
         commentyu=u'yu, п.4'
         
         p=self.pr.p()
-        commentp=u'P, кг/м3'
+        commentp=u'P, кг/м'
 
 
         a=self.pr.a()
@@ -2099,7 +2099,7 @@ class beam(snipn):
         lst=[]
         #Исходные данные:
         p=self.pr.p()
-        commentp=u'P, кг/м3'
+        commentp=u'P, кг/м'
         
         a=self.pr.a()
         commenta=u'A, см2'
@@ -3242,7 +3242,10 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
         [u'KустXY=N/(A*Ry*yc*phiexy) (п.5.34 (62))',l62],
         [u'№ усил',nl62],
         [u'Гибкость +',lLambdaP],
-        [u'Гибкость -',lLambdaM]]
+        [u'Гибкость -',lLambdaM],
+        [u'Kуст.стенки', lst16],
+        [u'Kуст.полки', lst17]]
+
         
         
         lst3=lst31
