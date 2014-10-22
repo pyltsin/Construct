@@ -346,9 +346,7 @@ class MyWindow(QtGui.QWidget):
 
     def loadTypeSolve(self):
         '''загружаем и ставим список расчетов - подбор и проверка'''
-#        lst=[u'Проверка', u'Подбор']
-        lst=[u'Проверка']
-
+        lst=[u'Проверка', u'Подбор']
         self.loadComboBox(self.boxTypeSolve, lst)
 
     def changeTypeSolve(self):
