@@ -3242,7 +3242,11 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
         [u'KустXY=N/(A*Ry*yc*phiexy) (п.5.34 (62))',l62],
         [u'№ усил',nl62],
         [u'Гибкость +',lLambdaP],
+        [u'№ усил',nlLambdaP],
+
         [u'Гибкость -',lLambdaM],
+        [u'№ усил',nlLambdaM],
+
         [u'Kуст.стенки', lst16],
         [u'Kуст.полки', lst17]]
 

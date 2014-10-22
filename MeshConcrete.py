@@ -29,14 +29,89 @@ djxy=dsx*y
 d11=djx.sum()
 d22=djy.sum()
 d12=djxy.sum()
-d12=dsx.sum()
+d13=dsx.sum()
 d23=dsy.sum()
 d33=da.sum()
 
 
 
 """
+def nmxmy2e0rxry(n, mx, my, lstForm, lstMat, nn, criter):
+    numberElements=lstForm.shape[1]
+    cx,cy=centerMass(lstForm)
+    formMatr=formGen(lstForm, cx, cy)
+#   возвращает список функций апроксимаций от mat
+    matFunE2V=matGenE2V(lstMat)
+#возвращает E
+    e=matGenE(lstForm, lstMat)
+    e0,rx,ry=0,0,0
+    
+    v=np.ones(numberElement)
+    
+    while True:
+        da=formMatr[2]*v*e
+        dsx=da*formMatr[0]
+        dsy=da*formMatr[1]
+    
+        djx=dsx*formMatr[0]
+        djy=dsy*formMatr[1]
+        djxy=dsx*formMatr[1]
+    
+        d11=djx.sum()
+        d22=djy.sum()
+        d12=djxy.sum()
+        d12=dsx.sum()
+        d23=dsy.sum()
+        d33=da.sum()
+        
+        e0,rx,ry,error=funtSolve(n,mx,my,d11,d22,d12,d13,d23,d33)
+        if error==1:
+            raise Error
+    '''траливали - недописано'''
+    
+def e0rxry2nmxmy(e0,rx,ry, formMatr, matFunE2Sigma):
+#   создаем матрицу e по всем точкам:
+    one=np.ones(formMatr.shape[1])
+    e=one*e0+formMatr[0]*rx+formMatr[1]*ry
+    sigma=matFunE2Sigma(e, formMatr[3])
+    n=sigma*formMatr[2]
+    mx=sigma*formMatr[2]*formMatr[0]
+    my=sigma*formMatr[2]*formMatr[1]
+    nSum=n.sum()
+    mxSum=mx.sum()
+    mySum=my.sum()
+    return nSum, mxSum, mySum
+    
+def formGen(lst, cx, cy):
+    matr=np.array([[0],[0],[0],[1]])
+    for i in lst:
+        if i[0]=='rectangle':
+            matr=np.concatenate((matr,functionRectanglesNP(i[1],i[2],i[3]-cx,i[4]-cy,i[5],i[6],i[7]) ),axis=1)
+        elif i[0]=='solidcircle':
+            matr=np.concatenate((matr,functionMeshSolidCirclesNP(i[1],i[3]-cx,i[5],i[4]-cy,i[5],i[7]) ),axis=1)
+        elif i[0]=='circle':
+            matr=np.concatenate((matr,functionCirclesNP(i[1],i[3]-cx,i[5],i[4]-cy,i[5],i[7]) ),axis=1)
+    return matr
+def centerMass(lst):
+    '''Состав lstForm:
+        ['rectangle/solidcircle/circle',h,b,dx,dy, nx, ny, nummat, typmat]'''
+    a=0
+    sx=0
+    sy=0
+    for i in lst:
+        if i[0]=='rectangle':
+            a+=i[1]*i[2]
+            sx+=a*(i[3]-i[2]/2)
+            sy+=a*(i[4]-i[1]/2)
+        elif [0]=='solidcircle':
+            a+=(i[1]/2.)**2*3.14
+            sx+=a*(i[3]-i[1]/2)
+            sy+=a*(i[4]-i[1]/2)
+    x=sx/a
+    y=sy/a
+    return x,y
 
+    
 def reinforcedPropertiesSP52(a):
     pass
 
@@ -45,6 +120,32 @@ def reinforcedPropertiesSP63(a):
 
 def concretePropertiesSP(a):
     pass
+
+def functDiaConcrete(lst, typDia, typPS, typFun):
+    if typDia==1:
+        x=lst[0]
+        y=lst[1]
+    elif typDia==2:
+        rsn,rs,rsw, es, es0, es2=lst
+        if typPS==1:
+            r=rs
+        else:
+            r=rsn
+        x=[-es2,-es0,0,es0,es2]
+        y=[-r,-r,0,r,r]
+
+    x=np.array(x)
+
+    y=np.array(y)        
+
+    
+    if typFun=='sigma':
+        fun=interpolate.interp1d(x,y, kind='linear')
+    elif typFun=='v':
+        v=y/x/eb
+        fun=interpolate.interp1d(x,v, kind='linear')
+    return fun
+        
 
 def functDiaConcrete(lst, typDia, typPS, typTime, typR, typRT, typFun):
     '''Отдача функции расчета sigma по e или v по e'''
@@ -248,18 +349,8 @@ def concretePropertiesApproxSP(b, phi):
     return rbn,rb,rbtn,rbt,eb, eb0, eb2, eb1red, ebt0, ebt2, ebt1red, ebl0, ebl2, ebl1red, eblt0, eblt2, eblt1red, phi_crc
         
    
-        
-        
-    
-def functionMeshCells(h,b,x,y):
-    a=h*b
-    jx0=a*h*h/12.
-    jx=jx0+a*y*yscipy.interpolate.interp1d
-    jy0=a*b*b/12.
-    jy=jy0+a*x*x
-    return [x,y, a, jx, jy]
 
-def functionRectanglesNP(h,b,x,y,nx,ny):
+def functionRectanglesNP(h,b,x,y,nx,ny, mat):
 #    gc.collect()
 
     db=b/nx
@@ -267,8 +358,8 @@ def functionRectanglesNP(h,b,x,y,nx,ny):
     a=db*dh
 #    jx0=a*db*db/12.
 #    jy0=a*dh*dh/12.
-    dx=db/2.-b/2.
-    dy=dh/2.-h/2.
+    dx=db/2.
+    dy=dh/2.
 
     xone=np.ones(ny)
     xmatr= np.arange(nx)
@@ -291,6 +382,9 @@ def functionRectanglesNP(h,b,x,y,nx,ny):
 
     amatr=np.ones(nx*ny)
     amatr*=a
+    
+    matmatr=np.ones(nx*ny)
+    matmatr*=mat
 
 #    jx=ymatr*ymatr*amatr
 #    jy=xmatr*xmatr*amatr
@@ -299,40 +393,18 @@ def functionRectanglesNP(h,b,x,y,nx,ny):
 #    jx=ymatr*ymatr*amatr+jx0
 #    jy=xmatr*xmatr*amatr+jy0
     
-    lst=np.vstack((xmatr,ymatr,amatr))
+    lst=np.vstack((xmatr,ymatr,amatr, matmatr))
     
     return lst
     
-def functionRectangles(h,b,x,y, nx, ny):
-    lst=[]
-    db=b/nx
-    dh=h/ny
-    a=db*dh
-    jx0=a*db*db/12.
-    jy0=a*dh*dh/12.
-    dx=db/2.-b/2.
-    dy=dh/2.-h/2.
-    for xi in xrange(nx):
-        for yi in xrange(ny):
-            x0=db*xi+dx
-            y0=dh*yi+dy
 
-            xCell=x+x0
-            yCell=y+y0
-            jx=jx0+a*yCell*yCell
-            jy=jy0+a*xCell*xCell
-            cell=[xCell,yCell,a,jx,jy]
-            lst.append(cell)
-    return lst
-
-def functionCircles(d,x,y):
+def functionCirclesNP(d,x,y, mat):
     a=3.1415*(d/2.)**2
-    jx=a*y**2
-    jy=a*x**2
-    return [x,y,a,jx,jy]
+    matr=np.array([[x],[y],[a], [mat]])
+    return matr
 
 
-def functionMeshSolidCirclesNP(d,x,y,nx):
+def functionMeshSolidCirclesNP(d,x,y,nx, mat):
 #    gc.collect()
     lst=[]
     b=d/nx
@@ -360,6 +432,9 @@ def functionMeshSolidCirclesNP(d,x,y,nx):
     amatr=rbool
     amatr*=a
 
+    matmatr=np.ones(nx*nx)
+    matmatr*=mat
+    
 #    jx=ymatr*ymatr*amatr
 #    jy=xmatr*xmatr*amatr
 
@@ -371,38 +446,15 @@ def functionMeshSolidCirclesNP(d,x,y,nx):
 
 #    gc.collect()
 
-    lst=np.vstack((xmatr,ymatr,amatr))
+    lst=np.vstack((xmatr,ymatr,amatr, matmatr))
     
     return lst
         
         
-def functionMeshSolidCircles(d,x,y,nx):
-    lst=[]
-    b=d/nx
-    h=b
-    r=d/2.
-    a=b*h
-    jx0=a*h*h/12.
-    jy0=a*b*b/12.
-
-    dx=b/2.-r
-    dy=h/2.-r
-    r2=r*r
-    for xi in xrange(nx):
-        for yi in xrange(nx):
-            x0=b*xi+dx
-            y0=h*yi+dy
-            if x0*x0+y0*y0<=r2:
-                xCell=x+x0
-                yCell=y+y0
-                jx=jx0+a*yCell*yCell
-                jy=jy0+a*xCell*xCell
-                cell=[xCell,yCell,a,jx,jy]
-                lst.append(cell)
-    return lst
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":    mx=sigma*formMatr[2]*formMatr[0]
+
 
     h=1000.
     b=1000.
@@ -416,7 +468,7 @@ if __name__ == "__main__":
 
     gc.collect()
 
-    meshLst=functionRectangles(h,b,0,0,ny,nx)
+    meshLst=functionRectangles(h,b,-h/2,-b/2,ny,nx)
 
     a=0
     jx=0
@@ -445,7 +497,7 @@ if __name__ == "__main__":
 
     time_start=time.time()    
     
-    meshLstNP=functionRectanglesNP(h,b,0,0,ny,nx)
+    meshLstNP=functionRectanglesNP(h,b,-h/2,-b/2,ny,nx)
     
     aNP=meshLstNP[2].sum()
 #    jxNP=meshLstNP[3].sum()
@@ -469,7 +521,7 @@ if __name__ == "__main__":
     time_start=time.time()    
 
 
-    meshLst=functionMeshSolidCircles(d,0,0,nx)
+    meshLst=functionMeshSolidCircles(d,-d/2,-d/2,nx)
     a=0
     jx=0
     jy=0
@@ -490,7 +542,7 @@ if __name__ == "__main__":
 
     gc.collect()
     
-    meshLstNP=functionMeshSolidCirclesNP(d,0,0,nx)
+    meshLstNP=functionMeshSolidCirclesNP(d,-d/2,-d/2,nx)
     aNP=meshLstNP[2].sum()
     time_stop1=time.time()    
 
