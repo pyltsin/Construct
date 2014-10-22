@@ -2941,12 +2941,13 @@ class ColumnPP(ferma):
                 a) расстяжение (N>=0)
                     N=0: Mx/Mxb+My/My; Mxb для случая - закрепления сжатого пояса ---a, psi, phi1, phib 
                 б) сжатие:
-                    а) Центральное сжатие в плоскости наибольшей жесткости
-                    в) 51 в плоскости (61 - не делаем так как есть a и б)
-                    в) 51 из плоскости (61 - не делаем так как есть a и б)
+                    а) 61
+                    б) 5.3 (7) из плоскости
 
-                    г) Если Mx!=0: 61
-                    д) Если Mx!=0: My!=0: 62
+                    в) 51 в плоскости 
+                    г) 51 из плоскости 
+                    д) 56
+                    е) Если Mx!=0: My!=0: 62
                     
         Выходные данные:
         4 списка - 
@@ -2984,43 +2985,40 @@ class ColumnPP(ferma):
 
         ,u'Kпр (п.5.25 (50))'
         ,u'KустБ (п.5.15 (34))'
-
-        ,u'a'
-        ,u'psi '
-        ,u'phi1'
         ,u'phib'
+        ,u'phi1'
+        ,u'psi '
+        ,u'a'
 
-        ,u'Kуст=N/(Ry*yc*phix) (п.5.32 (61))'
+        ,u'KустX=N/(Ry*yc*phix) (п.5.32 (61),5.3 (7))'
         ,u'phix'
         
+        ,u'KустY=N/(Ry*yc*phiy) (п.5.3 (7))'
+        ,u'phiy'
         
-        ,u'KустX=Ne/(Ry*yc*phiex) (п.5.32 (61))'
-        ,u'm'
-        ,u'nau'
-        ,u'mef'
+        ,u'KустX=Ne/(Ry*yc*phiex) (п.5.27 (51))'
         ,u'phiex'
-        
-        ,u'KустY=Ne/(Ry*yc*phiey) (п.5.32 (61))'
-        ,u'm'
-        ,u'nau'
         ,u'mef'
+        ,u'nau'
+
+
+
+        
+        ,u'KустY=Ne/(Ry*yc*phiey) (п.5.27 (51))'
         ,u'phiey'
+        ,u'mef'
+        ,u'nau'
         
         ,u'KустY=N/(Ry*yc*phiy*c) (п.5.30 (56))'
-        ,u'mx'
-        ,u'c_max'
         ,u'c'
-        ,u'phiy'
+        ,u'c_max'
+        ,u'mx'
 
-        ,u'KустXY=N/(Ry*yc*phiexy) (п.5.30 (56))'
-        ,u'mx'
-        ,u'c_max'
-        ,u'c'
-        ,u'my'
-        ,u'nauy'
-        ,u'mefy'
-        ,u'phiey'
+        ,u'KустXY=N/(Ry*yc*phiexy) (п.5.34 (62))'
         ,u'phiexy'
+        ,u'phiey'
+        ,u'c'
+        
         ,u'Гибкость +'
         ,u'Гибкость -']
         
@@ -3034,25 +3032,28 @@ class ColumnPP(ferma):
         mxbult=self.mxb_old(1,2,1,1)
 
         nplusult=self.nplus_old()
-            
+        phix=self.phix_old()
+        phiy=self.phix_old()
+        yc=self.el.yc()
+        ry=self.el.steel.ry()
+        rs=self.el.steel.rs()
+        
         for i in self.force.lstForce:
             self.force.n,self.force.mx,self.force.my,self.force.qx,self.force.qy=i
             n,mx,my,qx,qy=i
             
-            yc=self.el.yc()
-            ycb=self.el.ycb()
             
             
             #прочность на срез
             k29=abs(qx/qxult)+abs(qy/qyult)
 
             #прочность приведенная
-            sx=(abs(n/nplusult)+abs(mx/mxult)+abs(my/myult))*self.el.steel/ry()*self.el.yc()
-            taux=abs(qx/qxult)*self.el.steel/rs()*self.el.yc()
+            sx=(abs(n/nplusult)+abs(mx/mxult)+abs(my/myult))*ry*yc
+            taux=abs(qx/qxult)*rs*yc
 
-            tauy=abs(qy/qyult)*self.el.steel/rs()*self.el.yc()
+            tauy=abs(qy/qyult)*rs*yc
 
-            k33=(sx**2+3*taux**2+3*tauy**2)**0.5/(self.el.steel/ry()*self.el.yc()*1.15)
+            k33=(sx**2+3*taux**2+3*tauy**2)**0.5/(ry*yc*1.15)
 
 
             #прочность по N/A+M/W
@@ -3067,12 +3068,85 @@ class ColumnPP(ferma):
                 phib34=[u'-',u'-',u'-',u'-']
             
             if n<0:
-                pass
+                #проверка на центральное сжатие в плоскости:
+                k7x=abs(n/ry/yc/phix)
+                k7y=abs(n/ry/yc/phiy)
+                kMaxM=max(k7x,k7y)
+                if mx!=0:
+                    phie51x=self.phi_e_old(1)
+                    k51x=abs(n/ry/yc/phie51x[0])
+                    kMaxM=max(k51x,kMaxM)
+                else:
+                    k51x=u'-'
+                    phie51x=[u'-',u'-',u'-',u'-']                
             
+                if my!=0:
+                    phie51y=self.phi_e_old(2)
+                    k51y=abs(n/ry/yc/phie51y[0])
+                    kMaxM=max(k51y,kMaxM)
+
+                else:
+                    k51y=u'-'
+                    phie51y=[u'-',u'-',u'-',u'-']                
+
+                if mx!=0:
+                    c56=self.c_old()
+                    k56=abs(n/ry/yc/c56[0])
+                    kMaxM=max(k56,kMaxM)
+
+                else:
+                    k56=u'-'
+                    c56=[u'-',u'-',u'-']
+                
+                if mx!=0 and my!=0:
+                    
+                    phiexy62=self.phi_exy_old()
+                    k62=abs(n/ry/yc/phiexy62[0])
+                    kMaxM=max(k62,kMaxM)
+
+                else:
+                    phiexy62=[u'-',u'-',u'-']
+                    k62=u'-'
+            else:
+                k7x=u'-'  
+                k7y=u'-'  
+                k51x=u'-'
+                phie51x=[u'-',u'-',u'-',u'-']                
+                k51y=u'-'
+                phie51y=[u'-',u'-',u'-',u'-']                
+                k56=u'-'
+                c56=[u'-',u'-',u'-']
+                phiexy62=[u'-',u'-',u'-']
+                k62=u'-'
+            if n>=0:
+                kLambdaP=lambdaxy/lambdaP
+                kLambdaM=u'-'
+            else:
+                kLambdaP=u'-'
+                if lambdaML==1 or lambdaML==2:
+                    aa=kMaxM
+                    if aa<0.5:
+                        aa=0.5
+                    if lambdaML==1:
+                        lambdaMUlt=180-60*aa
+                    else:
+                        lambdaMUlt=210-60*aa
+                else:
+                    lambdaMUlt=lambdaM
+                    
+                kLambdaM=lambdaxy/lambdaMUlt
             
-            lstTemp=[i[0],kG,kP, kM, kLambdaP, kLambdaM]
+#           формируем lst; и вычисляем макс
+            if n>=0:
+                kMax=max(k29,k33,k50,k34)
+            else:
+                kMax=max(k29,k33,k50,kMaxM)
+                    
+            
+            lstTemp=[n,mx,my,qx,qy,kMax,k29,k33,k50,k34]+phib34+[k7x,phix,k7y, phiy, k51x]+phie51x+[k51y]+phie51y+[k56]+c56+[k62]+phiexy62+[kLambdaP, kLambdaM]
+            
             lst2.append(lstTemp)
-        
+        ''''''
         #Организуем 1 список
         lst1=[]
         
