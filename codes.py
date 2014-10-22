@@ -598,7 +598,7 @@ class snipn(normes):
             psi=1
             a=0
         
-        return phib, phi1, psi, a
+        return [phib, phi1, psi, a]
         
         
     def psib(self,a, typ1, typ2, typ3):
@@ -780,7 +780,7 @@ class snipn(normes):
         if phi<phi_e:
             phi_e=phi
 #            print 'point 2'
-        return phi_e, mef, nau, lambda_
+        return [phi_e, mef, nau, lambda_]
 
         
     def phi_etable(self, mef, lambda_):
@@ -998,7 +998,7 @@ class snipn(normes):
 #        if c>1:
 #            c=1
 #        print c
-        return c, c_max, mx
+        return [c, c_max, mx]
                 
     def c(self):
         """Определение коэффициента c по СП (формула 111)
@@ -1038,7 +1038,7 @@ class snipn(normes):
 #        if c>1:
 #            c=1
 #        print c
-        return c, c_max, mx
+        return [c, c_max, mx]
 
             
             
@@ -1147,7 +1147,7 @@ class snipn(normes):
 #        print 'c', c
 #        print 'phi_ey', phi_ey
         phi_exy=phi_ey*(0.6*c**(1./3)+0.4*c**(1./4))
-        return phi_exy, phi_ey, c
+        return [phi_exy, phi_ey, c]
 
     def phi_exy(self):
         '''определение по сп. БЕЗ УЧЕТА требования mefy<mx и lambdax>lambday;
@@ -1160,7 +1160,7 @@ class snipn(normes):
 #        print 'c', c
 #        print 'phi_ey', phi_ey
         phi_exy=phi_ey*(0.6*c**(1./3)+0.4*c**(1./4))
-        return phi_exy, phi_ey, c
+        return [phi_exy, phi_ey, c]
 
 
         '''_____________________________________________'''
@@ -2907,6 +2907,10 @@ class ColumnPP(ferma):
     
     def __init__(self):
         pass
+    
+    def reinit(self, element, forces, yc, ycb=0):
+        super(ColumnPP, self).__init__(element, forces, yc, ycb)
+
     def addData(self):
         '''Дополнительные данные'''
         lst=[[u'yc [0.1; 1.]',[0.1,1.]]
@@ -2951,8 +2955,8 @@ class ColumnPP(ferma):
                     
         Выходные данные:
         4 списка - 
-            1 - список - 1 - самый большой коэффициент использования, 2 - расстяжение, 3 - устойчивость
-            4 -гибкость растяжение, 5 - гибкость сжатие
+            1 - список - 1 - самый большой коэффициент использования, 
+k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM           
             6 - устойчивость стенки, 7 - полки, пример: [1,1,1,1,1,5,1]
             
             2- список усилий:
@@ -2990,13 +2994,13 @@ class ColumnPP(ferma):
         ,u'psi '
         ,u'a'
 
-        ,u'KустX=N/(Ry*yc*phix) (п.5.32 (61),5.3 (7))'
+        ,u'KустX=N/(A*Ry*yc*phix) (п.5.32 (61),5.3 (7))'
         ,u'phix'
         
-        ,u'KустY=N/(Ry*yc*phiy) (п.5.3 (7))'
+        ,u'KустY=N/(A*Ry*yc*phiy) (п.5.3 (7))'
         ,u'phiy'
         
-        ,u'KустX=Ne/(Ry*yc*phiex) (п.5.27 (51))'
+        ,u'KустX=Ne/(A*Ry*yc*phiex) (п.5.27 (51))'
         ,u'phiex'
         ,u'mef'
         ,u'nau'
@@ -3004,17 +3008,17 @@ class ColumnPP(ferma):
 
 
         
-        ,u'KустY=Ne/(Ry*yc*phiey) (п.5.27 (51))'
+        ,u'KустY=Ne/(A*Ry*yc*phiey) (п.5.27 (51))'
         ,u'phiey'
         ,u'mef'
         ,u'nau'
         
-        ,u'KустY=N/(Ry*yc*phiy*c) (п.5.30 (56))'
+        ,u'KустY=N/(A*Ry*yc*phiy*c) (п.5.30 (56))'
         ,u'c'
         ,u'c_max'
         ,u'mx'
 
-        ,u'KустXY=N/(Ry*yc*phiexy) (п.5.34 (62))'
+        ,u'KустXY=N/(A*Ry*yc*phiexy) (п.5.34 (62))'
         ,u'phiexy'
         ,u'phiey'
         ,u'c'
@@ -3034,7 +3038,7 @@ class ColumnPP(ferma):
         nplusult=self.nplus_old()
         phix=self.phix_old()
         phiy=self.phix_old()
-        yc=self.el.yc()
+        yc=self.yc()
         ry=self.el.steel.ry()
         rs=self.el.steel.rs()
         
@@ -3143,10 +3147,15 @@ class ColumnPP(ferma):
                 kMax=max(k29,k33,k50,kMaxM)
                     
             
-            lstTemp=[n,mx,my,qx,qy,kMax,k29,k33,k50,k34]+phib34+[k7x,phix,k7y, phiy, k51x]+phie51x+[k51y]+phie51y+[k56]+c56+[k62]+phiexy62+[kLambdaP, kLambdaM]
-            
+            lstTemp1=[n,mx,my,qx,qy,kMax,k29,k33,k50,k34]
+            print phib34, [k7x,phix,k7y, phiy, k51x]
+            lstTemp21=phib34+[k7x,phix,k7y, phiy, k51x]
+            lstTemp22=phie51x+[k51y]+phie51y+[k56]+c56
+            lstTemp3=[k62]+phiexy62+[kLambdaP, kLambdaM]
+            lstTemp=lstTemp1+lstTemp21+lstTemp22+lstTemp3
             lst2.append(lstTemp)
         ''''''
+        
         #Организуем 1 список
         lst1=[]
         
@@ -3155,26 +3164,50 @@ class ColumnPP(ferma):
         
 #        lst15=lambdaxy/lambdaM
 #        lst14=lambdaxy/lambdaP
-        
-        lst13=0
-        lst12=0
-        lst14=0
-        lst15=0
-        iP=0
-        iM=0
+        l29,l33,l50,l34,l7x,l7y, l51x,l51y,l56,l62,lLambdaP, lLambdaM=0,0,0,0,0,0,0,0,0,0,0,0
+        nl29,nl33,nl50,nl34,nl7x,nl7y, nl51x,nl51y,nl56,nl62,nlLambdaP, nlLambdaM=0,0,0,0,0,0,0,0,0,0,0,0           
         j=0
         for i in lst2[1:]:
-            j=j+1
-            if i[2]!=u'-' and lst12<i[2]:
-                lst12=i[2]
-                iP=j
-                lst14=i[4]
-            if i[3]!=u'-' and lst13<i[3]:
-                lst13=i[3]
-                iM=j
-                lst15=i[5]
+            j+=1
+            if i[6]!=u'-' and l29<i[6]:
+                l29=i[6]
+                nl29=j
+            if i[7]!=u'-' and l33<i[6]:
+                l33=i[7]
+                nl33=j
+            if i[8]!=u'-' and l50<i[8]:
+                l50=i[8]
+                nl50=j
+            if i[9]!=u'-' and l34<i[9]:
+                l34=i[9]
+                nl34=j
+            if i[14]!=u'-' and l7x<i[14]:
+                l7x=i[14]
+                nl7x=j
+            if i[16]!=u'-' and l7y<i[16]:
+                l7y=i[16]
+                nl7y=j
+            if i[18]!=u'-' and l51x<i[18]:
+                l51x=i[18]
+                nl51x=j
+            if i[23]!=u'-' and l51y<i[23]:
+                l51y=i[23]
+                nl51y=j
+            if i[28]!=u'-' and l56<i[28]:
+                l56=i[28]
+                nl56=j
+            if i[32]!=u'-' and l62<i[32]:
+                l62=i[32]
+                nl62=j
+            if i[36]!=u'-' and lLambdaP<i[36]:
+                lLambdaP=i[36]
+                nlLambdaP=j
+            if i[37]!=u'-' and lLambdaM<i[37]:
+                lLambdaM=i[37]
+                nlLambdaM=j
+
         
-        lst11=max(lst12,lst13,lst14,lst15,lst16,lst17)
+        lst11=max(l29,l33,l50,l34,l7x,l7y, l51x,l51y,l56,l62,lLambdaP, lLambdaM,lst16,lst17)
 #        print lst11, 'lst11'
 #        print lst12
 #        print lst13
@@ -3182,29 +3215,37 @@ class ColumnPP(ferma):
 #        print lst15
 #        print lst16
 #        print lst17
-        lst1=[lst11,lst12,lst13,lst14,lst15,lst16,lst17]
+        lst1=[lst11,l29,l33,l50,l34,l7x,l7y, l51x,l51y,l56,l62,lLambdaP, lLambdaM,lst16,lst17]
 
     #формируем 3 список
-        lst31=[[u'Kmax', lst11],
-              [u'Kmax +', lst12],
-              [u'№ усил', iP],
-              [u'Kmax -', lst13],
-              [u'№ усил', iM],
-              [u'Kгибкость +', lst14],
-              [u'Kгибкость -', lst15],
-              [u'Kуст.стенки', lst16],
-              [u'Kуст.полки', lst17]]
+        lst31=[[u'КиспMax',lst11],
+        [u'Kcрез (п.5.12 (29))',l29],
+        [u'№ усил',nl29],
+        [u'Kпр (п.5.14 (33))',l33],
+        [u'№ усил',nl33],
+        [u'Kпр (п.5.25 (50))', nl50],
+        [u'№ усил',nl50],         
+        [u'KустБ (п.5.15 (34))',l34],
+        [u'№ усил',nl34],
+        [u'KустX=N/(A*Ry*yc*phix) (п.5.32 (61),5.3 (7))',l7x],
+        [u'№ усил',nl7x],
         
-        alpha=lst13
-        if alpha<0.5:
-            alpha=0.5
-        elif alpha>1:
-            alpha=1
-            
-        lst32=[[u'180-60*a', 180-60.*alpha],
-               [u'210-60*a', 210-60.*alpha]]
+        [u'KустY=N/(A*Ry*yc*phiy) (п.5.3 (7))', l7y],
+        [u'№ усил',nl7y],
         
-        lst3=lst31+lst32
+        [u'KустX=Ne/(A*Ry*yc*phiex) (п.5.27 (51))', l51x],
+        [u'№ усил',nl51x],
+        [u'KустY=Ne/(A*Ry*yc*phiey) (п.5.27 (51))',nl51y],
+        [u'№ усил',nl51y],
+        [u'KустY=N/(A*Ry*yc*phiy*c) (п.5.30 (56))',l56],
+        [u'№ усил',nl56],
+        [u'KустXY=N/(A*Ry*yc*phiexy) (п.5.34 (62))',l62],
+        [u'№ усил',nl62],
+        [u'Гибкость +',lLambdaP],
+        [u'Гибкость -',lLambdaM]]
+        
+        
+        lst3=lst31
         
         lst4=globalData+localData+sectionData
         
@@ -3320,6 +3361,19 @@ class ColumnPP(ferma):
     def qy(self):
         return self.qy_old()
 
+    def nminus(self):
+        """максимальная несущая способность (сжатие) по СП в Т"""
+        n=self.pr.a()*self.element.steel.ry()*self.yc()*self.phi()/1000
+        return n
+
+        
+    def nminus_old(self):
+        """максимальная несущая способность (сжатие) по СНиПП  в Т"""
+
+        n=self.pr.a()*self.element.steel.ry()*self.yc()*self.phi_old()/1000
+        return n
+
+
     def nplus(self):
         """максимальная несущая способность (расстяжение) по СП  в Т"""
 
@@ -3332,3 +3386,121 @@ class ColumnPP(ferma):
         n1=self.pr.a()*self.element.steel.ry()*self.yc()/1000
 
         return n1
+        
+    def output_data_snip_old_global(self):
+        """Выходные основные расчетные данные по СНиП"""
+        
+        lst=[]        
+        #Расчет на расстяжение
+#        print self.pr.a(),self.element.steel.ry(),self.yc1()
+        n1=self.pr.a()*self.element.steel.ry()*self.yc()/1000.
+        comment1=u'N=An*Ry*yc (п.5.1.(5)), т'         
+
+        n2=self.pr.a()*self.element.steel.ru()*self.yc()/self.yu()/1000.
+        comment2=u'N=A*Ru*yc/yu (п.5.2.(6)), т'         
+
+        if n1<n2:
+            nmin=n1
+        else:
+            nmin=n2
+        commentnmin=u'N(+)min(п.5.1,п.5.2), т'
+        #сжатие:
+        phix_old=self.phix_old()
+        commentpx=u'phix (п.5.3.)'
+
+        phiy_old=self.phiy_old()
+        commentpy=u'phiy (п.5.3.)'
+
+        n3=self.nminus_old()
+        comment3=u'N=An*Ry*yc*phi (п.5.3.(7)), т'
+#        print self.output_data_snip_old_local()
+        if float(self.output_data_snip_old_local()[0][0])>float(self.output_data_snip_old_local()[3][0]):
+            fact_local=self.output_data_snip_old_local()[0]
+        else:
+            fact_local=self.output_data_snip_old_local()[3]
+            
+        lst=[[n3, comment3],
+             [nmin,commentnmin],
+            fact_local,
+             [phix_old, commentpx],
+             [phiy_old, commentpy],
+             [n1, comment1],
+             [n2, comment2]]
+
+        if self.element.lx()!=0:
+            nelx=3.14**2*self.element.steel.e()*self.pr.jx()/self.element.lx()**2/1000.
+        else:
+            nelx=0
+
+        if self.element.ly()!=0:
+            nely=3.14**2*self.element.steel.e()*self.pr.jy()/self.element.ly()**2/1000.
+        else:
+            nely=0
+
+        lst.append([nelx, u'N_eilerx, т'])
+        lst.append([nely, u'N_eilery, т'])
+
+
+                
+        return lst
+
+    def output_data_snip_n_global(self):
+        """Выходные основные расчетные данные по СП"""
+
+        lst=[]        
+        #Расчет на расстяжение
+        n1=self.pr.a()*self.element.steel.ry()*self.yc()/1000.
+        comment1=u'N=An*Ry*yc (п.7.1.1(5)), т'         
+
+        n2=self.pr.a()*self.element.steel.ru()*self.yc()/self.yu()/1000.
+        comment2=u'N=A*Ru*yc/yu (п.7.1.1), т'         
+
+        if n1<n2:
+            nmin=n1
+        else:
+            nmin=n2
+        commentnmin=u'N(+)min(п.7.1.1), т'
+        #сжатие:
+        
+        phix, typx=self.phix()
+        commentpx=u'phix (п.7.1.3)'
+        comment_typx=u'Тип сечения Х'
+        
+        phiy, typy=self.phiy()
+        commentpy=u'phiy (п.7.1.3)'
+        comment_typy=u'Тип сечения Y'
+
+        n3=self.nminus()
+        comment3=u'N=An*Ry*yc*phi (п.7.1.3 (7)), т'
+
+        if float(self.output_data_snip_n_local()[0][0])>float(self.output_data_snip_n_local()[3][0]):
+            fact_local=self.output_data_snip_n_local()[0]
+        else:
+            fact_local=self.output_data_snip_n_local()[3]
+
+
+        lst=[[n3, comment3],
+             [nmin,commentnmin],
+            fact_local,
+             [phix, commentpx],
+             [phiy, commentpy],
+             [typx, comment_typx],
+             [typy, comment_typy],
+             [n1, comment1],
+             [n2, comment2]]
+            
+        if self.element.lx()!=0:
+            nelx=3.14**2*self.element.steel.e()*self.pr.jx()/self.element.lx()**2/1000.
+        else:
+            nelx=0
+
+        if self.element.ly()!=0:
+            nely=3.14**2*self.element.steel.e()*self.pr.jy()/self.element.ly()**2/1000.
+        else:
+            nely=0
+
+        lst.append([nelx, u'N_eilerx, т'])
+        lst.append([nely, u'N_eilery, т'])
+
+        return lst
+

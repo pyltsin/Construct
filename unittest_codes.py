@@ -2869,7 +2869,7 @@ class Test_code_beam(unittest.TestCase):
         forc=force()        
         sol=snipn(el,forc,1) 
         test=sol.phi_b_old(1,1,3,1)
-        self.assertEqual(test, (1,1,1,0))
+        self.assertEqual(test, [1,1,1,0])
 
 # швеллер 
         pr1=shvel(30.0	,10.0,	0.65,	1.1,	1.2,	0.5,	0.0,	0.1)
@@ -4919,7 +4919,8 @@ class Test_column(unittest.TestCase):
 
         print 50
 
-#список для новых тестов: phi_b при l_d->0 и l_b=0        
+#список для новых тестов: phi_b при l_d->0 и l_b=0  
+#fermaPP, beamPP, columnPP - снип/сп (около 7 тестов!)      
         
 if __name__ == "__main__":
     unittest.main()

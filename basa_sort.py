@@ -210,6 +210,16 @@ class BasaSort(object):
                 elif code==QtCore.QString(self.__list_code[1]):
                     out=sol.outDataN(lstInputData[-4],lstInputData[-3],lstInputData[-2],lstInputData[-1])
         
+            elif  element== QtCore.QString(self.__list_elements[2][0]    ):
+                el=codes.elements(s, pr, mux=lstInputData[3], muy=lstInputData[4], mub=lstInputData[5], lfact=lstInputData[2]) 
+    #            print inp[-1],inp[-2]
+                sol=codes.ColumnPP()
+                sol.reinit(el,forc,yc=[lstInputData[0]],ycb=lstInputData[1])
+    
+                if code==QtCore.QString(self.__list_code[0]):
+                    out=sol.outDataOld(lstInputData[-3],lstInputData[-2],lstInputData[-1])
+                elif code==QtCore.QString(self.__list_code[1]):
+                    out=sol.outDataN(lstInputData[-3],lstInputData[-2],lstInputData[-1])
             
             
             return out
