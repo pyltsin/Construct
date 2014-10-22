@@ -889,7 +889,7 @@ class Test_code_ferma(unittest.TestCase):
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[2][0]
-        res=0.554
+        res=0.628
         self.assertLess(abs(un-res)/res,0.001)        
 
         un=check[3][0]
@@ -3064,7 +3064,7 @@ class Test_code_beam(unittest.TestCase):
         self.assertLess(abs(un-res)/res,0.01)        
 
         un=check[3][0]
-        res=(24.-2.37*2)/0.56*(ry/e)**0.5/3.2
+        res=((9-0.56-1)/1.)*(ry/e)**0.5/0.5
         self.assertLess(abs(un-res)/res,0.01)        
 
         un=check[4][0]
@@ -3202,7 +3202,7 @@ class Test_code_beam(unittest.TestCase):
         self.assertLess(abs(un-res)/res,0.01)        
 
         un=check[3][0]
-        res=(8-0.3*2-0.3*2)/0.3*(ry/e)**0.5/3.2
+        res=((6-0.3*2-0.3*2)/0.3)*(ry/e)**0.5/1.5
         self.assertLess(abs(un-res)/res,0.01)        
 
         un=check[4][0]
@@ -3471,7 +3471,7 @@ class Test_code_beam(unittest.TestCase):
         self.assertLess(abs(un-res)/res,0.01)        
 
         un=check[3][0]
-        res=(24.-2.37*2)/0.56*(ry/e)**0.5/3.2
+        res=((9-0.56-1)/1.)*(ry/e)**0.5/0.5
         self.assertLess(abs(un-res)/res,0.01)        
 
         un=check[4][0]
@@ -3610,7 +3610,7 @@ class Test_code_beam(unittest.TestCase):
         self.assertLess(abs(un-res)/res,0.01)        
 
         un=check[3][0]
-        res=(8-0.3*2-0.3*2)/0.3*(ry/e)**0.5/3.2
+        res=((6-0.3*2-0.3*2)/0.3)*(ry/e)**0.5/1.5
         self.assertLess(abs(un-res)/res,0.01)        
 
         un=check[4][0]
@@ -3746,7 +3746,7 @@ class Test_code_beam(unittest.TestCase):
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[3][0]
-        res=1.12/3.2
+        res=0.745
         self.assertLess(abs(un-res)/res,0.004)        
 
         un=check[4][0]
@@ -3881,8 +3881,8 @@ class Test_code_beam(unittest.TestCase):
         self.assertLess(abs(un-res)/res,0.0012)        
 
         un=check[3][0]
-        res=1.13/3.2
-        self.assertLess(abs(un-res)/res,0.0044)        
+        res=0.745
+        self.assertLess(abs(un-res)/res,0.013)        
 
         un=check[4][0]
         res=1.
