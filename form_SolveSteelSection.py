@@ -14,7 +14,7 @@ from basa_sort import BasaSort
 from key_press_event import copy_past
 from py2word import printToWord
 import sys
-
+from py2save import save2file, load2form
 class MyWindow(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
@@ -555,11 +555,82 @@ class MyWindow(QtGui.QWidget):
 
 
     def loadFiles(self):
-        pass 
+        folder=self.textFolder.text()
+        fil_name=self.listFiles.currentItem().text()
+        fil=folder+str(u"\\")+fil_name
+
+#        try:
+        lst=[self.boxCode, self.boxElement, self.boxTypeSolve, self.boxTypeSection,self.boxFormSection, self.boxSortament, 
+             self.boxNumberSection, self.boxSteel,self.tableInput,self.boxCountLoad, self.tableLoad, self.tableOutLoad, self.tableOutK, self.tableOutGeneral]        
+        load2form(fil, lst)
+        self.changeInputData()
+#        except:
+#            self.labelComment.clear()
+#            self.labelComment.setText(u'Ошибка чтения')
+#            self.labelComment.setStyleSheet("background: yellow")
+            
     def toSave(self):
-        pass
+        lst=[self.boxCode, self.boxElement, self.boxTypeSolve, self.boxTypeSection,self.boxFormSection, self.boxSortament, 
+             self.boxNumberSection, self.boxSteel,self.tableInput,self.boxCountLoad, self.tableLoad, self.tableOutLoad, self.tableOutK, self.tableOutGeneral]        
+
+        '''сохраняем данные в файл, в указанную папку, имя==название 1-го элемента,
+        если такой файл уже есть - спрашиваем про перезапись, после записи обновляем список файлов'''
+        #1 - получаем путь и имя файла
+        folder=self.textFolder.text()
+        if self.textName.text()!='':
+            
+            fil_name=unicode(self.textName.text()).rstrip()+'.con2'
+        else:
+            fil_name=u'1.con2'
+            self.textName.setText('1')
+            
+        if folder[-2:]==":\\":
+            fil=folder+fil_name
+        else:
+            fil=folder+str("\\")+fil_name
+        #спрашиваем про перезапись файлов
+        raw_list_files=os.listdir(folder)
+#        print fil_name
+#        print raw_list_files
+        
+        if fil_name in raw_list_files:
+#            print 'tut'
+            msgBox = QtGui.QMessageBox()
+            msgBox.setWindowTitle(u'Перезапись файла')
+            msgBox.setText(u'Файл существует, перезаписать?')
+            msgBox.addButton(QtGui.QPushButton(u'Да'), QtGui.QMessageBox.YesRole)
+            msgBox.addButton(QtGui.QPushButton(u'Нет'), QtGui.QMessageBox.NoRole)
+            ret = msgBox.exec_()
+            if ret==0:
+                try:
+                    save2file(fil, lst)
+                except(IOError):
+                    self.labelComment.clear()
+                    self.labelComment.insert(u'Ошибка записи, файл возможно создан с ошибкой')
+                    self.labelComment.setStyleSheet("background: yellow")
+                    
+
+        else:
+            try:
+                save2file(fil, lst)
+            except(IOError):
+                self.labelComment.clear()
+                self.labelComment.insert(u'Ошибка записи, файл возможно создан с ошибкой')
+                self.labelComment.setStyleSheet("background: yellow")
+        
+        #обновляем список файлов
+        self.load_list_files(folder)
+            
     def toWord(self):
-        pass
+        '''импорт в ворд'''
+        lst=['Расчет сечения',self.boxCode, self.boxElement, self.boxTypeSolve, self.boxTypeSection,self.boxFormSection, self.boxSortament, 
+             self.boxNumberSection, self.boxSteel,self.tableInput, self.tableLoad, self.tableOutLoad, self.tableOutK, self.tableOutGeneral]        
+
+#        lst=[u'Расчет сечения',self.boxCode, self.boxElement, self.boxTypeSolve, self.boxTypeSection,self.boxFormSection, self.boxSortament, 
+#             self.boxNumberSection, self.boxSteel, self.labelPicture, self.tableInput, self.tableLoad, self.tableOutLoad, self.tableOutK, self.tableOutGeneral]            
+#    
+        printToWord(lst)
+    
 if __name__=="__main__":
     app=QtGui.QApplication(sys.argv)
     window=MyWindow()

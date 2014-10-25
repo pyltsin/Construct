@@ -31,6 +31,7 @@ def printToWord(lst):
             worddoc.ActiveWindow.Selection.InlineShapes.AddPicture(path)
             os.remove(path)
             worddoc.ActiveWindow.Selection.TypeParagraph()
+            worddoc.ActiveWindow.Selection.TypeParagraph()
 
             
         elif type(item)==QtCore.QString or type(item)==type(u'a'):
@@ -94,6 +95,7 @@ def printToWord(lst):
             for i in range(rowCount+3):
                 worddoc.ActiveWindow.Selection.MoveDown()
 #            worddoc.ActiveWindow.Selection.MoveDown(rowCount+1)
+            worddoc.ActiveWindow.Selection.TypeParagraph()
 
             worddoc.ActiveWindow.Selection.TypeParagraph()
             
