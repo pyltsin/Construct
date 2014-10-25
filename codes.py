@@ -2696,7 +2696,7 @@ class BeamPP(beam):
         for i in self.force.lstForce:
             mx, my, qx,qy=i           
             kpr38=abs(mx/mxult)+abs(my/myult)
-            kpr29=abs(qx/qxult)+abs(qy/qyult)
+            kpr29=(abs(qx/qxult)**2+abs(qy/qyult)**2)**0.5
             sx=abs(mx/mxult*self.element.steel.ry()*self.yc())+abs(my/myult*self.element.steel.ry()*self.yc())
             sy=0
             tx=qx/qxult*self.element.steel.rs()*self.yc()
@@ -2821,7 +2821,7 @@ class BeamPP(beam):
         for i in self.force.lstForce:
             mx, my, qx,qy=i           
             kpr38=abs(mx/mxult)+abs(my/myult)
-            kpr29=abs(qx/qxult)+abs(qy/qyult)
+            kpr29=(abs(qx/qxult)**2+abs(qy/qyult)**2)**0.5
             sx=abs(mx/mxult*self.element.steel.ry()*self.yc())+abs(my/myult*self.element.steel.ry()*self.yc())
             sy=0
             tx=qx/qxult*self.element.steel.rs()*self.yc()
@@ -2914,7 +2914,7 @@ class ColumnPP(ferma):
     def addData(self):
         '''Дополнительные данные'''
         lst=[[u'yc [0.1; 1.]',[0.1,1.]]
-        , [u'ycb(-) [0.1; 1.]',[0.1,1.]]
+        , [u'ycb [0.1; 1.]',[0.1,1.]]
         ,[u'l, см [0.; 3000.]', [0., 3000.]]
         ,[u'mu_x [0.; 4.]',[0.,4.]]
         ,[u'mu_y [0.; 4.]',[0.,4.]]
@@ -3049,7 +3049,7 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
             
             
             #прочность на срез
-            k29=abs(qx/qxult)+abs(qy/qyult)
+            k29=(abs(qx/qxult)**2+abs(qy/qyult)**2)**0.5
 
             #прочность приведенная
             sx=(abs(n/nplusult)+abs(mx/mxult)+abs(my/myult))*ry*yc

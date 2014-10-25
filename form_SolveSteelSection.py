@@ -86,6 +86,25 @@ class MyWindow(QtGui.QWidget):
  # ставим тип сечения -фермаЖ
         self.boxElement.setCurrentIndex(0)
         self.loadTableInput()
+
+#Сохранение/открытие файлов
+#выбор рабочей папки
+        self.buttonFolder.clicked.connect(self.show_dia_folder)
+
+#направляем на открытие:
+        self.listFiles.itemDoubleClicked.connect(self.loadFiles)
+        
+#устанавливаем начальный путь
+        self.load_list_files('c:\\') 
+        self.textFolder.clear()
+        self.textFolder.insert('c:\\')
+    
+#Сохраняем файл
+        self.buttonSave.clicked.connect(self.toSave)     
+
+#в ворд
+        self.buttonWord.clicked.connect(self.toWord)     
+
     def solve(self):
         """Расчет сам: выход в два списка - один в таблицу решения, один в общий вывод"""
         #собираем все данные
@@ -287,14 +306,17 @@ class MyWindow(QtGui.QWidget):
         except errorSteel:
             self.labelComment.setText(u'Не найдены значения стали для профиля')
             self.labelComment.setStyleSheet("background: yellow")
-            
+        else:
+            self.buttonWord.setEnabled(True)
+            self.buttonSave.setEnabled(True)
+
             
 
         
 
     def keyPressEvent(self, e):
         """обеспечивает возможность копирования, вставить"""
-        copy_past(e, [window.tableInput, window.tableLoad], [], window)
+        copy_past(e, [window.tableInput, window.tableLoad], [window.tableOutLoad, window.tableOutK, window.tableOutGeneral], window)
 
         
     def loadComboBox(self, widget, lst):
@@ -309,6 +331,10 @@ class MyWindow(QtGui.QWidget):
         self.tabGeneralOutputData.setEnabled(False)
         self.labelComment.setText(u'Исходные данные изменились')
         self.labelComment.setStyleSheet("background: white")
+
+        self.buttonWord.setEnabled(False)
+        self.buttonSave.setEnabled(False)
+
     
     def loadCode(self):
         '''загружаем и ставим список норм'''
@@ -505,7 +531,35 @@ class MyWindow(QtGui.QWidget):
         i=self.boxCountLoad.value()
         self.tableLoad.setRowCount(i)
         self.changeInputData()
-        
+
+
+    def show_dia_folder(self):
+        """отправляет список файлов, которые можно открыть в окно"""
+        folder_name = QtGui.QFileDialog.getExistingDirectory(self, 'Open Folfer', self.textFolder.text())
+        if folder_name!='':
+            self.textFolder.clear()
+            self.textFolder.insert(folder_name)
+            self.load_list_files(folder_name)
+       
+    def load_list_files(self, folder_name):
+        if folder_name!='':        
+            raw_list_files=os.listdir(folder_name)
+            list_files=[]
+            for x in raw_list_files:
+                if x[-5:]=='.con2':
+                    list_files.append(unicode(x))
+                
+                
+            self.listFiles.clear()
+            self.listFiles.addItems(list_files)
+
+
+    def loadFiles(self):
+        pass 
+    def toSave(self):
+        pass
+    def toWord(self):
+        pass
 if __name__=="__main__":
     app=QtGui.QApplication(sys.argv)
     window=MyWindow()
