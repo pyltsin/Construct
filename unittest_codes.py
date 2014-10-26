@@ -4919,8 +4919,6 @@ class Test_column(unittest.TestCase):
 
         print 50
 
-#список для новых тестов: phi_b при l_d->0 и l_b=0  
-#fermaPP, beamPP, columnPP - снип/сп (около 7 тестов!)      
         
 if __name__ == "__main__":
     unittest.main()

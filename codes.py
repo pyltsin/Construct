@@ -2018,6 +2018,7 @@ class ferma(snipn):
     def nminus(self):
         """максимальная несущая способность (сжатие) по СП в Т"""
         n=self.pr.a()*self.element.steel.ry()*self.yc2()*self.phi()/1000
+#        print self.pr.a(),self.element.steel.ry(),self.yc2(),self.phi()
         return n
 
     def nplus(self):
@@ -2029,6 +2030,8 @@ class ferma(snipn):
         """максимальная несущая способность (сжатие) по СНиПП  в Т"""
 
         n=self.pr.a()*self.element.steel.ry()*self.yc2()*self.phi_old()/1000
+        print self.pr.a(),self.element.steel.ry(),self.yc2(),self.phi()
+
         return n
         
     def nplus_old(self):
@@ -2412,19 +2415,21 @@ class FermaPP(ferma):
             if i[0]>=0:
                 kP=i[0]/nPMax
                 kM=u'-'
-                kG=kP
                 kLambdaP=lambdaxy/lambdaP
                 kLambdaM=u'-'
+                kG=max(kP,kLambdaP)
+
             else:
                 kP=u'-'
                 kM=abs(i[0])/nMMax
-                kG=kM
                 kLambdaP=u'-'
-                print lambdaML, 'ML'
+#                print lambdaML, 'ML'
                 if lambdaML==1 or lambdaML==2:
                     aa=kM
                     if aa<0.5:
                         aa=0.5
+                    if aa>1:
+                        aa=1
                     if lambdaML==1:
                         lambdaMUlt=180-60*aa
                     else:
@@ -2433,6 +2438,7 @@ class FermaPP(ferma):
                     lambdaMUlt=lambdaM
                     
                 kLambdaM=lambdaxy/lambdaMUlt
+                kG=max(kM,kLambdaM)
 
             lstTemp=[i[0],kG,kP, kM, kLambdaP, kLambdaM]
             lst2.append(lstTemp)
@@ -2538,7 +2544,6 @@ class FermaPP(ferma):
         
         nPMax=self.nplus()
         nMMax=self.nminus()
-        print 'nPMax', nPMax
         # Организуем список № 2 и заодно находим общий плохой случай и по п.
         lst2=[]
         lst2Header=[u'Усилия, т', u'КиспMax',u'Kисп+ (п.7.1.1,2)',u'Kисп- (п.7.1.3.(7))',u'Гибкость +', u'Гибкость -']
@@ -2550,18 +2555,20 @@ class FermaPP(ferma):
             if i[0]>=0:
                 kP=i[0]/nPMax
                 kM=u'-'
-                kG=kP
                 kLambdaP=lambdaxy/lambdaP
                 kLambdaM=u'-'
+                kG=max(kP,kLambdaP)
+
             else:
                 kP=u'-'
                 kM=abs(i[0])/nMMax
-                kG=kM
                 kLambdaP=u'-'
                 if lambdaML==1 or lambdaML==2:
                     aa=kM
                     if aa<0.5:
                         aa=0.5
+                    if aa>1:
+                        aa=1
                     if lambdaML==1:
                         lambdaMUlt=180-60*aa
                     else:
@@ -2570,6 +2577,7 @@ class FermaPP(ferma):
                     lambdaMUlt=lambdaM
                     
                 kLambdaM=lambdaxy/lambdaMUlt
+                kG=max(kM,kLambdaM)
 
             lstTemp=[i[0],kG,kP, kM, kLambdaP, kLambdaM]
             lst2.append(lstTemp)

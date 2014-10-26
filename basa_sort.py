@@ -131,7 +131,7 @@ class BasaSort(object):
         lstAddData - для сечения
         lstInputData - для расчета
         lstForce - усилия'''
-        
+        print lstInputData
         #Ставим флаг в фальш
         flag_sostav=False
         

@@ -15,6 +15,7 @@ from key_press_event import copy_past
 from py2word import printToWord
 import sys
 from py2save import save2file, load2form
+
 class MyWindow(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
@@ -158,12 +159,12 @@ class MyWindow(QtGui.QWidget):
             for i in range(lenInputData):
                 j=i+lenAddData
                 #сначала widget
-                print self.tableInput.cellWidget(j,0)
+#                print self.tableInput.cellWidget(j,0)
                 if self.tableInput.cellWidget(j,0)!=None:
                     wid=self.tableInput.cellWidget(j,0)
                     lstInputData.append(wid.currentIndex()+1)
                 else:
-                    print j, i, lenAddData
+#                    print j, i, lenAddData
                     #потом остальное
                     text=self.tableInput.item(j,0).text()
                     if "," in text:
@@ -472,12 +473,12 @@ class MyWindow(QtGui.QWidget):
         addDataForm=self.basa.add_data_sostav(formSection)
 #        print lst
 #        ln=len(lst)
-        i=-1
         
         if addDataForm!=[]:
             name=addDataForm[0][:]
         else:
             name=[]
+        i=len(name)-1
             
         for num in lst:
             i+=1
@@ -568,6 +569,7 @@ class MyWindow(QtGui.QWidget):
 #            self.labelComment.clear()
 #            self.labelComment.setText(u'Ошибка чтения')
 #            self.labelComment.setStyleSheet("background: yellow")
+        self.textName.setText(fil_name[:-5])
             
     def toSave(self):
         lst=[self.boxCode, self.boxElement, self.boxTypeSolve, self.boxTypeSection,self.boxFormSection, self.boxSortament, 
