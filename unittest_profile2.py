@@ -901,7 +901,7 @@ class Test_profile(unittest.TestCase):
         ,u'title0'  
         ])
 
-        print pr.output_dict()[u'P, кг/м']
+#        print pr.output_dict()[u'P, кг/м']
         self.assertLess(abs(pr.output_dict()[u'P, кг/м']-1272./100/100*7850)/(1272./100/100*7850),0.001)
         self.assertLess(abs(pr.output_dict()[u'A, см2']-1272)/1272,0.001)
 
