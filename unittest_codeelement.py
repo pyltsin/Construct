@@ -23,6 +23,7 @@ import basa_sort
 
 class Test_fermaPP(unittest.TestCase):
     def testSNIP(self):
+        print 'ferma SNIP'
 #        solvePP(self, code, element, typeSolve,typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce):
 #    def checkPP(self, code, element, typeSection,formSection,sortament,numberSection,stl,lstAddData, lstInputData, lstForce):
 #        '''Проверка сечений - для начала загружаем все даные и отправляем их в codes, 
@@ -270,7 +271,7 @@ class Test_fermaPP(unittest.TestCase):
 
 #        print out[0]
 #        print out[1]
-        print out[2]
+#        print out[2]
 #        print out[3]
 
         check=out[2][0][1]
@@ -325,7 +326,7 @@ class Test_fermaPP(unittest.TestCase):
 
 #        print out[0]
 #        print out[1]
-        print out[2]
+#        print out[2]
 #        print out[3]
 
         check=out[2][0][1]
@@ -373,6 +374,7 @@ class Test_fermaPP(unittest.TestCase):
         self.assertLess(abs(res-check)/res,0.01)      
 
     def testSP(self):
+        print 'ferma SP'
 #        solvePP(self, code, element, typeSolve,typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce):
 #    def checkPP(self, code, element, typeSection,formSection,sortament,numberSection,stl,lstAddData, lstInputData, lstForce):
 #        '''Проверка сечений - для начала загружаем все даные и отправляем их в codes, 
@@ -628,7 +630,7 @@ class Test_fermaPP(unittest.TestCase):
 
 #        print out[0]
 #        print out[1]
-        print out[2]
+#        print out[2]
 #        print out[3]
 
         check=out[2][0][1]
@@ -683,7 +685,7 @@ class Test_fermaPP(unittest.TestCase):
 
 #        print out[0]
 #        print out[1]
-        print out[2]
+#        print out[2]
 #        print out[3]
 
         check=out[2][0][1]
@@ -729,6 +731,415 @@ class Test_fermaPP(unittest.TestCase):
         check=out[2][10][1]
         res=180
         self.assertLess(abs(res-check)/res,0.01)      
+
+class Test_beamPP(unittest.TestCase):
+    def testSNIP(self):
+        print 'beam SNIP'
+#        solvePP(self, code, element, typeSolve,typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce):
+#    def checkPP(self, code, element, typeSection,formSection,sortament,numberSection,stl,lstAddData, lstInputData, lstForce):
+#        '''Проверка сечений - для начала загружаем все даные и отправляем их в codes, 
+#        Исходные данные - отправляем в QString
+#        code -  имя норм (СНиП II-23-81*)
+#        element - название типа элемента (Ферма), 
+#        typeSection- название типа сечения (пока только ПРОКАТ)
+#        formSection - название сечения (Уголки в тавр (длинные стор. - вверх))
+#        sortament - текстом (QString) названия ГОСТа соратмента (ГОСТ 8509-93 Уголки равнополочные)
+#        numberSection - номер сечения (L20x20x3)
+#        steel - текстом (QString) сталь (C235)
+#        lstAddData - для сечения
+#        lstInputData - для расчета
+#        lstForce - усилия'''
+
+        code=QtCore.QString(u"СНиП II-23-81*")
+        element=QtCore.QString(u"Балка")
+        typeSolve=QtCore.QString(u"Проверка")
+        typeSection=QtCore.QString(u"Прокат")
+        formSection=QtCore.QString(u"Двутавр")
+        sortament=QtCore.QString(u"ГОСТ 8239-89 Двутавры с уклоном полок")
+        numberSection=QtCore.QString(u"24")
+        steel=QtCore.QString(u"C255")
+        lstAddData=[]
+        lstInputData=[1, 0.5, 1000, 0.6, 1, 1, 3, 1]
+        lstForce=[[10,1,2,1],[-5,1,-1,1]]
+        basa=basa_sort.BasaSort()
+        out=basa.solvePP(code, element, typeSolve,typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce)
+#        print out[0]
+#        print out[1]
+#        print out[2]
+#        print out[2]
+        #сначала частично тестируем 3 список.
+
+        a=34.77
+        jx=3457
+        jy=199
+        wx=288.1
+        wy=34.5
+        sx=162.7
+        sy=28.88
+        phi_b=0.383
+        phi_1=0.38
+        psi=5.06
+        aa=49.34
+        ry=2548
+        rs=0.58*ry
+        
+        check=out[3][0][0]
+        res=wx*ry*1/1000/100
+        mx=res
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[3][1][0]
+        res=wy*ry*1/1000/100
+        my=res
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[3][2][0]
+        res=wx*phi_b*ry*0.5/1000/100
+        mxb=res
+        self.assertLess(abs(res-check)/res,0.01)      
+
+
+        check=out[3][10][0]
+        res=rs*0.56*jx/(sx)/1000
+        qx=res
+#        print check, res
+        self.assertLess(abs(res-check)/res,0.01)      
+        
+        check=out[3][11][0]
+        res=rs*0.95*jy*2/(sy)/1000
+        qy=res
+#        print check, res
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        # тестируем 1 список.
+        check=out[1][1][0]
+        res=10
+        self.assertLess(abs(res-check)/res,0.01)      
+        
+        check=out[1][1][1]
+        res=1
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][1][2]
+        res=2
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][1][3]
+        res=1
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][1][4]
+        res=10/mxb+1/my
+#        print check, res
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][1][5]
+        res=10/mx+1/my
+#        print check, res
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][1][6]
+        res=((2/qx)**2+(1/qy)**2)**0.5
+#        print check, res
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][1][7]
+        res=((10/mx*ry+1/my*ry)**2+3*(rs*2/qx)**2+3*(rs*1/qy)**2)**0.5/1.15/ry
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][1][8]
+        res=10/mxb+1/my
+        self.assertLess(abs(res-check)/res,0.01)      
+
+#       2 список усилий
+        check=out[1][2][0]
+        res=-5
+#        print check, res
+        
+        self.assertLess(abs(res-check)/res,0.01)      
+        
+        check=out[1][2][1]
+        res=1
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][2][2]
+        res=-1
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][2][3]
+        res=1
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][2][4]
+        res=5/mxb+1/my
+#        print check, res
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][2][5]
+        res=5/mx+1/my
+#        print check, res
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][2][6]
+        res=((1/qx)**2+(1/qy)**2)**0.5
+#        print check, res
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][2][7]
+        res=((5/mx*ry+1/my*ry)**2+3*(rs*1/qx)**2+3*(rs*1/qy)**2)**0.5/1.15/ry
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][2][8]
+        res=5/mxb+1/my
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        # тестируем 2 список.
+        check=out[2][0][1]
+        res=8.25
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][1][1]
+        res=2.50
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][2][1]
+        res=1
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][3][1]
+        res=0.12
+        self.assertLess(abs(res-check)/res,0.05)      
+
+        check=out[2][4][1]
+        res=1
+        self.assertLess(abs(res-check)/res,0.01) 
+        
+        check=out[2][5][1]
+        res=2.17
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][6][1]
+        res=1
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][7][1]
+        res=8.25
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][8][1]
+        res=1
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][9][1]
+        res=0.38
+        self.assertLess(abs(res-check)/res,0.012)      
+
+        check=out[2][10][1]
+        res=0.33
+        self.assertLess(abs(res-check)/res,0.012)      
+
+    def testSP(self):
+        print 'beam SP'
+#        solvePP(self, code, element, typeSolve,typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce):
+#    def checkPP(self, code, element, typeSection,formSection,sortament,numberSection,stl,lstAddData, lstInputData, lstForce):
+#        '''Проверка сечений - для начала загружаем все даные и отправляем их в codes, 
+#        Исходные данные - отправляем в QString
+#        code -  имя норм (СНиП II-23-81*)
+#        element - название типа элемента (Ферма), 
+#        typeSection- название типа сечения (пока только ПРОКАТ)
+#        formSection - название сечения (Уголки в тавр (длинные стор. - вверх))
+#        sortament - текстом (QString) названия ГОСТа соратмента (ГОСТ 8509-93 Уголки равнополочные)
+#        numberSection - номер сечения (L20x20x3)
+#        steel - текстом (QString) сталь (C235)
+#        lstAddData - для сечения
+#        lstInputData - для расчета
+#        lstForce - усилия'''
+
+        code=QtCore.QString(u"СП16.13330.2011")
+        element=QtCore.QString(u"Балка")
+        typeSolve=QtCore.QString(u"Проверка")
+        typeSection=QtCore.QString(u"Прокат")
+        formSection=QtCore.QString(u"Двутавр")
+        sortament=QtCore.QString(u"ГОСТ 8239-89 Двутавры с уклоном полок")
+        numberSection=QtCore.QString(u"24")
+        steel=QtCore.QString(u"C255")
+        lstAddData=[]
+        lstInputData=[1, 0.5, 1000, 0.6, 1, 1, 3, 1]
+        lstForce=[[10,1,2,1],[-5,1,-1,1]]
+        basa=basa_sort.BasaSort()
+        out=basa.solvePP(code, element, typeSolve,typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce)
+#        print out[0]
+#        print out[1]
+#        print out[2]
+#        print out[2]
+        #сначала частично тестируем 3 список.
+
+        a=34.77
+        jx=3457
+        jy=199
+        wx=288.1
+        wy=34.5
+        sx=162.7
+        sy=28.88
+        phi_b=0.367
+        ry=2446
+        rs=0.58*ry
+        
+        check=out[3][0][0]
+        res=wx*ry*1/1000/100
+        mx=res
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[3][1][0]
+        res=wy*ry*1/1000/100
+        my=res
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[3][2][0]
+        res=wx*phi_b*ry*0.5/1000/100
+        mxb=res
+        self.assertLess(abs(res-check)/res,0.01)      
+
+
+        check=out[3][10][0]
+        res=rs*0.56*jx/(sx)/1000
+        qx=res
+#        print check, res
+        self.assertLess(abs(res-check)/res,0.01)      
+        
+        check=out[3][11][0]
+        res=rs*0.95*jy*2/(sy)/1000
+        qy=res
+#        print check, res
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        # тестируем 1 список.
+        check=out[1][1][0]
+        res=10
+        self.assertLess(abs(res-check)/res,0.01)      
+        
+        check=out[1][1][1]
+        res=1
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][1][2]
+        res=2
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][1][3]
+        res=1
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][1][4]
+        res=10/mxb+1/my
+#        print check, res
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][1][5]
+        res=10/mx+1/my
+#        print check, res
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][1][6]
+        res=((2/qx)**2+(1/qy)**2)**0.5
+#        print check, res
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][1][7]
+        res=((10/mx*ry+1/my*ry)**2+3*(rs*2/qx)**2+3*(rs*1/qy)**2)**0.5/1.15/ry
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][1][8]
+        res=10/mxb+1/my
+        self.assertLess(abs(res-check)/res,0.01)      
+
+#       2 список усилий
+        check=out[1][2][0]
+        res=-5
+#        print check, res
+        
+        self.assertLess(abs(res-check)/res,0.01)      
+        
+        check=out[1][2][1]
+        res=1
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][2][2]
+        res=-1
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][2][3]
+        res=1
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][2][4]
+        res=5/mxb+1/my
+#        print check, res
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][2][5]
+        res=5/mx+1/my
+#        print check, res
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][2][6]
+        res=((1/qx)**2+(1/qy)**2)**0.5
+#        print check, res
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][2][7]
+        res=((5/mx*ry+1/my*ry)**2+3*(rs*1/qx)**2+3*(rs*1/qy)**2)**0.5/1.15/ry
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[1][2][8]
+        res=5/mxb+1/my
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        # тестируем 2 список.
+        check=out[2][0][1]
+        res=8.94
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][1][1]
+        res=2.60
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][2][1]
+        res=1
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][3][1]
+        res=0.13
+        self.assertLess(abs(res-check)/res,0.05)      
+
+        check=out[2][4][1]
+        res=1
+        self.assertLess(abs(res-check)/res,0.01) 
+        
+        check=out[2][5][1]
+        res=2.26
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][6][1]
+        res=1
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][7][1]
+        res=8.94
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][8][1]
+        res=1
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][9][1]
+        res=0.37
+        self.assertLess(abs(res-check)/res,0.012)      
+
+        check=out[2][10][1]
+        res=0.33
+        self.assertLess(abs(res-check)/res,0.012)      
+
         
 if __name__ == "__main__":
     unittest.main()

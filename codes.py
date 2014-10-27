@@ -2030,7 +2030,7 @@ class ferma(snipn):
         """максимальная несущая способность (сжатие) по СНиПП  в Т"""
 
         n=self.pr.a()*self.element.steel.ry()*self.yc2()*self.phi_old()/1000
-        print self.pr.a(),self.element.steel.ry(),self.yc2(),self.phi()
+#        print self.pr.a(),self.element.steel.ry(),self.yc2(),self.phi()
 
         return n
         
@@ -2702,7 +2702,8 @@ class BeamPP(beam):
         
         
         for i in self.force.lstForce:
-            mx, my, qx,qy=i           
+            mx, my, qx,qy=i    
+#            print mx, my, mxult, myult
             kpr38=abs(mx/mxult)+abs(my/myult)
             kpr29=(abs(qx/qxult)**2+abs(qy/qyult)**2)**0.5
             sx=abs(mx/mxult*self.element.steel.ry()*self.yc())+abs(my/myult*self.element.steel.ry()*self.yc())
