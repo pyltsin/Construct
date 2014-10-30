@@ -3169,7 +3169,7 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
                 kMax=max(k29,k33,k50,kMaxM)
                     
             '''ЗОНА ТЕСТИРОВАНИЯ'''
-            print [k62]+phiexy62
+#            print [k62]+phiexy62
  
             '''Зона тестирования'''
             lstTemp1=[n/1000,mx/100000,my/100000,qx/1000,qy/1000,kMax,k29,k33,k50,k34]
