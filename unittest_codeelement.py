@@ -1140,6 +1140,37 @@ class Test_beamPP(unittest.TestCase):
         res=0.33
         self.assertLess(abs(res-check)/res,0.012)      
 
+class Test_columnPP(unittest.TestCase):
+    def testSNIP(self):
+        print 'Column SNIP'
+#        solvePP(self, code, element, typeSolve,typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce):
+#    def checkPP(self, code, element, typeSection,formSection,sortament,numberSection,stl,lstAddData, lstInputData, lstForce):
+#        '''Проверка сечений - для начала загружаем все даные и отправляем их в codes, 
+#        Исходные данные - отправляем в QString
+#        code -  имя норм (СНиП II-23-81*)
+#        element - название типа элемента (Ферма), 
+#        typeSection- название типа сечения (пока только ПРОКАТ)
+#        formSection - название сечения (Уголки в тавр (длинные стор. - вверх))
+#        sortament - текстом (QString) названия ГОСТа соратмента (ГОСТ 8509-93 Уголки равнополочные)
+#        numberSection - номер сечения (L20x20x3)
+#        steel - текстом (QString) сталь (C235)
+#        lstAddData - для сечения
+#        lstInputData - для расчета
+#        lstForce - усилия'''
+
+        code=QtCore.QString(u"СНиП II-23-81*")
+        element=QtCore.QString(u"Колонна")
+        typeSolve=QtCore.QString(u"Проверка")
+        typeSection=QtCore.QString(u"Прокат")
+        formSection=QtCore.QString(u"Двутавр")
+        sortament=QtCore.QString(u"ГОСТ 8239-89 Двутавры с уклоном полок")
+        numberSection=QtCore.QString(u"24")
+        steel=QtCore.QString(u"C255")
+        lstAddData=[]
+        lstInputData=[1, 1, 1000, 1, 1, 1, 400, 1,1]
+        lstForce=[[10,1,1,1,1],[-5,1,1,1,1]]
+        basa=basa_sort.BasaSort()
+        out=basa.solvePP(code, element, typeSolve,typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce)
         
 if __name__ == "__main__":
     unittest.main()

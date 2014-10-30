@@ -815,10 +815,10 @@ class snipn(normes):
         выходные -  mef, nau'''
 
         if typ==1:
-            e=self.force.mx/self.force.n
+            e=abs(self.force.mx/self.force.n)
             m=self.pr.a()/self.pr.wx()*e
         if typ==2:
-            e=self.force.my/self.force.n
+            e=abs(self.force.my/self.force.n)
             m=self.pr.a()/self.pr.wy()*e
         nau=self.nau(m, typ)
         mef=nau*m
@@ -966,7 +966,7 @@ class snipn(normes):
         """Определение коэффициента c по СНиП (формула 56)
         возвращает с, с_max, mx"""
         
-        e=self.force.mx/self.force.n
+        e=abs(self.force.mx/self.force.n)
         mx=self.pr.a()/self.pr.wx()*e
         
         if self.pr.title()=='dvut':
@@ -1005,7 +1005,7 @@ class snipn(normes):
         возвращает с, с_max, mx
         Для mx<5 проверяется доп. условие C<1 (проверки нет - сложно поймать)"""
         
-        e=self.force.mx/self.force.n
+        e=abs(self.force.mx/self.force.n)
         mx=self.pr.a()/self.pr.wx()*e
         
         if self.pr.title()=='dvut':
@@ -1095,7 +1095,7 @@ class snipn(normes):
                 
     def c_max_old(self):
         """определение по СНиП"""
-        e=self.force.mx/self.force.n
+        e=abs(self.force.mx/self.force.n)
         h=self.pr.h()-self.pr.t()
         jt=self.pr.jt()
         mu=2.+0.156*jt/(self.pr.a()*h**2)*self.el.lambday()**2
@@ -1125,7 +1125,7 @@ class snipn(normes):
 #        print 'jt', jt
         mu=8*w+0.156*jt*self.el.lambday()**2/(self.pr.a()*h**2)
 #        print 'mu', mu
-        ex=self.force.mx/self.force.n
+        ex=abs(self.force.mx/self.force.n)
 #        print 'ex', ex
 #        bb=1
 #        print 'bb', bb
@@ -3013,6 +3013,7 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
         ,u'phiex'
         ,u'mef'
         ,u'nau'
+        ,u'lambda_'
 
 
 
@@ -3021,6 +3022,7 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
         ,u'phiey'
         ,u'mef'
         ,u'nau'
+        ,u'lambda_'
         
         ,u'KустY=N/(A*Ry*yc*phiy*c) (п.5.30 (56))'
         ,u'c'
@@ -3030,23 +3032,29 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
         ,u'KустXY=N/(A*Ry*yc*phiexy) (п.5.34 (62))'
         ,u'phiexy'
         ,u'phiey'
-        ,u'c'
+        ,u'c'        
+
         
         ,u'Гибкость +'
-        ,u'Гибкость -']
+        ,u'Гибкость -'
+        ,u'Гибкость + пред.'
+        ,u'Гибкость - пред.']
         
         lst2.append(lst2Header)
         
-        mxult=self.mx_old()
-        myult=self.my_old()
-        qxult=self.qx_old()
-        qyult=self.qy_old()
+        mxult=self.mx_old()*100000
+        myult=self.my_old()*100000
+        qxult=self.qx_old()*1000
+        qyult=self.qy_old()*1000
         
-        mxbult=self.mxb_old(1,2,1,1)
+        mxbult=self.mxb_old(1,2,1,1)*100000
 
-        nplusult=self.nplus_old()
+        nplusult=self.nplus_old()*1000
+        
+        print nplusult,mxult,myult
+        
         phix=self.phix_old()
-        phiy=self.phix_old()
+        phiy=self.phiy_old()
         yc=self.yc()
         ry=self.el.steel.ry()
         rs=self.el.steel.rs()
@@ -3054,9 +3062,11 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
         for i in self.force.lstForce:
             self.force.n,self.force.mx,self.force.my,self.force.qx,self.force.qy=i
             n,mx,my,qx,qy=i
-            
-            
-            
+            n*=1000
+            mx*=100000
+            my*=100000
+            qx*=1000
+            qy*=1000
             #прочность на срез
             k29=(abs(qx/qxult)**2+abs(qy/qyult)**2)**0.5
 
@@ -3082,12 +3092,12 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
             
             if n<0:
                 #проверка на центральное сжатие в плоскости:
-                k7x=abs(n/ry/yc/phix)
-                k7y=abs(n/ry/yc/phiy)
+                k7x=abs(n/ry/yc/phix/self.pr.a())
+                k7y=abs(n/ry/yc/phiy/self.pr.a())
                 kMaxM=max(k7x,k7y)
                 if mx!=0:
                     phie51x=self.phi_e_old(1)
-                    k51x=abs(n/ry/yc/phie51x[0])
+                    k51x=abs(n/ry/yc/phie51x[0]/self.pr.a())
                     kMaxM=max(k51x,kMaxM)
                 else:
                     k51x=u'-'
@@ -3095,7 +3105,7 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
             
                 if my!=0:
                     phie51y=self.phi_e_old(2)
-                    k51y=abs(n/ry/yc/phie51y[0])
+                    k51y=abs(n/ry/yc/phie51y[0]/self.pr.a())
                     kMaxM=max(k51y,kMaxM)
 
                 else:
@@ -3104,7 +3114,7 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
 
                 if mx!=0:
                     c56=self.c_old()
-                    k56=abs(n/ry/yc/c56[0])
+                    k56=abs(n/ry/yc/c56[0]/self.pr.a())
                     kMaxM=max(k56,kMaxM)
 
                 else:
@@ -3114,7 +3124,7 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
                 if mx!=0 and my!=0:
                     
                     phiexy62=self.phi_exy_old()
-                    k62=abs(n/ry/yc/phiexy62[0])
+                    k62=abs(n/ry/yc/phiexy62[0]/self.pr.a())
                     kMaxM=max(k62,kMaxM)
 
                 else:
@@ -3131,6 +3141,7 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
                 c56=[u'-',u'-',u'-']
                 phiexy62=[u'-',u'-',u'-']
                 k62=u'-'
+            lambdaMUlt='-'
             if n>=0:
                 kLambdaP=lambdaxy/lambdaP
                 kLambdaM=u'-'
@@ -3140,6 +3151,8 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
                     aa=kMaxM
                     if aa<0.5:
                         aa=0.5
+                    if aa>1:
+                        aa=1
                     if lambdaML==1:
                         lambdaMUlt=180-60*aa
                     else:
@@ -3155,13 +3168,17 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
             else:
                 kMax=max(k29,k33,k50,kMaxM)
                     
-            
-            lstTemp1=[n,mx,my,qx,qy,kMax,k29,k33,k50,k34]
-            print phib34, [k7x,phix,k7y, phiy, k51x]
+            '''ЗОНА ТЕСТИРОВАНИЯ'''
+            print [k62]+phiexy62
+ 
+            '''Зона тестирования'''
+            lstTemp1=[n/1000,mx/100000,my/100000,qx/1000,qy/1000,kMax,k29,k33,k50,k34]
+#            print phib34, [k7x,phix,k7y, phiy, k51x]
             lstTemp21=phib34+[k7x,phix,k7y, phiy, k51x]
             lstTemp22=phie51x+[k51y]+phie51y+[k56]+c56
             lstTemp3=[k62]+phiexy62+[kLambdaP, kLambdaM]
-            lstTemp=lstTemp1+lstTemp21+lstTemp22+lstTemp3
+            lstTemp4=[lambdaP, lambdaMUlt]
+            lstTemp=lstTemp1+lstTemp21+lstTemp22+lstTemp3+lstTemp4
             lst2.append(lstTemp)
         ''''''
         
@@ -3232,7 +3249,7 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
         [u'№ усил',nl29],
         [u'Kпр (п.5.14 (33))',l33],
         [u'№ усил',nl33],
-        [u'Kпр (п.5.25 (50))', nl50],
+        [u'Kпр (п.5.25 (50))', l50],
         [u'№ усил',nl50],         
         [u'KустБ (п.5.15 (34))',l34],
         [u'№ усил',nl34],
@@ -3456,6 +3473,11 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
         lst.append([nelx, u'N_eilerx, т'])
         lst.append([nely, u'N_eilery, т'])
 
+        lst.append([self.mx_old(), u'Mxult, т*м'])
+        lst.append([self.my_old(), u'Myult, т*м'])
+        lst.append([self.mxb_old(1,2,1,1), u'Mxbult, т*м'])
+        lst.append([self.qx_old(), u'Qxult, т'])
+        lst.append([self.qy_old(), u'Qxult, т'])
 
                 
         return lst
@@ -3517,6 +3539,13 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
 
         lst.append([nelx, u'N_eilerx, т'])
         lst.append([nely, u'N_eilery, т'])
+
+        lst.append([self.mx(), u'Mxult, т*м'])
+        lst.append([self.my(), u'Myult, т*м'])
+        lst.append([self.mxb(1,2,1,1), u'Mxbult, т*м'])
+        lst.append([self.qx(), u'Qxult, т'])
+        lst.append([self.qy(), u'Qxult, т'])
+
 
         return lst
 
