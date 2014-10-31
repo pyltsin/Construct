@@ -1172,7 +1172,7 @@ class Test_columnPP(unittest.TestCase):
         basa=basa_sort.BasaSort()
         out=basa.solvePP(code, element, typeSolve,typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce)
 #        print out[0]
-        print out[1]
+#        print out[1]
 #        print out[2]
 #        print out[3]
 #        Проверка 4 списка
@@ -1239,7 +1239,7 @@ class Test_columnPP(unittest.TestCase):
 
         check=out[3][12][0]
         res=0.58*ry*jx*0.56/163.07/1000*.9
-        print check, res
+#        print check, res
         self.assertLess(abs(res-check)/res,0.01)      
 
         check=out[3][13][0]
@@ -1411,7 +1411,7 @@ class Test_columnPP(unittest.TestCase):
 
         check=out[1][4][23]
         res=2.67
-        print check, res
+#        print check, res
         self.assertLess(abs(res-check)/res,0.02)      
 
         check=out[1][4][24]
@@ -1478,14 +1478,163 @@ class Test_columnPP(unittest.TestCase):
         res=120
         self.assertLess(abs(res-check)/res,0.02)      
 
-        
+        check=out[1][5][8]
+        res=5/79.9+1/6.62+2/0.79
+        self.assertLess(abs(res-check)/res,0.02)      
+
+        check=out[1][5][9]
+        res=5/79.9+1/2.37+2/0.79
+        self.assertLess(abs(res-check)/res,0.02)      
+
+        check=out[1][5][10]
+        res=0.64
+        self.assertLess(abs(res-check)/res,0.02)      
+
+        check=out[1][5][11]
+        res=0.64
+        self.assertLess(abs(res-check)/res,0.02)      
+
+        check=out[1][5][12]
+        res=3.79
+        self.assertLess(abs(res-check)/res,0.02)      
+
+        check=out[1][5][13]
+        res=22
+        self.assertLess(abs(res-check)/res,0.02)      
+
+        check=out[1][5][-4]
+        res=125.67/400
+        self.assertLess(abs(res-check)/res,0.02)      
+
+        check=out[1][5][-2]
+        res=400
+        self.assertLess(abs(res-check)/res,0.02)      
+#проверяем последний 3 список [2]     
+        check=out[2][0][1]
+        res=3.07
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][1][1]
+        res=0.3
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][2][1]
+        res=1
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][3][1]
+        res=2.56
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][4][1]
+        res=4
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][5][1]
+        res=2.93
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][6][1]
+        res=4
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][7][1]
+        res=3.01
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][8][1]
+        res=5
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][9][1]
+        res=0.26
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][10][1]
+        res=4
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][11][1]
+        res=0.67
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][12][1]
+        res=4
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][13][1]
+        res=0.37
+        self.assertLess(abs(res-check)/res,0.013)      
+
+        check=out[2][14][1]
+        res=4
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][15][1]
+        res=3.07
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][16][1]
+        res=1
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][17][1]
+        res=0.75
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][18][1]
+        res=4
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][19][1]
+        res=2.76
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][20][1]
+        res=4
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][21][1]
+        res=0.31
+        self.assertLess(abs(res-check)/res,0.014)      
+
+        check=out[2][22][1]
+        res=5
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][23][1]
+        res=1.05
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][24][1]
+        res=1
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][25][1]
+        res=0.53
+        self.assertLess(abs(res-check)/res,0.01)      
+
+        check=out[2][26][1]
+        res=0.33
+        self.assertLess(abs(res-check)/res,0.011)      
+
+
         lstInputData=[0.9, 0.5, 100, 2, 3, 4,  400, 2,1]
         basa=basa_sort.BasaSort()
         out=basa.solvePP(code, element, typeSolve,typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce)
 
+        check=out[1][1][-1]
+        res=150
+        self.assertLess(abs(res-check)/res,0.011)      
+
+
         lstInputData=[0.9, 0.5, 100, 2, 3, 4,   400, 3,300]
         basa=basa_sort.BasaSort()
         out=basa.solvePP(code, element, typeSolve,typeSection,formSection,sortament,numberSection,steel,lstAddData, lstInputData, lstForce)
+
+        check=out[1][1][-1]
+        res=300
+        self.assertLess(abs(res-check)/res,0.011)      
         
 if __name__ == "__main__":
     unittest.main()

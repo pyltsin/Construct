@@ -3212,7 +3212,7 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
             if i[6]!=u'-' and l29<i[6]:
                 l29=i[6]
                 nl29=j
-            if i[7]!=u'-' and l33<i[6]:
+            if i[7]!=u'-' and l33<i[7]:
                 l33=i[7]
                 nl33=j
             if i[8]!=u'-' and l50<i[8]:
@@ -3275,7 +3275,7 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
         
         [u'KустX=Ne/(A*Ry*yc*phiex) (п.5.27 (51))', l51x],
         [u'№ усил',nl51x],
-        [u'KустY=Ne/(A*Ry*yc*phiey) (п.5.27 (51))',nl51y],
+        [u'KустY=Ne/(A*Ry*yc*phiey) (п.5.27 (51))',l51y],
         [u'№ усил',nl51y],
         [u'KустY=N/(A*Ry*yc*phiy*c) (п.5.30 (56))',l56],
         [u'№ усил',nl56],
