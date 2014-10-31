@@ -19,7 +19,7 @@ from py2save import save2file, load2form
 class MyWindow(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
-        uic.loadUi("gui/solve_steel_section.ui", self)
+        uic.loadUi("gui/solve_steel_sectionv2.ui", self)
         self.basa=BasaSort()
         #загружаем код и связываем его изменение
         self.loadCode()
