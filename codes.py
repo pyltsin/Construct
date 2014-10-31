@@ -768,6 +768,7 @@ class snipn(normes):
         mefm=self.mef_old(typ)
         mef=mefm[0]
         nau=mefm[1]
+        print mefm, 'mefm'
         if typ==1:
             lambda_=self.el.lambdax_()
         if typ==2:
@@ -800,7 +801,7 @@ class snipn(normes):
             
             table=tables_csv('SolveSteelData\\table_phi_n.csv', 'float_all')
             phi=table.get_interpolate(mef, lambda_)
-        if lambda_>14:
+        if lambda_>14 :
             phi=1/10.**10
         phi=phi/1000.
         
@@ -3060,13 +3061,14 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
         rs=self.el.steel.rs()
         
         for i in self.force.lstForce:
-            self.force.n,self.force.mx,self.force.my,self.force.qx,self.force.qy=i
+
             n,mx,my,qx,qy=i
             n*=1000
             mx*=100000
             my*=100000
             qx*=1000
             qy*=1000
+            self.force.n,self.force.mx,self.force.my,self.force.qx,self.force.qy=n, mx, my, qx, qy
             #прочность на срез
             k29=(abs(qx/qxult)**2+abs(qy/qyult)**2)**0.5
 
@@ -3084,7 +3086,7 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
 
             #если расстяжение - проверить балочную устойчивость по 1 2  1 1            
             if n>=0:
-                k34=abs(mx/mxbult)+abs(my/myult)
+                k34=abs(n/nplusult)+abs(mx/mxbult)+abs(my/myult)
                 phib34=self.phi_b_old(1,2,1,1)
             else:
                 k34=u'-'
@@ -3097,16 +3099,28 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
                 kMaxM=max(k7x,k7y)
                 if mx!=0:
                     phie51x=self.phi_e_old(1)
-                    k51x=abs(n/ry/yc/phie51x[0]/self.pr.a())
+                    print phie51x
+
+                    if  phie51x[1]<20:
+                        k51x=abs(n/ry/yc/phie51x[0]/self.pr.a())
+                    else:
+                        k51x=abs(n/nplusult)+abs(mx/mxbult)+abs(my/myult)
                     kMaxM=max(k51x,kMaxM)
+
                 else:
                     k51x=u'-'
                     phie51x=[u'-',u'-',u'-',u'-']                
             
                 if my!=0:
                     phie51y=self.phi_e_old(2)
-                    k51y=abs(n/ry/yc/phie51y[0]/self.pr.a())
+                    print phie51y
+
+                    if phie51y<20:
+                        k51y=abs(n/ry/yc/phie51y[0]/self.pr.a())
+                    else:
+                        k51y=abs(n/nplusult)+abs(mx/mxbult)+abs(my/myult)
                     kMaxM=max(k51y,kMaxM)
+                        
 
                 else:
                     k51y=u'-'
@@ -3114,7 +3128,7 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
 
                 if mx!=0:
                     c56=self.c_old()
-                    k56=abs(n/ry/yc/c56[0]/self.pr.a())
+                    k56=abs(n/ry/yc/c56[0]/self.pr.a()/phiy)
                     kMaxM=max(k56,kMaxM)
 
                 else:
@@ -3544,7 +3558,7 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
         lst.append([self.my(), u'Myult, т*м'])
         lst.append([self.mxb(1,2,1,1), u'Mxbult, т*м'])
         lst.append([self.qx(), u'Qxult, т'])
-        lst.append([self.qy(), u'Qxult, т'])
+        lst.append([self.qy(), u'Qyult, т'])
 
 
         return lst
