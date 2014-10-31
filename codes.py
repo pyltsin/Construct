@@ -768,7 +768,7 @@ class snipn(normes):
         mefm=self.mef_old(typ)
         mef=mefm[0]
         nau=mefm[1]
-        print mefm, 'mefm'
+#        print mefm, 'mefm'
         if typ==1:
             lambda_=self.el.lambdax_()
         if typ==2:
@@ -3052,7 +3052,7 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
 
         nplusult=self.nplus_old()*1000
         
-        print nplusult,mxult,myult
+#        print nplusult,mxult,myult
         
         phix=self.phix_old()
         phiy=self.phiy_old()
@@ -3099,9 +3099,9 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
                 kMaxM=max(k7x,k7y)
                 if mx!=0:
                     phie51x=self.phi_e_old(1)
-                    print phie51x
+#                    print phie51x
 
-                    if  phie51x[1]<20:
+                    if  float(phie51x[1])<20:
                         k51x=abs(n/ry/yc/phie51x[0]/self.pr.a())
                     else:
                         k51x=abs(n/nplusult)+abs(mx/mxbult)+abs(my/myult)
@@ -3113,9 +3113,9 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
             
                 if my!=0:
                     phie51y=self.phi_e_old(2)
-                    print phie51y
+#                    print phie51y
 
-                    if phie51y<20:
+                    if float(phie51y[1])<20:
                         k51y=abs(n/ry/yc/phie51y[0]/self.pr.a())
                     else:
                         k51y=abs(n/nplusult)+abs(mx/mxbult)+abs(my/myult)
