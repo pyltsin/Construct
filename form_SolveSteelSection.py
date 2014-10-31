@@ -625,8 +625,16 @@ class MyWindow(QtGui.QWidget):
             
     def toWord(self):
         '''импорт в ворд'''
-        lst=['Расчет сечения',self.boxCode, self.boxElement, self.boxTypeSolve, self.boxTypeSection,self.boxFormSection, self.boxSortament, 
-             self.boxNumberSection, self.boxSteel,self.tableInput, self.tableLoad, self.tableOutLoad, self.tableOutK, self.tableOutGeneral]        
+        if self.boxCountLoad.value()<100 and self.boxElement.currentIndex()!=2:
+            lst=['Расчет сечения',self.boxCode, self.boxElement, self.boxTypeSolve, self.boxTypeSection,self.boxFormSection, self.boxSortament, 
+                 self.boxNumberSection, self.boxSteel,self.tableInput, self.tableLoad, self.tableOutLoad, self.tableOutK, self.tableOutGeneral]  
+        elif self.boxCountLoad.value()<100 and self.boxElement.currentIndex()!=2:
+            lst=['Расчет сечения',self.boxCode, self.boxElement, self.boxTypeSolve, self.boxTypeSection,self.boxFormSection, self.boxSortament, 
+                 self.boxNumberSection, self.boxSteel,self.tableInput, self.tableLoad, self.tableOutK, self.tableOutGeneral]  
+        else:
+            lst=['Расчет сечения',self.boxCode, self.boxElement, self.boxTypeSolve, self.boxTypeSection,self.boxFormSection, self.boxSortament, 
+                 self.boxNumberSection, self.boxSteel,self.tableInput,  self.tableOutK, self.tableOutGeneral]  
+            
 
 #        lst=[u'Расчет сечения',self.boxCode, self.boxElement, self.boxTypeSolve, self.boxTypeSection,self.boxFormSection, self.boxSortament, 
 #             self.boxNumberSection, self.boxSteel, self.labelPicture, self.tableInput, self.tableLoad, self.tableOutLoad, self.tableOutK, self.tableOutGeneral]            
