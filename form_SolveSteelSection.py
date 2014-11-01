@@ -301,9 +301,9 @@ class MyWindow(QtGui.QWidget):
         except errorData:
             self.labelComment.setText(u'Выход за границы допустимых значений')
             self.labelComment.setStyleSheet("background: yellow")
-#        except ValueError:
-#            self.labelComment.setText(u'Недопустимые исходные данные')
-#            self.labelComment.setStyleSheet("background: yellow")
+        except ValueError:
+            self.labelComment.setText(u'Недопустимые исходные данные')
+            self.labelComment.setStyleSheet("background: yellow")
         except errorSteel:
             self.labelComment.setText(u'Не найдены значения стали для профиля')
             self.labelComment.setStyleSheet("background: yellow")
