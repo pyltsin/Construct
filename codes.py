@@ -762,7 +762,7 @@ class snipn(normes):
         if phi<phi_e:
             phi_e=phi
 #            print 'point 1'
-        return phi_e, mef, nau, lambda_
+        return [phi_e, mef, nau, lambda_]
 
     def phi_e_old(self, typ):
         mefm=self.mef_old(typ)
@@ -3302,6 +3302,431 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
 #        print lst4
         
         return [lst1, lst2, lst3, lst4]
+
+    def outDataN(self, lambdaP, lambdaML, lambdaM):
+        '''общий вывод по старому снип. 
+        Входные данные - предельные лямбда для расстяжения и сжатия
+        Расчет:
+            1. Прочность a:
+                если tau<0.5*Rs, ry<5400 и выполняются проверки по локальной устойчивости по изгибу:
+                    49
+                иначе:
+                    50
+               Прочность б:
+                   приведенная прочность
+            2. Устойчивость:
+                a) расстяжение (N>=0)
+                    N=0: Mx/Mxb+My/My; Mxb для случая - закрепления сжатого пояса ---a, psi, phi1, phib 
+                б) сжатие:
+                    а) 61
+                    б) 5.3 (7) из плоскости
+
+                    в) 51 в плоскости 
+                    г) 51 из плоскости 
+                    д) 56
+                    е) Если Mx!=0: My!=0: 62
+                    
+        Выходные данные:
+        4 списка - 
+            1 - список - 1 - самый большой коэффициент использования, 
+k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM           
+            6 - устойчивость стенки, 7 - полки, пример: [1,1,1,1,1,5,1]
+            
+            2- список усилий:
+                1- усилие
+                2 - коэффициент использование максимальное
+                3 - коэффициент использование на расстяжение
+                4 - устойчивость сжатие
+                если проверка НЕ выполняется - '-'
+                
+            3 - общие исходные данные:
+                1- повтор 1 с указанием № усилия [1- коэффициент, 1 - коэффициент, 1 - номер усилия и т.д.]
+                2 - +180-60alpha
+                +210-60alpha - alpha max из 2 списка
+                
+            4 - output_data_snip_old_all'''
+        
+        #собрали исходные данные        
+        localData=self.output_data_snip_n_local()
+        globalData=self.output_data_snip_n_global()
+        sectionData=self.output_data()
+
+        lambdaxy=max(self.el.lambdax(),self.el.lambday())
+        
+        # Организуем список № 2 и заодно находим общий плохой случай и по п.
+        lst2=[]
+        lst2Header=[u'N, т',u'Mx, т*м', u'My, т*м', u'Qx, т', u'Qy, т'
+        , u'КиспMax'
+        ,u'Kcрез (п.8.2.1 (44))'
+        ,u'Kпр (п.8.2.1 (44))'
+
+        ,u'Kпр (п.9.1.1 (106))'
+        ,u'KустБ (п.8.4.1 (70))'
+        ,u'phib'
+        ,u'phi1'
+        ,u'psi '
+        ,u'a'
+
+        ,u'KустX=N/(A*Ry*yc*phix) (п.7.1.3 (7))'
+        ,u'phix'
+        
+        ,u'KустY=N/(A*Ry*yc*phiy) (п.7.1.3 (7))'
+        ,u'phiy'
+        
+        ,u'KустX=Ne/(A*Ry*yc*phiex) (п.9.2.2. (109))'
+        ,u'phiex'
+        ,u'mef'
+        ,u'nau'
+        ,u'lambda_'
+
+
+
+        
+        ,u'KустY=Ne/(A*Ry*yc*phiey) (п.9.2.2. (109))'
+        ,u'phiey'
+        ,u'mef'
+        ,u'nau'
+        ,u'lambda_'
+        
+        ,u'KустY=N/(A*Ry*yc*phiy*c) (п.9.2.4. (111))'
+        ,u'c'
+        ,u'c_max'
+        ,u'mx'
+
+
+
+        ,u'KустXY=N/(A*Ry*yc*phiexy) (п.9.2.9. (116))'
+        ,u'phiexy'
+        ,u'phiey'
+        ,u'c'        
+
+        ,u'KустXYX (п.9.2.10. (120))'
+        ,u'phiey'
+        ,u'cx'
+        ,u'deltax'        
+
+        ,u'KустXYY (п.9.2.10. (121))'
+        ,u'phiex'
+        ,u'cy'
+        ,u'deltay'        
+
+        
+        ,u'Гибкость +'
+        ,u'Гибкость -'
+        ,u'Гибкость + пред.'
+        ,u'Гибкость - пред.']
+        
+        lst2.append(lst2Header)
+        
+        mxult=self.mx()*100000
+        myult=self.my()*100000
+        qxult=self.qx()*1000
+        qyult=self.qy()*1000
+        
+        mxbult=self.mxb(1,2,1,1)*100000
+
+        nplusult=self.nplus()*1000
+        
+#        print nplusult,mxult,myult
+        
+        phix=self.phix()[0]
+        phiy=self.phiy()[0]
+        yc=self.yc()
+        ry=self.el.steel.ry()
+        rs=self.el.steel.rs()
+        
+        for i in self.force.lstForce:
+
+            n,mx,my,qx,qy=i
+            n*=1000
+            mx*=100000
+            my*=100000
+            qx*=1000
+            qy*=1000
+            self.force.n,self.force.mx,self.force.my,self.force.qx,self.force.qy=n, mx, my, qx, qy
+            #прочность на срез
+            k44s=(abs(qx/qxult)**2+abs(qy/qyult)**2)**0.5
+
+            #прочность приведенная
+            sx=(abs(n/nplusult)+abs(mx/mxult)+abs(my/myult))*ry*yc
+            taux=abs(qx/qxult)*rs*yc
+
+            tauy=abs(qy/qyult)*rs*yc
+
+            k44n=(sx**2+3*taux**2+3*tauy**2)**0.5/(ry*yc*1.15)
+
+
+            #прочность по N/A+M/W
+            k106=abs(n/nplusult)+abs(mx/mxult)+abs(my/myult)
+
+            #если расстяжение - проверить балочную устойчивость по 1 2  1 1            
+            if n>=0:
+                k70=abs(n/nplusult)+abs(mx/mxbult)+abs(my/myult)
+                phib70=self.phi_b(1,2,1,1)
+            else:
+                k70=u'-'
+                phib70=[u'-',u'-',u'-',u'-']
+            
+            if n<0:
+                #проверка на центральное сжатие в плоскости:
+                k7x=abs(n/ry/yc/phix/self.pr.a())
+                k7y=abs(n/ry/yc/phiy/self.pr.a())
+                kMaxM=max(k7x,k7y)
+                if mx!=0:
+                    phie109x=self.phi_e(1)
+#                    print phie51x
+
+                    if  float(phie109x[1])<20:
+                        k109x=abs(n/ry/yc/phie109x[0]/self.pr.a())
+                    else:
+                        k109x=abs(n/nplusult)+abs(mx/mxbult)+abs(my/myult)
+                    kMaxM=max(k109x,kMaxM)
+
+                else:
+                    k109x=u'-'
+                    phie109x=[u'-',u'-',u'-',u'-']                
+            
+                if my!=0:
+                    phie109y=self.phi_e(2)
+#                    print phie51y
+
+                    if float(phie109y[1])<20:
+                        k109y=abs(n/ry/yc/phie109y[0]/self.pr.a())
+                    else:
+                        k109y=abs(n/nplusult)+abs(mx/mxbult)+abs(my/myult)
+                    kMaxM=max(k109y,kMaxM)
+                        
+
+                else:
+                    k109y=u'-'
+                    phie109y=[u'-',u'-',u'-',u'-']                
+
+                if mx!=0 and self.pr.title()=='dvut':
+                    c111=self.c()
+                    k111=abs(n/ry/yc/c111[0]/self.pr.a()/phiy)
+                    kMaxM=max(k111,kMaxM)
+
+                else:
+                    k111=u'-'
+                    c111=[u'-',u'-',u'-']
+                
+                if mx!=0 and my!=0 and self.pr.title()=='dvut':
+                    
+                    phiexy116=self.phi_exy()
+                    k116=abs(n/ry/yc/phiexy116[0]/self.pr.a())
+                    kMaxM=max(k116,kMaxM)
+
+                else:
+                    phiexy116=[u'-',u'-',u'-']
+                    k116=u'-'
+                if mx!=0 and self.pr.title()=='korob': 
+                    if my!=0:                    
+                        phiey=self.phi_e(2)[0]
+                    else:
+                        phiey=self.phiy()[0]
+                    phiex=self.phi_e(1)[0]
+                    cx=self.cxcyn()[0]
+                    cy=self.cxcyn()[1]
+                    deltax=1-0.1*n*self.el.lambdax_()**2/(self.pr.a()*ry)
+                    if self.el.lambdax_()<=1:
+                        deltax=1
+                    
+                    deltay=1-0.1*n*self.el.lambday_()**2/(self.pr.a()*ry)
+                    if self.el.lambday_()<=1:
+                        deltay=1
+                    k120=abs(n)/(phiey*self.pr.a()*ry*yc)+abs(mx)/(cx*deltax*self.pr.wx()*yc)
+                    k121=abs(n)/(phiex*self.pr.a()*ry*yc)+abs(my)/(cy*deltay*self.pr.wy()*yc)
+                    phie120=[phiey, cx, deltax]                    
+                    phie121=[phiex, cy, deltay]
+                    kMaxM=max(k120,k121,kMaxM)
+
+                else:
+                    k120=u'-'
+                    phie120=[u'-',u'-',u'-']
+                    k121=u'-'
+                    phie121=[u'-',u'-',u'-']
+
+            else:
+                k7x=u'-'  
+                k7y=u'-'  
+                k109x=u'-'
+                phie109x=[u'-',u'-',u'-',u'-']                
+                k109y=u'-'
+                phie109y=[u'-',u'-',u'-',u'-']                
+                k111=u'-'
+                c111=[u'-',u'-',u'-']
+                phiexy116=[u'-',u'-',u'-']
+                k116=u'-'
+                k120=u'-'
+                phie120=[u'-',u'-',u'-']
+                k121=u'-'
+                phie121=[u'-',u'-',u'-']
+                
+            lambdaMUlt='-'
+            if n>=0:
+                kLambdaP=lambdaxy/lambdaP
+                kLambdaM=u'-'
+            else:
+                kLambdaP=u'-'
+                if lambdaML==1 or lambdaML==2:
+                    aa=kMaxM
+                    if aa<0.5:
+                        aa=0.5
+                    if aa>1:
+                        aa=1
+                    if lambdaML==1:
+                        lambdaMUlt=180-60*aa
+                    else:
+                        lambdaMUlt=210-60*aa
+                else:
+                    lambdaMUlt=lambdaM
+                    
+                kLambdaM=lambdaxy/lambdaMUlt
+            
+#           формируем lst; и вычисляем макс
+            if n>=0:
+                kMax=max(k44s,k44n,k106,k70)
+            else:
+                kMax=max(k44s,k44n,k106,kMaxM)
+                    
+            '''ЗОНА ТЕСТИРОВАНИЯ'''
+#            print phie109x,[k109y],phie109y,[k111],c111
+ 
+            '''Зона тестирования'''
+            lstTemp1=[n/1000,mx/100000,my/100000,qx/1000,qy/1000,kMax,k44s,k44n,k106,k70]
+#            print phib34, [k7x,phix,k7y, phiy, k51x]
+            lstTemp21=phib70+[k7x,phix,k7y, phiy, k109x]
+            lstTemp22=phie109x+[k109y]+phie109y+[k111]+c111
+
+            lstTemp3=[k116]+phiexy116+[k120]+phie120+[k121]+phie121+[kLambdaP, kLambdaM]
+            lstTemp4=[lambdaP, lambdaMUlt]
+            lstTemp=lstTemp1+lstTemp21+lstTemp22+lstTemp3+lstTemp4
+            lst2.append(lstTemp)
+        ''''''
+        
+        #Организуем 1 список
+        lst1=[]
+        
+        lst17=localData[3][0]
+        lst16=localData[0][0]
+        
+#        lst15=lambdaxy/lambdaM
+#        lst14=lambdaxy/lambdaP
+        l44s,l44n,l106,l70,l7x,l7y, l109x,l109y,l111,l116,l120,l121,lLambdaP, lLambdaM=0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        nl44s,nl44n,nl106,nl70,nl7x,nl7y, nl109x,nl109y,nl111,nl116,nl120,nl121,nlLambdaP, nlLambdaM=0,0,0,0,0,0,0,0,0,0,0,0 ,0,0          
+        j=0
+        for i in lst2[1:]:
+            j+=1
+            if i[6]!=u'-' and l44s<i[6]:
+                l44s=i[6]
+                nl44s=j
+            if i[7]!=u'-' and l44n<i[7]:
+                l44n=i[7]
+                nl44n=j
+            if i[8]!=u'-' and l106<i[8]:
+                l106=i[8]
+                nl106=j
+            if i[9]!=u'-' and l70<i[9]:
+                l70=i[9]
+                nl70=j
+            if i[14]!=u'-' and l7x<i[14]:
+                l7x=i[14]
+                nl7x=j
+            if i[16]!=u'-' and l7y<i[16]:
+                l7y=i[16]
+                nl7y=j
+            if i[18]!=u'-' and l109x<i[18]:
+                l109x=i[18]
+                nl109x=j
+            if i[23]!=u'-' and l109y<i[23]:
+                l109y=i[23]
+                nl109y=j
+            if i[28]!=u'-' and l111<i[28]:
+                l111=i[28]
+                nl111=j
+            if i[32]!=u'-' and l116<i[32]:
+                l116=i[32]
+                nl116=j
+            if i[36]!=u'-' and l120<i[36]:
+                l120=i[36]
+                nl120=j
+            if i[40]!=u'-' and l121<i[40]:
+                l121=i[40]
+                nl121=j
+
+            if i[44]!=u'-' and lLambdaP<i[44]:
+                lLambdaP=i[44]
+                nlLambdaP=j
+            if i[45]!=u'-' and lLambdaM<i[45]:
+                lLambdaM=i[45]
+                nlLambdaM=j
+
+        
+        lst11=max(l44s,l44n,l106,l70,l7x,l7y, l109x,l109y,l111,l116,l120,l121,lLambdaP, lLambdaM,lst16,lst17)
+#        print lst11, 'lst11'
+#        print lst12
+#        print lst13
+#        print lst14
+#        print lst15
+#        print lst16
+#        print lst17
+        lst1=[lst11,l44s,l44n,l106,l70,l7x,l7y, l109x,l109y,l111,l116,l120,l121,lLambdaP, lLambdaM,lst16,lst17]
+
+    #формируем 3 список
+        lst31=[[u'КиспMax',lst11],
+        [u'Kcрез (п.8.2.1 (44))',l44s],
+        [u'№ усил',nl44s],
+        [u'Kпр (п.8.2.1 (44))',l44n],
+        [u'№ усил',nl44n],
+        [u'Kпр (п.9.1.1 (106))', l106],
+        [u'№ усил',nl106],         
+        [u'KустБ (п.8.4.1 (70))',l70],
+        [u'№ усил',nl70],
+        [u'KустX=N/(A*Ry*yc*phix) (п.7.1.3 (7))',l7x],
+        [u'№ усил',nl7x],
+        
+        [u'KустY=N/(A*Ry*yc*phiy) (п.7.1.3 (7))', l7y],
+        [u'№ усил',nl7y],
+        
+        [u'KустX=Ne/(A*Ry*yc*phiex) (п.9.2.2. (109))', l109x],
+        [u'№ усил',nl109x],
+        [u'KустY=Ne/(A*Ry*yc*phiey) (п.9.2.2. (109))',l109y],
+        [u'№ усил',nl109y],
+        [u'KустY=N/(A*Ry*yc*phiy*c) (п.9.2.4. (111))',l111],
+        [u'№ усил',nl111],
+        [u'KустXY=N/(A*Ry*yc*phiexy) (п.9.2.9. (116))',l116],
+        [u'№ усил',nl116],
+
+        [u'KустXYX (п.9.2.10. (120))',l120],
+        [u'№ усил',nl120],
+
+        [u'KустXYY (п.9.2.10. (121))',l121],
+        [u'№ усил',nl121],
+
+
+        [u'Гибкость +',lLambdaP],
+        [u'№ усил',nlLambdaP],
+
+        [u'Гибкость -',lLambdaM],
+        [u'№ усил',nlLambdaM],
+
+        [u'Kуст.стенки', lst16],
+        [u'Kуст.полки', lst17]]
+
+
+        
+        
+        lst3=lst31
+        
+        lst4=globalData+localData+sectionData
+        
+#        print lst1
+#        print lst2
+#        print lst3
+#        print lst4
+        
+        return [lst1, lst2, lst3, lst4]
+
     def output_data_snip_old_local(self):
         """Выходные расчетные данные по местной потери устойчивости по СНиП. Тупо берем мин из балок и колонн"""
         lst=[] 
