@@ -3527,15 +3527,15 @@ k29,k33,k50,k34,k7x,k7y, k51x,k51y,k56,k62,kLambdaP, kLambdaM
                     phiex=self.phi_e(1)[0]
                     cx=self.cxcyn()[0]
                     cy=self.cxcyn()[1]
-                    deltax=1-0.1*n*self.el.lambdax_()**2/(self.pr.a()*ry)
+                    deltax=1-0.1*abs(n)*self.el.lambdax_()**2/(self.pr.a()*ry)
                     if self.el.lambdax_()<=1:
                         deltax=1
                     
-                    deltay=1-0.1*n*self.el.lambday_()**2/(self.pr.a()*ry)
+                    deltay=1-0.1*abs(n)*self.el.lambday_()**2/(self.pr.a()*ry)
                     if self.el.lambday_()<=1:
                         deltay=1
-                    k120=abs(n)/(phiey*self.pr.a()*ry*yc)+abs(mx)/(cx*deltax*self.pr.wx()*yc)
-                    k121=abs(n)/(phiex*self.pr.a()*ry*yc)+abs(my)/(cy*deltay*self.pr.wy()*yc)
+                    k120=abs(n)/(phiey*self.pr.a()*ry*yc)+abs(mx)/(cx*deltax*self.pr.wx()*yc*ry)
+                    k121=abs(n)/(phiex*self.pr.a()*ry*yc)+abs(my)/(cy*deltay*self.pr.wy()*yc*ry)
                     phie120=[phiey, cx, deltax]                    
                     phie121=[phiex, cy, deltay]
                     kMaxM=max(k120,k121,kMaxM)
