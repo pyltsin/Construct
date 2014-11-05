@@ -92,6 +92,7 @@ def formGen(lst, cx, cy):
         elif i[0]=='circle':
             matr=np.concatenate((matr,functionCirclesNP(i[1],i[3]-cx,i[5],i[4]-cy,i[5],i[7]) ),axis=1)
     return matr
+    
 def centerMass(lst):
     '''Состав lstForm:
         ['rectangle/solidcircle/circle',h,b,dx,dy, nx, ny, nummat, typmat]'''
@@ -358,8 +359,8 @@ def functionRectanglesNP(h,b,x,y,nx,ny, mat):
     a=db*dh
 #    jx0=a*db*db/12.
 #    jy0=a*dh*dh/12.
-    dx=db/2.
-    dy=dh/2.
+#    dx=db/2.
+#    dy=dh/2.
 
     xone=np.ones(ny)
     xmatr= np.arange(nx)
@@ -368,7 +369,7 @@ def functionRectanglesNP(h,b,x,y,nx,ny, mat):
 
 
     xmatr*=db
-    xmatr+=(x+dx)
+    xmatr+=(-x-db/2)
 
     yone=np.ones(nx)
     ymatr= np.arange(ny)
@@ -378,7 +379,7 @@ def functionRectanglesNP(h,b,x,y,nx,ny, mat):
     
 
     ymatr*=dh
-    ymatr+=(y+dy)
+    ymatr+=(-y-dh/2)
 
     amatr=np.ones(nx*ny)
     amatr*=a
@@ -435,6 +436,8 @@ def functionMeshSolidCirclesNP(d,x,y,nx, mat):
     matmatr=np.ones(nx*nx)
     matmatr*=mat
     
+    xmatr+=(r-x)
+    ymatr+=(r-y)    
 #    jx=ymatr*ymatr*amatr
 #    jy=xmatr*xmatr*amatr
 
@@ -450,7 +453,96 @@ def functionMeshSolidCirclesNP(d,x,y,nx, mat):
     
     return lst
         
-        
+def functionMeshAngleNP (lstxy, x0, y0, nx,ny, mat):
+    '''lstxy=[[x0,y0],[x1,y1],[x2,y2]]'''
+    lst=lstxy
+
+
+    
+    b=max(x0,x1,x2)-min(x0,x1,x2)
+    db=b/nx
+    h=max(y0,y1,y2)-min(y0,y1,y2)
+    dh=h/ny
+    a=db*dh
+    '''ищем самую высокую точку'''
+    for i in range(2):
+        for j in range(1):
+            if lst[j][1]>lst[j+1][1]:
+                lst[j],lst[j+1]=lst[j+1],lst[j]
+    x0=lst[0][0]
+    y0=lst[0][1]
+    x1=lst[1][0]
+    y1=lst[1][1]
+    x2=lst[1][0]
+    y2=lst[1][1]
+    
+    if x2-x0!=0:
+        k20=(y2-y0)/(x2-x0)
+        b20=y2-k20*x2            
+    else:
+        k20=0
+        b20=x0
+
+    if x2-x1!=0:        
+        k21=(y2-y1)/(x2-x1)
+        b21=y2-k21*x2     
+    else:
+        k21=0
+        b21=x1
+
+    if x1-x0!=0:
+        k10=(y1-y0)/(x1-x0)
+        b10=y1-k10*x1 
+    else:
+        k10=0
+        b10=x1
+
+    xone=np.ones(nx)
+    xmatr= np.arange(nx)
+    xmatr=np.meshgrid(xmatr,xone)
+    xmatr=xmatr[0]*db-db/2
+
+    yone=np.ones(ny)
+    ymatr= np.arange(ny)
+    ymatr=np.meshgrid(ymatr,yone)
+    ymatr=ymatr[0]*dh-dh/2
+    ymatr=ymatr.transpose()
+
+    xmatr=xmatr.flatten()
+    ymatr=ymatr.flatten()
+
+    y21=k21*xmatr+b21
+    y20=k20*xmatr+b20
+    y10=k10*xmatr+b10
+    rbool=(ymatr<=y21)        
+#    if y2!=y1:
+#
+#
+#    elif y2==y1 and x0!=x1 and x1!=x2:
+#        y21=k21*xmatr+b21
+#        y20=k20*xmatr+b20
+#        y10=k10*xmatr+b10
+#        rbool=(ymatr<=y21)and(ymatr>=y20)and(ymatr>=y10)        
+
+
+    amatr=rbool
+    amatr*=a
+    
+    matmatr=np.ones(nx*ny)
+    matmatr*=mat
+
+#    jx=ymatr*ymatr*amatr
+#    jy=xmatr*xmatr*amatr
+
+    
+#    jx=ymatr*ymatr*amatr+jx0
+#    jy=xmatr*xmatr*amatr+jy0
+    
+    lst=np.vstack((xmatr,ymatr,amatr, matmatr))
+    
+    return lst
+
+                            
 print concretePropertiesApproxSP(26.5,1)
 
 #if __name__ == "__main__":    mx=sigma*formMatr[2]*formMatr[0]
