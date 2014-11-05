@@ -451,103 +451,103 @@ def functionMeshSolidCirclesNP(d,x,y,nx, mat):
     return lst
         
         
+print concretePropertiesApproxSP(26.5,1)
 
-
-if __name__ == "__main__":    mx=sigma*formMatr[2]*formMatr[0]
-
-
-    h=1000.
-    b=1000.
-    nx=2000
-    ny=2000
-
-    time_start=time.time()    
-
-    meshLst=None
-    meshLstNP=None
-
-    gc.collect()
-
-    meshLst=functionRectangles(h,b,-h/2,-b/2,ny,nx)
-
-    a=0
-    jx=0
-    jy=0
-#    print 'tut2'
-    for i in meshLst:
-        a+=i[2]
-        jx+=i[3]
-        jy+=i[4]
-
-    time_stop1=time.time()    
-
-#    print u'По функции'
-
-    print a, jx, jy, time_stop1-time_start
-    
-#    print u'Точный расчет'
-
-    print h*b, h**3*b/12.,b**3*h/12. 
-
-
-    meshLst=None
-    meshLstNP=None
-
-    gc.collect()
-
-    time_start=time.time()    
-    
-    meshLstNP=functionRectanglesNP(h,b,-h/2,-b/2,ny,nx)
-    
-    aNP=meshLstNP[2].sum()
-#    jxNP=meshLstNP[3].sum()
-#    jyNP=meshLstNP[4].sum()
+#if __name__ == "__main__":    mx=sigma*formMatr[2]*formMatr[0]
 #
-    time_stop1=time.time()    
-
-#    print u'NumPy'
-    print aNP,   time_stop1-time_start
-
-
-
-    d=2000.
-    nx=2000
-
-    meshLst=None
-    meshLstNP=None
-
-    gc.collect()
-
-    time_start=time.time()    
-
-
-    meshLst=functionMeshSolidCircles(d,-d/2,-d/2,nx)
-    a=0
-    jx=0
-    jy=0
-    print 'tut2'
-    for i in meshLst:
-        a+=i[2]
-        jx+=i[3]
-        jy+=i[4]
-    time_stop1=time.time()    
-
-    print a, jx, jy,   time_stop1-time_start
-    print 3.14*(d/2.)**2, 3.1415*d** 4 / 64 
-
-    time_start=time.time()    
-
-    meshLst=None
-    meshLstNP=None
-
-    gc.collect()
-    
-    meshLstNP=functionMeshSolidCirclesNP(d,-d/2,-d/2,nx)
-    aNP=meshLstNP[2].sum()
-    time_stop1=time.time()    
-
-    print aNP, time_stop1-time_start
-    
-    print concretePropertiesApproxSP(25,74)
-    print concretePropertiesApproxSP(12.5,74)
-    print [1,2]+[2,3]
+#
+#    h=1000.
+#    b=1000.
+#    nx=2000
+#    ny=2000
+#
+#    time_start=time.time()    
+#
+#    meshLst=None
+#    meshLstNP=None
+#
+#    gc.collect()
+#
+#    meshLst=functionRectangles(h,b,-h/2,-b/2,ny,nx)
+#
+#    a=0
+#    jx=0
+#    jy=0
+##    print 'tut2'
+#    for i in meshLst:
+#        a+=i[2]
+#        jx+=i[3]
+#        jy+=i[4]
+#
+#    time_stop1=time.time()    
+#
+##    print u'По функции'
+#
+#    print a, jx, jy, time_stop1-time_start
+#    
+##    print u'Точный расчет'
+#
+#    print h*b, h**3*b/12.,b**3*h/12. 
+#
+#
+#    meshLst=None
+#    meshLstNP=None
+#
+#    gc.collect()
+#
+#    time_start=time.time()    
+#    
+#    meshLstNP=functionRectanglesNP(h,b,-h/2,-b/2,ny,nx)
+#    
+#    aNP=meshLstNP[2].sum()
+##    jxNP=meshLstNP[3].sum()
+##    jyNP=meshLstNP[4].sum()
+##
+#    time_stop1=time.time()    
+#
+##    print u'NumPy'
+#    print aNP,   time_stop1-time_start
+#
+#
+#
+#    d=2000.
+#    nx=2000
+#
+#    meshLst=None
+#    meshLstNP=None
+#
+#    gc.collect()
+#
+#    time_start=time.time()    
+#
+#
+#    meshLst=functionMeshSolidCircles(d,-d/2,-d/2,nx)
+#    a=0
+#    jx=0
+#    jy=0
+#    print 'tut2'
+#    for i in meshLst:
+#        a+=i[2]
+#        jx+=i[3]
+#        jy+=i[4]
+#    time_stop1=time.time()    
+#
+#    print a, jx, jy,   time_stop1-time_start
+#    print 3.14*(d/2.)**2, 3.1415*d** 4 / 64 
+#
+#    time_start=time.time()    
+#
+#    meshLst=None
+#    meshLstNP=None
+#
+#    gc.collect()
+#    
+#    meshLstNP=functionMeshSolidCirclesNP(d,-d/2,-d/2,nx)
+#    aNP=meshLstNP[2].sum()
+#    time_stop1=time.time()    
+#
+#    print aNP, time_stop1-time_start
+#    
+#    print concretePropertiesApproxSP(25,74)
+#    print concretePropertiesApproxSP(12.5,74)
+#    print [1,2]+[2,3]
