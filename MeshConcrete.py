@@ -267,10 +267,11 @@ def concretePropertiesApproxSP(b, phi):
     rbn=max(b*(0.765-0.001*b),0.71*b)
     rb=rbn/yb1
     
-    rbtn=0.232*b**(2./3)*0.776
+#    rbtn=0.232*b**(2./3)*0.776
+    rbtn=0.232*(rbn)**(2./3)*0.956*1.01
     rbt=rbtn/ybt1
     
-    eb=55000*b/(18/0.9+b/0.9)/1000*1.05
+    eb=55000*b/(19.+b/0.9)/1000*1.03
     
     eb0=0.002
     ebt0=0.0001
@@ -545,7 +546,7 @@ def functionTriangleNP(lstxy,nx,ny, mat):
 if __name__ == "__main__": 
 
 #    print range(2)
-    a=functionTriangleNP([[0.,0.],[1.,0.],[0.5,1.]],5000.,5000.,1.)
+    a=functionTriangleNP([[0.,0.],[1.,0.],[0.5,1.]],1000.,1000.,1.)
     print a[2].sum()
     print (a[2]*a[1]*a[1]).sum()
     print (a[2]*a[0]*a[0]).sum()
@@ -553,19 +554,19 @@ if __name__ == "__main__":
     a=None
     gc.collect()
 
-    a2=functionTriangleNP([[0.,0.],[1.,0.],[1,1.]],4000.,4000.,1.)
+    a2=functionTriangleNP([[0.,0.],[1.,0.],[1,1.]],1000.,1000.,1.)
     print a2[2].sum()
     a2=None
 
     gc.collect()
 
-    a3=functionTriangleNP([[0.,0.],[1.,0.],[0,1.]],3000.,3000.,1.)
+    a3=functionTriangleNP([[0.,0.],[1.,0.],[0,1.]],1000.,1000.,1.)
     print a3[2].sum()
     a3=None
 
     gc.collect()
 
-    a4=functionTriangleNP([[0.,0.],[0.,1.],[1,1.]],2000.,2000.,1.)
+    a4=functionTriangleNP([[0.,0.],[0.,1.],[1,1.]],1000.,1000.,1.)
     print a4[2].sum()
     a4=None
 
@@ -573,5 +574,5 @@ if __name__ == "__main__":
 
 
                             
-    print concretePropertiesApproxSP(26.5,1)
+    print concretePropertiesApproxSP(25,1)
 
