@@ -453,193 +453,125 @@ def functionMeshSolidCirclesNP(d,x,y,nx, mat):
     
     return lst
         
-def functionMeshAngleNP (lstxy, x0, y0, nx,ny, mat):
-    '''lstxy=[[x0,y0],[x1,y1],[x2,y2]]'''
-    lst=lstxy
-
-
+def functionTriangleNP(lstxy,nx,ny, mat):
     
-    b=max(x0,x1,x2)-min(x0,x1,x2)
+    xc=((lstxy[2][0]+lstxy[1][0])/2.+lstxy[0][0])/2.
+    yc=((lstxy[2][1]+lstxy[1][1])/2.+lstxy[0][1])/2.
+    
+    kmatr=[]
+    bmatr=[]
+    for i in range(3):
+        if (lstxy[i-1][0]-lstxy[i][0])!=0:
+            kmatr.append((lstxy[i-1][1]-lstxy[i][1])/(lstxy[i-1][0]-lstxy[i][0]))
+            bmatr.append(lstxy[i-1][1]-lstxy[i-1][0]*kmatr[i])
+        else:
+            kmatr.append(None)
+            bmatr.append(lstxy[i-1][0])
+
+    kkmatr=[]
+    for i in range(3):
+        if kmatr[i]!=None:
+            if yc>=kmatr[i]*xc+bmatr[i]:
+                kkmatr.append(1)
+            else:
+                kkmatr.append(0)
+        else:
+            if xc>bmatr[i]:
+                kkmatr.append(1)
+            else:
+                kkmatr.append(0)
+                
+    b=max(abs(lstxy[2][0]-lstxy[1][0]),abs(lstxy[2][0]-lstxy[0][0]),abs(lstxy[1][0]-lstxy[0][0]))
+    h=max(abs(lstxy[2][1]-lstxy[1][1]),abs(lstxy[2][1]-lstxy[0][1]),abs(lstxy[1][1]-lstxy[0][1]))
+
     db=b/nx
-    h=max(y0,y1,y2)-min(y0,y1,y2)
     dh=h/ny
+
+    dx=db/2.
+    dy=dh/2.
     a=db*dh
-    '''ищем самую высокую точку'''
-    for i in range(2):
-        for j in range(1):
-            if lst[j][1]>lst[j+1][1]:
-                lst[j],lst[j+1]=lst[j+1],lst[j]
-    x0=lst[0][0]
-    y0=lst[0][1]
-    x1=lst[1][0]
-    y1=lst[1][1]
-    x2=lst[1][0]
-    y2=lst[1][1]
     
-    if x2-x0!=0:
-        k20=(y2-y0)/(x2-x0)
-        b20=y2-k20*x2            
-    else:
-        k20=0
-        b20=x0
-
-    if x2-x1!=0:        
-        k21=(y2-y1)/(x2-x1)
-        b21=y2-k21*x2     
-    else:
-        k21=0
-        b21=x1
-
-    if x1-x0!=0:
-        k10=(y1-y0)/(x1-x0)
-        b10=y1-k10*x1 
-    else:
-        k10=0
-        b10=x1
-
-    xone=np.ones(nx)
+    xone=np.ones(ny)
     xmatr= np.arange(nx)
     xmatr=np.meshgrid(xmatr,xone)
-    xmatr=xmatr[0]*db-db/2
+    xmatr=xmatr[0].flatten()
 
-    yone=np.ones(ny)
+
+    xmatr*=db
+    xmatr+=(dx)
+
+    yone=np.ones(nx)
     ymatr= np.arange(ny)
     ymatr=np.meshgrid(ymatr,yone)
-    ymatr=ymatr[0]*dh-dh/2
-    ymatr=ymatr.transpose()
-
-    xmatr=xmatr.flatten()
+    ymatr=ymatr[0].transpose()
     ymatr=ymatr.flatten()
-
-    y21=k21*xmatr+b21
-    y20=k20*xmatr+b20
-    y10=k10*xmatr+b10
-    rbool=(ymatr<=y21)        
-#    if y2!=y1:
-#
-#
-#    elif y2==y1 and x0!=x1 and x1!=x2:
-#        y21=k21*xmatr+b21
-#        y20=k20*xmatr+b20
-#        y10=k10*xmatr+b10
-#        rbool=(ymatr<=y21)and(ymatr>=y20)and(ymatr>=y10)        
-
-
-    amatr=rbool
-    amatr*=a
     
-    matmatr=np.ones(nx*ny)
+
+    ymatr*=dh
+    ymatr+=(dy)
+
+    bol=[[],[],[]]
+    
+    for i in range(3):
+        if kmatr[i]!=None:
+            if kkmatr[i]==1:
+                bol[i]=(ymatr>=kmatr[i]*xmatr+bmatr[i])
+            else:
+                bol[i]=(ymatr<kmatr[i]*xmatr+bmatr[i])
+        else:
+            if kkmatr[i]==1:            
+                bol[i]=(xmatr>=bmatr[i])
+            else:
+                bol[i]=(xmatr<bmatr[i])
+            
+    boolmatr=bol[0] * bol[1]
+    
+    boolmatr=boolmatr * bol[2]
+    
+    nn= np.arange(nx*ny)
+    
+    
+    amatr=boolmatr+0.00
+    
+    amatr*=a
+    matmatr=np.ones(nx*nx)
     matmatr*=mat
 
-#    jx=ymatr*ymatr*amatr
-#    jy=xmatr*xmatr*amatr
+#    lst=np.vstack((xmatr,ymatr,amatr, matmatr))
+##    
+#    return lst
+    return [xmatr,ymatr,amatr, matmatr]
 
-    
-#    jx=ymatr*ymatr*amatr+jx0
-#    jy=xmatr*xmatr*amatr+jy0
-    
-    lst=np.vstack((xmatr,ymatr,amatr, matmatr))
-    
-    return lst
+if __name__ == "__main__": 
+
+#    print range(2)
+    a=functionTriangleNP([[0.,0.],[1.,0.],[0.5,1.]],5000.,5000.,1.)
+    print a[2].sum()
+    print (a[2]*a[1]*a[1]).sum()
+    print (a[2]*a[0]*a[0]).sum()
+
+    a=None
+    gc.collect()
+
+    a2=functionTriangleNP([[0.,0.],[1.,0.],[1,1.]],4000.,4000.,1.)
+    print a2[2].sum()
+    a2=None
+
+    gc.collect()
+
+    a3=functionTriangleNP([[0.,0.],[1.,0.],[0,1.]],3000.,3000.,1.)
+    print a3[2].sum()
+    a3=None
+
+    gc.collect()
+
+    a4=functionTriangleNP([[0.,0.],[0.,1.],[1,1.]],2000.,2000.,1.)
+    print a4[2].sum()
+    a4=None
+
+    gc.collect()
+
 
                             
-print concretePropertiesApproxSP(26.5,1)
+    print concretePropertiesApproxSP(26.5,1)
 
-#if __name__ == "__main__":    mx=sigma*formMatr[2]*formMatr[0]
-#
-#
-#    h=1000.
-#    b=1000.
-#    nx=2000
-#    ny=2000
-#
-#    time_start=time.time()    
-#
-#    meshLst=None
-#    meshLstNP=None
-#
-#    gc.collect()
-#
-#    meshLst=functionRectangles(h,b,-h/2,-b/2,ny,nx)
-#
-#    a=0
-#    jx=0
-#    jy=0
-##    print 'tut2'
-#    for i in meshLst:
-#        a+=i[2]
-#        jx+=i[3]
-#        jy+=i[4]
-#
-#    time_stop1=time.time()    
-#
-##    print u'По функции'
-#
-#    print a, jx, jy, time_stop1-time_start
-#    
-##    print u'Точный расчет'
-#
-#    print h*b, h**3*b/12.,b**3*h/12. 
-#
-#
-#    meshLst=None
-#    meshLstNP=None
-#
-#    gc.collect()
-#
-#    time_start=time.time()    
-#    
-#    meshLstNP=functionRectanglesNP(h,b,-h/2,-b/2,ny,nx)
-#    
-#    aNP=meshLstNP[2].sum()
-##    jxNP=meshLstNP[3].sum()
-##    jyNP=meshLstNP[4].sum()
-##
-#    time_stop1=time.time()    
-#
-##    print u'NumPy'
-#    print aNP,   time_stop1-time_start
-#
-#
-#
-#    d=2000.
-#    nx=2000
-#
-#    meshLst=None
-#    meshLstNP=None
-#
-#    gc.collect()
-#
-#    time_start=time.time()    
-#
-#
-#    meshLst=functionMeshSolidCircles(d,-d/2,-d/2,nx)
-#    a=0
-#    jx=0
-#    jy=0
-#    print 'tut2'
-#    for i in meshLst:
-#        a+=i[2]
-#        jx+=i[3]
-#        jy+=i[4]
-#    time_stop1=time.time()    
-#
-#    print a, jx, jy,   time_stop1-time_start
-#    print 3.14*(d/2.)**2, 3.1415*d** 4 / 64 
-#
-#    time_start=time.time()    
-#
-#    meshLst=None
-#    meshLstNP=None
-#
-#    gc.collect()
-#    
-#    meshLstNP=functionMeshSolidCirclesNP(d,-d/2,-d/2,nx)
-#    aNP=meshLstNP[2].sum()
-#    time_stop1=time.time()    
-#
-#    print aNP, time_stop1-time_start
-#    
-#    print concretePropertiesApproxSP(25,74)
-#    print concretePropertiesApproxSP(12.5,74)
-#    print [1,2]+[2,3]
