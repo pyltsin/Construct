@@ -371,8 +371,12 @@ class Triangles(object):
         dy=dh/2.
         a=db*dh
         
+#        xmatr=[i for i in range(int(nx))]
+#        xmatr=np.concatenate((xmatr*int(ny-1), xmatr))
+##        print xmatr
         xone=np.ones(ny)
         xmatr= np.arange(nx)
+        
         xmatr=np.meshgrid(xmatr,xone)
         xmatr=xmatr[0].flatten()
     
@@ -414,24 +418,12 @@ class Triangles(object):
         matmatr=np.ones(nx*nx)
         matmatr*=mat
     
-        lst=np.vstack((xmatr,ymatr,amatr, matmatr))
+#        lst=np.vstack((xmatr,ymatr,amatr, matmatr))
 
-        return lst
+        return [xmatr,ymatr,amatr, matmatr]
 
     
 if __name__ == "__main__": 
-
-#    print range(2)
-    a=Triangles([[0.,0.],[1.,0.],[0.5,1.]],1000.,1000.,1.)
-    amesh=a.mesh()
-    print amesh[2].sum()
-    print (amesh[2]*amesh[1]*amesh[1]).sum()
-    print (amesh[2]*amesh[0]*amesh[0]).sum()
-
-    amesh=None
-    gc.collect()
-
-
 
     rc=Rectangles([[-1,-1],[1,1]],3000,3000,1)
     rcmesh=rc.mesh()
@@ -439,3 +431,18 @@ if __name__ == "__main__":
     print (rcmesh[2]*rcmesh[0]*rcmesh[0]).sum()
     rcmesh=None
     gc.collect()
+
+    start=time.time()
+    for i in range(10000):
+        a=Triangles([[0.,0.],[1.,0.],[0.5,1.]],100,100,1.)
+        amesh=a.mesh()
+#        print amesh[2].sum()
+#        print (amesh[2]*amesh[1]*amesh[1]).sum()
+#        print (amesh[2]*amesh[0]*amesh[0]).sum()
+    
+#        amesh=None
+#        gc.collect()
+    print  time.time()-start    
+    print np.concatenate(([0],[0]*5))
+
+
