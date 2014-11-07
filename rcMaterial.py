@@ -168,7 +168,8 @@ class Reinforced(object):
     
     
 
-    
+    def title(self):
+        return 'Reinforced'
         
 class Concrete(object):
     '''Класс для работы с бетоном и всем что с ней связано'''
@@ -224,7 +225,7 @@ class Concrete(object):
 
             return self.rbn, self.rb, self.rbtn, self.rbt, self.eb, self.eb0, self.eb2, self.eb1red, self.ebt0, self.ebt2, self.ebt1red, self.ebl0, self.ebl2, self.ebl1red, self.eblt0, self.eblt2, self.eblt1red, self.phi_crc
 
-
+    
     def listSP52(self):
         '''возвращает список доступных классов по СП52'''
         fil=tables_csv(filename='MaterialData\\concreteSP52.csv', typ='none')
@@ -249,9 +250,10 @@ class Concrete(object):
             v=y/x/self.es
             fun=interpolate.interp1d(x,v, kind='linear')
         return fun
+    def title(self):
+        return 'Concrete'
 
-
-    def functDiaConcrete(self, typDia, typPS, typTime, typR, typRT, typFun):
+    def functDia(self, typDia, typPS, typTime, typR, typRT, typFun):
         '''Отдача функции расчета sigma по e или v по e'''
         rbn,rb,rbtn,rbt,eb= self.rbn, self.rb, self.rbtn, self.rbt, self.eb
         eb0, eb2, eb1red, ebt0, ebt2, ebt1red= self.eb0, self.eb2, self.eb1red, self.ebt0, self.ebt2, self.ebt1red
@@ -298,24 +300,24 @@ class Concrete(object):
             x=[-e2,-e0,-0.6*r/eb,0,0.6*rt/eb,et0,et2]
             y=[-r,-r,-0.6*r,0,0.6*r,r,r]
     
-        if typR==True:
+        if typR==0:
             n=0
             for i in x:
                if i<0:
                    y[n]=0
                n+=1
-        else:
+        elif typR==1:
             x.insert(0,x[0]*1.001)
             y.insert(0,0)
                
-        if typRT==True:
+        if typRT==0:
             n=0
             for i in x:
                if i>0:
                    y[n]=0
                n+=1
-        else:
-            x.append(x[0]*1.001)
+        elif typRT==1:
+            x.append(x[-1]*1.001)
             y.append(0)
         
         x.append(x[-1]*1000000.)

@@ -11,117 +11,11 @@ import time
 import gc
 from scipy import interpolate
 import math
-#пусть материалы есть в виде функций и есть матрица материалов, 
-"""v=ones(numberElements)
-e=e
-x
-y
-a
-
-da=a*v*e
-
-dsx=da*x
-dsy=da*y
-
-djx=dsx*x
-djy=dsy*y
-
-djxy=dsx*y
-
-d11=djx.sum()
-d22=djy.sum()
-d12=djxy.sum()
-d13=dsx.sum()
-d23=dsy.sum()
-d33=da.sum()
-
-
-
-"""
-class Solves(object):
-    def __init__(self):
-        pass
-    def nmxmy2e0rxry(n, mx, my, lstForm, lstMat, nn, criter):
-        numberElements=lstForm.shape[1]
-        cx,cy=centerMass(lstForm)
-        formMatr=formGen(lstForm, cx, cy)
-    #   возвращает список функций апроксимаций от mat
-        matFunE2V=matGenE2V(lstMat)
-    #возвращает E
-        e=matGenE(lstForm, lstMat)
-        e0,rx,ry=0,0,0
-        
-        v=np.ones(numberElement)
-        
-        while True:
-            da=formMatr[2]*v*e
-            dsx=da*formMatr[0]
-            dsy=da*formMatr[1]
-        
-            djx=dsx*formMatr[0]
-            djy=dsy*formMatr[1]
-            djxy=dsx*formMatr[1]
-        
-            d11=djx.sum()
-            d22=djy.sum()
-            d12=djxy.sum()
-            d12=dsx.sum()
-            d23=dsy.sum()
-            d33=da.sum()
-            
-            e0,rx,ry,error=funtSolve(n,mx,my,d11,d22,d12,d13,d23,d33)
-            if error==1:
-                raise Error
-        '''траливали - недописано'''
-        
-    def e0rxry2nmxmy(e0,rx,ry, formMatr, matFunE2Sigma):
-    #   создаем матрицу e по всем точкам:
-        one=np.ones(formMatr.shape[1])
-        e=one*e0+formMatr[0]*rx+formMatr[1]*ry
-        sigma=matFunE2Sigma(e, formMatr[3])
-        n=sigma*formMatr[2]
-        mx=sigma*formMatr[2]*formMatr[0]
-        my=sigma*formMatr[2]*formMatr[1]
-        nSum=n.sum()
-        mxSum=mx.sum()
-        mySum=my.sum()
-        return nSum, mxSum, mySum
-    
-    def formGen(lst):
-        '''lst - список созданных элементов!'''
-        matr=np.array([[0],[0],[0],[1]])
-        for i in lst:
-            matr=np.concatenate((matr,lst.mesh()) ,axis=1)
-        return matr
-    
-    def centerMass(lst):
-        '''lst - список элементов'''
-        a=0
-        sx=0
-        sy=0
-        for i in lst:
-            a+=i.a()
-            sx+=i.sx()
-            sy+=i.sy()
-            
-        x=sx/a
-        y=sy/a
-        return x,y
-    def critPoint(lst, e, rx,ry):
-        lstCritPoint=[]
-        for i in lst:
-            lstCritPoint+=i.critPoint(e,rx,ry)
-        return lstCritPoint
-        
-    
-            
-        
-    
 
 class Rectangles(object):
-    def __init__(self,lstXY, nx=100, ny=100, mat=1, sign=1):
-        self.nx=float(nx)
-        self.ny=float(ny)
+    def __init__(self,lstXY, lstN, mat=1, sign=1, e0rxry=[0,0,0]):
+        self.nx=float(lstN[0])
+        self.ny=float(lstN[1])
         self.mat=mat
         self.lstXY=lstXY
         self.b=abs(lstXY[1][0]-lstXY[0][0])
@@ -129,6 +23,7 @@ class Rectangles(object):
         self.x=lstXY[0][0]
         self.y=lstXY[0][1]
         self.sign=sign
+        self.e0rxry=e0rxry
     def a(self):
         return self.b*self.h
     def sx(self):
@@ -177,19 +72,27 @@ class Rectangles(object):
     
         matmatr=np.ones(nx*ny)
         matmatr*=mat
-            
-        lst=np.vstack((xmatr,ymatr,amatr, matmatr))
+
+        e0=np.ones(nx*ny)
+        e0*=self.e0rxry[0]
+        rx=np.ones(nx*ny)
+        rx*=self.e0rxry[1]
+        ry=np.ones(nx*ny)
+        ry*=self.e0rxry[2]
+
+        lst=np.vstack((xmatr,ymatr,amatr, matmatr,e0,rx,ry))
         
         return lst
     
 class Circles(object):
-    def __init__(self,lst,nx=1, ny=1, mat=1, sign=1):
+    def __init__(self,lst,lstN, mat=1, sign=1, e0rxry=[0,0,0]):
         self.d=float(lst[0])
 
         self.x=float(lst[1])
         self.y=float(lst[2])
         self.mat=mat
         self.sign=sign
+        self.e0rxry=e0rxry
     def a(self):
         return 3.1415*(self.d/2.)**2
     def sx(self):
@@ -199,7 +102,7 @@ class Circles(object):
 
     def mesh(self):
         a=self.a()*self.sign
-        matr=np.array([[self.x],[self.y],[a], [self.mat]])
+        matr=np.array([[self.x],[self.y],[a], [self.mat],[self.e0rxry[0]],[self.e0rxry[1]],[self.e0rxry[2]]])
         return matr
 
     def critPoint(self, e,rx,ry):
@@ -211,14 +114,15 @@ class Circles(object):
 
 
 class SolidCircles(object):
-    def __init__(self,lst,nx=100, ny=1, mat=1, sign=1):
+    def __init__(self,lst,lstN, mat=1, sign=1,e0rxry=[0,0,0]):
         '''x y  - координаты центра тяжести'''
         self.d=float(lst[0])
-        self.nx=nx
+        self.nx=lstN[0]
         self.x=float(lst[1])
         self.y=float(lst[2])
         self.mat=mat
         self.sign=sign
+        self.e0rxry=e0rxry
     def a(self):
         return 3.1415*(self.d/2.)**2
     def sx(self):
@@ -226,7 +130,13 @@ class SolidCircles(object):
     def sy(self):
         return self.a()*self.y
 
-    def mesh(d,x,y,nx, mat):
+    def mesh(self):
+        d=self.d
+        x=self.x
+        y=self.y
+        nx=self.nx
+        mat=self.mat
+        
         gc.collect()
         lst=[]
         b=d/nx
@@ -254,10 +164,18 @@ class SolidCircles(object):
         matmatr=np.ones(nx*nx)
         matmatr*=mat
         
-        xmatr+=(r-x)
-        ymatr+=(r-y)    
+        xmatr+=(-r+x)
+        ymatr+=(-r+y)    
+
+        e0=np.ones(nx*ny)
+        e0*=self.e0rxry[0]
+        rx=np.ones(nx*ny)
+        rx*=self.e0rxry[1]
+        ry=np.ones(nx*ny)
+        ry*=self.e0rxry[2]
+
     
-        lst=np.vstack((xmatr,ymatr,amatr, matmatr))
+        lst=np.vstack((xmatr,ymatr,amatr, matmatr,e0,rx,ry))
         
         return lst
 
@@ -276,12 +194,13 @@ class SolidCircles(object):
 
 
 class Triangles(object):
-    def __init__(self,lstXY, nx=100, ny=100, mat=1, sign=1):
-        self.nx=float(nx)
-        self.ny=float(ny)
+    def __init__(self,lstXY, lstN, mat=1, sign=1,e0rxry=[0,0,0]):
+        self.nx=float(lstN[0])
+        self.ny=float(lstN[1])
         self.mat=mat
         self.lstXY=lstXY
         self.sign=sign
+        self.e0rxry=e0rxry
     def a(self):
         x1=self.lstXY[0][0]
         y1=self.lstXY[0][1]
@@ -417,15 +336,23 @@ class Triangles(object):
         amatr*=(sign*a)
         matmatr=np.ones(nx*nx)
         matmatr*=mat
+
+        e0=np.ones(nx*ny)
+        e0*=self.e0rxry[0]
+        rx=np.ones(nx*ny)
+        rx*=self.e0rxry[1]
+        ry=np.ones(nx*ny)
+        ry*=self.e0rxry[2]
+
     
 #        lst=np.vstack((xmatr,ymatr,amatr, matmatr))
 
-        return [xmatr,ymatr,amatr, matmatr]
+        return [xmatr,ymatr,amatr, matmatr,e0,rx,ry]
 
     
 if __name__ == "__main__": 
 
-    rc=Rectangles([[-1,-1],[1,1]],3000,3000,1)
+    rc=Rectangles([[-1,-1],[1,1]],[3000,3000],1,1)
     rcmesh=rc.mesh()
     print rcmesh[2].sum()
     print (rcmesh[2]*rcmesh[0]*rcmesh[0]).sum()
@@ -434,7 +361,7 @@ if __name__ == "__main__":
 
     start=time.time()
     for i in range(10000):
-        a=Triangles([[0.,0.],[1.,0.],[0.5,1.]],100,100,1.)
+        a=Triangles([[0.,0.],[1.,0.],[0.5,1.]],[100,100],1,1)
         amesh=a.mesh()
 #        print amesh[2].sum()
 #        print (amesh[2]*amesh[1]*amesh[1]).sum()
@@ -443,6 +370,5 @@ if __name__ == "__main__":
 #        amesh=None
 #        gc.collect()
     print  time.time()-start    
-    print np.concatenate(([0],[0]*5))
 
 
