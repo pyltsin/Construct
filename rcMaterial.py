@@ -6,8 +6,6 @@ Created on Fri Nov 07 17:49:22 2014
 """
 from table import tables_csv
 import numpy as np
-import time
-import gc
 from scipy import interpolate
 
 class Reinforced(object):
@@ -36,6 +34,7 @@ class Reinforced(object):
                 return self.propertiesSP63()
                 
     def setA(self, txt):
+        '''назначить typm rn'''
         self.typ=txt[0]
         self.rn=int(txt[1:])
         
@@ -68,7 +67,7 @@ class Reinforced(object):
         self.rsn, self.rs, self.rsw, self.es, self.es0, self.es2=rsn,rs,rsw, es, es0, es2
         return rsn,rs,rsw, es, es0, es2
 
-    def functDiaLst(self, lst, typFun):
+    def functDiaLst(self, lst):
         '''Возвращает функцию по интерполяции по списку'''
         x=lst[0]
         y=lst[1]
@@ -77,17 +76,23 @@ class Reinforced(object):
         y=np.array(y)        
     
         
-        if typFun=='sigma':
-            fun=interpolate.interp1d(x,y, kind='linear')
-        elif typFun=='v':
-            v=y/x/self.es
-            fun=interpolate.interp1d(x,v, kind='linear')
-        return fun
+        funSigma=interpolate.interp1d(x,y, kind='linear')
+        ev=[]
+        for i in range(len(x)):
+            if x[i]!=0:
+                ev.append(y[i]/x[i])
+            else:
+                if i+1>len(x):
+                    ev.append(y[i-1]/x[i-1])
+                else:
+                    ev.append(y[i+1]/x[i+1])
+        funEv=interpolate.interp1d(x,ev, kind='linear')
+        
+        return [funSigma, funEv]
 
-    def functDia(self, typPS, typFun):
+    def functDia(self, typPS):
         '''возвращает функцию по интерполяции по графику (общему)
-        typPS - тип предельного состояния
-        typFun - тип функции'''
+        typPS - тип предельного состояния'''
         
         if typPS==1:
             r=self.rs
@@ -117,12 +122,19 @@ class Reinforced(object):
         y=np.array(y)        
     
         
-        if typFun=='sigma':
-            fun=interpolate.interp1d(x,y, kind='linear')
-        elif typFun=='v':
-            v=y/x/self.es
-            fun=interpolate.interp1d(x,v, kind='linear')
-        return fun
+        funSigma=interpolate.interp1d(x,y, kind='linear')
+        ev=[]
+        for i in range(len(x)):
+            if x[i]!=0:
+                ev.append(y[i]/x[i])
+            else:
+                if i+1>len(x):
+                    ev.append(y[i-1]/x[i-1])
+                else:
+                    ev.append(y[i+1]/x[i+1])
+        funEv=interpolate.interp1d(x,ev, kind='linear')
+        
+        return [funSigma, funEv]
 
         
     def listSP52(self):
@@ -149,6 +161,11 @@ class Reinforced(object):
             self.rs/=self.ysi
             self.rsw/=self.ysi
             
+            self.rsn*=(100/9.81)
+            self.rs*=(100/9.81)
+            self.rsw*=(100/9.81)
+            self.es*=(100/9.81)
+            
             return self.rsn, self.rs, self.rsw, self.es, self.es0, self.es2
             
     def propertiesSP63(self):
@@ -163,6 +180,12 @@ class Reinforced(object):
             self.rsn, self.rs, self.rsw, self.es, self.es0, self.es2, self.ys=index[1:]
             self.rs/=self.ysi
             self.rsw/=self.ysi
+
+            self.rsn*=(100/9.81)
+            self.rs*=(100/9.81)
+            self.rsw*=(100/9.81)
+            self.es*=(100/9.81)
+
 
             return self.rsn, self.rs, self.rsw, self.es, self.es0, self.es2
     
@@ -208,6 +231,11 @@ class Concrete(object):
                 index=i
         if index!=False:
             self.rbn, self.rbtn, self.rb, self.rbt, self.eb=index[1:]
+            self.rbn*=(100/9.81)
+            self.rbtn*=(100/9.81)
+            self.rb*=(100/9.81/self.yb)
+            self.rbt*=(100/9.81/self.yb)
+            self.eb*=(100/9.81)
 
             return self.rbn, self.rb, self.rbtn, self.rbt, self.eb, self.eb0, self.eb2, self.eb1red, self.ebt0, self.ebt2, self.ebt1red, self.ebl0, self.ebl2, self.ebl1red, self.eblt0, self.eblt2, self.eblt1red, self.phi_crc
 
@@ -223,6 +251,13 @@ class Concrete(object):
         if index!=False:
             self.rbn, self.rbtn, self.rb, self.rbt, self.eb=index[1:]
 
+            self.rbn*=(100/9.81)
+            self.rbtn*=(100/9.81)
+            self.rb*=(100/9.8/self.yb)
+            self.rbt*=(100/9.81/self.yb)
+            self.eb*=(100/9.81)
+
+
             return self.rbn, self.rb, self.rbtn, self.rbt, self.eb, self.eb0, self.eb2, self.eb1red, self.ebt0, self.ebt2, self.ebt1red, self.ebl0, self.ebl2, self.ebl1red, self.eblt0, self.eblt2, self.eblt1red, self.phi_crc
 
     
@@ -235,7 +270,7 @@ class Concrete(object):
         fil=tables_csv(filename='MaterialData\\concreteSP63.csv', typ='none')
         return fil.get_title_column()
 
-    def functDiaLst(self, lst, typFun):
+    def functDiaLst(self, lst):
         '''Возвращает функцию по интерполяции по списку'''
         x=lst[0]
         y=lst[1]
@@ -244,17 +279,46 @@ class Concrete(object):
         y=np.array(y)        
     
         
-        if typFun=='sigma':
-            fun=interpolate.interp1d(x,y, kind='linear')
-        elif typFun=='v':
-            v=y/x/self.es
-            fun=interpolate.interp1d(x,v, kind='linear')
-        return fun
+        funSigma=interpolate.interp1d(x,y, kind='linear')
+        ev=[]
+        for i in range(len(x)):
+            if x[i]!=0:
+                ev.append(y[i]/x[i])
+            else:
+                if i+1>len(x):
+                    ev.append(y[i-1]/x[i-1])
+                else:
+                    ev.append(y[i+1]/x[i+1])
+        funEv=interpolate.interp1d(x,ev, kind='linear')
+        
+        return [funSigma, funEv]
+        
     def title(self):
         return 'Concrete'
+    
+    def functDia2(self,x):
+        lstx=self.x
+        lsty=self.y
+        lstyev=self.yEv
+#        print lstx, lsty
 
-    def functDia(self, typDia, typPS, typTime, typR, typRT, typFun):
-        '''Отдача функции расчета sigma по e или v по e'''
+        for i in range(len(self.x)-1):
+#            print lstx[i], lstx[i+1], x
+#            print lstx[i]<=x and lstx[i+1]<=x
+            if lstx[i]<=x and lstx[i+1]>=x:
+                y1=(lsty[i]-lsty[i+1])/(lstx[i]-lstx[i+1])+lsty[i+1]
+                y2=(lstyev[i]-lstyev[i+1])/(lstx[i]-lstx[i+1])+lstyev[i+1]
+#                print y1, y2 , 'y1'
+                return [y1, y2]
+            
+    def functDia(self, typDia, typPS, typTime, typR, typRT):
+        '''Отдача функции расчета sigma по e или v по e
+        typDia - тип диаграммы для бетонна, 
+        typPS - тип предельного состояния, 
+        typTime - long или short для бетона, 
+        typR - для бетона, если 1 - просто режется все -, если 2 - после последнего значения - до 0, другое - продлеваем до max, 
+        typRT - для бетона, если 1 - просто режется все +, если 2 - после последнего значения - до 0, другое - продлеваем до max'''
+
         rbn,rb,rbtn,rbt,eb= self.rbn, self.rb, self.rbtn, self.rbt, self.eb
         eb0, eb2, eb1red, ebt0, ebt2, ebt1red= self.eb0, self.eb2, self.eb1red, self.ebt0, self.ebt2, self.ebt1red
         ebl0, ebl2, ebl1red, eblt0, eblt2, eblt1red=self.ebl0, self.ebl2, self.ebl1red, self.eblt0, self.eblt2, self.eblt1red 
@@ -300,23 +364,23 @@ class Concrete(object):
             x=[-e2,-e0,-0.6*r/eb,0,0.6*rt/eb,et0,et2]
             y=[-r,-r,-0.6*r,0,0.6*r,r,r]
     
-        if typR==0:
+        if typR==1:
             n=0
             for i in x:
                if i<0:
                    y[n]=0
                n+=1
-        elif typR==1:
+        elif typR==2:
             x.insert(0,x[0]*1.001)
             y.insert(0,0)
                
-        if typRT==0:
+        if typRT==1:
             n=0
             for i in x:
                if i>0:
                    y[n]=0
                n+=1
-        elif typRT==1:
+        elif typRT==2:
             x.append(x[-1]*1.001)
             y.append(0)
         
@@ -331,12 +395,23 @@ class Concrete(object):
         y=np.array(y)        
     
         
-        if typFun=='sigma':
-            fun=interpolate.interp1d(x,y, kind='linear')
-        elif typFun=='v':
-            v=y/x/eb
-            fun=interpolate.interp1d(x,v, kind='linear')
-        return fun
+        funSigma=interpolate.interp1d(x,y, kind='linear')
+        ev=[]
+        for i in range(len(x)):
+            if x[i]!=0:
+                ev.append(y[i]/x[i])
+            else:
+                if i+1>len(x):
+                    ev.append(y[i-1]/x[i-1])
+                else:
+                    ev.append(y[i+1]/x[i+1])
+                
+        funEv=interpolate.interp1d(x,ev, kind='linear')
+        
+        self.x=x
+        self.y=y
+        self.yEv=ev
+        return [funSigma, funEv]
 
     def propertiesApproxSP(self):
         '''аппроксимирующие функции определния характеристик бетона с В10'''
@@ -362,8 +437,8 @@ class Concrete(object):
                     
             rbn*=(100./9.81)
             rb*=(100./9.81)
-            rbtn*=(100./9.81)
-            rbt*=(100./9.81)
+            rbtn*=(100./9.81/self.yb)
+            rbt*=(100./9.81/self.yb)
             eb*=10000.
             
             self.rbn,self.rb,self.rbtn,self.rbt,eb=rbn,rb,rbtn,rbt,eb

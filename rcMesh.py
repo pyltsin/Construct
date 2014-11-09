@@ -4,16 +4,18 @@ Created on Fri Sep 19 23:19:35 2014
 
 @author: Pyltsin
 """
-#from timeit import Timer
-from table import tables_csv
+import unittest
 import numpy as np
-import time
 import gc
-from scipy import interpolate
-import math
 
 class Rectangles(object):
-    def __init__(self,lstXY, lstN, mat=1, sign=1, e0rxry=[0,0,0]):
+    '''Меш прямоугольников
+    lstXY - список 2 точек [[0,0],[5,5]]
+    lstN - список количества мешов [100,10]
+    mat - добавка mat
+    sign - коэффициент для площади
+    e0rxry - добавка для e0rxr'''
+    def __init__(self,lstXY, lstN, mat=0, sign=1, e0rxry=[0,0,0]):
         self.nx=float(lstN[0])
         self.ny=float(lstN[1])
         self.mat=mat
@@ -25,12 +27,16 @@ class Rectangles(object):
         self.sign=sign
         self.e0rxry=e0rxry
     def a(self):
+        '''площадь'''
         return self.b*self.h
     def sx(self):
+        '''статический момент инерции относительно 0 отн. Y - для определения ц.т.Х''' 
         return self.a()*(self.x+self.b/2.)
     def sy(self):
+        '''статический момент инерции относительно 0 отн. X - для определения ц.т.Y''' 
         return self.a()*(self.y+self.h/2.)
-    def critPoint(self, e,rx,ry):
+    def critPoint(self, e=0,rx=0,ry=0):
+        '''Список критический точек - возвращает координаты ВСЕХ 4 точек'''
         b=self.b
         h=self.h
         x=self.x
@@ -42,7 +48,16 @@ class Rectangles(object):
         p4=[x,y+h, mat]
         return [p1,p2,p3,p4]
     def mesh(self):
-        gc.collect()
+        '''функция меша
+        Возвращает список матриц:
+        []  -  координаты Х
+        [] - коордиранты Y
+        [] - площадь
+        [] - материал
+        [] - e0
+        [] - rx
+        [] - ry'''
+#        gc.collect()
         h,b,x,y,nx,ny, mat=self.h,self.b,self.x,self.y,self.nx,self.ny, self.mat
         sign=self.sign
         db=b/nx
@@ -53,9 +68,9 @@ class Rectangles(object):
         xmatr=np.meshgrid(xmatr,xone)
         xmatr=xmatr[0].flatten()
     
-    
+#        xmatr-=(nx/2.)    
         xmatr*=db
-        xmatr+=(x-db/2)
+        xmatr+=(x+db/2)
     
         yone=np.ones(nx)
         ymatr= np.arange(ny)
@@ -63,9 +78,9 @@ class Rectangles(object):
         ymatr=ymatr[0].transpose()
         ymatr=ymatr.flatten()
         
-    
+#        ymatr-=(ny/2.)        
         ymatr*=dh
-        ymatr+=(y-dh/2)
+        ymatr+=(y+dh/2)
     
         amatr=np.ones(nx*ny)
         amatr*=(sign*a)
@@ -80,32 +95,55 @@ class Rectangles(object):
         ry=np.ones(nx*ny)
         ry*=self.e0rxry[2]
 
-        lst=np.vstack((xmatr,ymatr,amatr, matmatr,e0,rx,ry))
+#        lst=np.vstack((xmatr,ymatr,amatr, matmatr,e0,rx,ry))
         
-        return lst
+        return [xmatr,ymatr,amatr, matmatr,e0,rx,ry]
     
 class Circles(object):
-    def __init__(self,lst,lstN, mat=1, sign=1, e0rxry=[0,0,0]):
-        self.d=float(lst[0])
+    '''Класс для работы с точками - используется для арматуры'''
+    def __init__(self,lst,lstN=[], mat=0, sign=1, e0rxry=[0,0,0]):
+        '''lst - [1,2,3] - x-1, y-2, d-3 
+        lstN - не используется - только для совместимости
+        mat - добавка mat
+        sign - коэффициент для площади
+        e0rxry - добавка для e0rxr'''
+        
 
-        self.x=float(lst[1])
-        self.y=float(lst[2])
+        self.x=float(lst[0])
+        self.y=float(lst[1])
+        self.d=float(lst[2])
+
         self.mat=mat
         self.sign=sign
         self.e0rxry=e0rxry
+        
     def a(self):
-        return 3.1415*(self.d/2.)**2
+        '''возвращает 0 - так как точка не имеет a'''
+        return 0
     def sx(self):
+        '''возвращает 0 - так как точка не имеет Sx'''
         return 0
     def sy(self):
+        '''возвращает 0 - так как точка не имеет Sy'''
         return 0
 
     def mesh(self):
-        a=self.a()*self.sign
+        '''функция меша
+        Возвращает список матриц:
+        []  -  координаты Х
+        [] - коордиранты Y
+        [] - площадь
+        [] - материал
+        [] - e0
+        [] - rx
+        [] - ry'''
+
+        a=3.1415*(self.d/2.)**2
         matr=np.array([[self.x],[self.y],[a], [self.mat],[self.e0rxry[0]],[self.e0rxry[1]],[self.e0rxry[2]]])
         return matr
 
-    def critPoint(self, e,rx,ry):
+    def critPoint(self, e=0,rx=0,ry=0):
+        '''Список критический точек - возвращает координаты 1 точки '''
         x=self.x
         y=self.y
         mat=self.mat
@@ -114,7 +152,7 @@ class Circles(object):
 
 
 class SolidCircles(object):
-    def __init__(self,lst,lstN, mat=1, sign=1,e0rxry=[0,0,0]):
+    def __init__(self,lst,lstN, mat=0, sign=1,e0rxry=[0,0,0]):
         '''x y  - координаты центра тяжести'''
         self.d=float(lst[0])
         self.nx=lstN[0]
@@ -194,7 +232,7 @@ class SolidCircles(object):
 
 
 class Triangles(object):
-    def __init__(self,lstXY, lstN, mat=1, sign=1,e0rxry=[0,0,0]):
+    def __init__(self,lstXY, lstN, mat=0, sign=1,e0rxry=[0,0,0]):
         self.nx=float(lstN[0])
         self.ny=float(lstN[1])
         self.mat=mat
@@ -349,26 +387,62 @@ class Triangles(object):
 
         return [xmatr,ymatr,amatr, matmatr,e0,rx,ry]
 
+
+class Test(unittest.TestCase):
+    def testRectangles(self):
+        print 'Rectangles'
+        rect=Rectangles([[2,1],[6,5]],[1000,1000])
+        a=4*4
+        jx=4*4**3/12.+4*4*3*3
+        jy=4*4**3/12.+4*4*4*4
+        self.assertLess(abs(rect.a()-a)/a,0.0001) 
+        self.assertLess(abs(rect.sx()-a*4)/a,0.0001) 
+        self.assertLess(abs(rect.sy()-a*3)/a,0.0001) 
+        
+        meshRect=rect.mesh()
+        aMesh=meshRect[2].sum()
+        jxMesh=(meshRect[1]*meshRect[1]*meshRect[2]).sum()   
+        jyMesh=(meshRect[0]*meshRect[0]*meshRect[2]).sum()    
+        
+        self.assertLess(abs(aMesh-a)/a,0.001)  
+        self.assertLess(abs(jxMesh-jx)/jx,0.005) 
+        self.assertLess(abs(jyMesh-jy)/jy,0.005)   
+
+        self.assertEqual(rect.critPoint(),[[2,1,0],[6,5,0],[6,1,0],[2,5,0]])
+
+        rect=Rectangles([[2,1],[6,5]],[1000,1000],1,-1,[3,4,5])
+
+        meshRect=rect.mesh()
+        aMesh=meshRect[2].sum()
+        self.assertLess(abs(meshRect[3][4]-1),0.001)  
+        self.assertLess(abs(meshRect[4][4]-3),0.001)  
+        self.assertLess(abs(meshRect[5][4]-4),0.001)  
+        self.assertLess(abs(meshRect[6][4]-5),0.001)  
+        
+#        print rect.critPoint()
+        
+if __name__ == "__main__":
+    unittest.main()
     
-if __name__ == "__main__": 
-
-    rc=Rectangles([[-1,-1],[1,1]],[3000,3000],1,1)
-    rcmesh=rc.mesh()
-    print rcmesh[2].sum()
-    print (rcmesh[2]*rcmesh[0]*rcmesh[0]).sum()
-    rcmesh=None
-    gc.collect()
-
-    start=time.time()
-    for i in range(10000):
-        a=Triangles([[0.,0.],[1.,0.],[0.5,1.]],[100,100],1,1)
-        amesh=a.mesh()
-#        print amesh[2].sum()
-#        print (amesh[2]*amesh[1]*amesh[1]).sum()
-#        print (amesh[2]*amesh[0]*amesh[0]).sum()
-    
-#        amesh=None
-#        gc.collect()
-    print  time.time()-start    
-
+#if __name__ == "__main__": 
+#
+#    rc=Rectangles([[-1,-1],[1,1]],[3000,3000],1,1)
+#    rcmesh=rc.mesh()
+#    print rcmesh[2].sum()
+#    print (rcmesh[2]*rcmesh[0]*rcmesh[0]).sum()
+#    rcmesh=None
+#    gc.collect()
+#
+#    start=time.time()
+#    for i in range(10000):
+#        a=Triangles([[0.,0.],[1.,0.],[0.5,1.]],[100,100],1,1)
+#        amesh=a.mesh()
+##        print amesh[2].sum()
+##        print (amesh[2]*amesh[1]*amesh[1]).sum()
+##        print (amesh[2]*amesh[0]*amesh[0]).sum()
+#    
+##        amesh=None
+##        gc.collect()
+#    print  time.time()-start    
+#
 
