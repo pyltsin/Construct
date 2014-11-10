@@ -395,7 +395,7 @@ class Concrete(object):
         y=np.array(y)        
     
         
-        funSigma=interpolate.interp1d(x,y, kind='linear')
+        funSigma=interpolate.interp1d(x,y, kind='linear',assume_sorted=True)
         ev=[]
         for i in range(len(x)):
             if x[i]!=0:
@@ -406,7 +406,7 @@ class Concrete(object):
                 else:
                     ev.append(y[i+1]/x[i+1])
                 
-        funEv=interpolate.interp1d(x,ev, kind='linear')
+        funEv=interpolate.interp1d(x,ev, kind='linear',assume_sorted=True)
         
         self.x=x
         self.y=y

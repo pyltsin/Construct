@@ -94,7 +94,7 @@ def printToWord(lst):
 
             for i in range(rowCount+3):
                 worddoc.ActiveWindow.Selection.MoveDown()
-#            worddoc.ActiveWindow.Selection.MoveDown(rowCount+1)
+            worddoc.ActiveWindow.Selection.MoveDown(rowCount+1)
             worddoc.ActiveWindow.Selection.TypeParagraph()
 
             worddoc.ActiveWindow.Selection.TypeParagraph()
