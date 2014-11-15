@@ -295,21 +295,45 @@ class Concrete(object):
         
     def title(self):
         return 'Concrete'
-    
-    def functDia2(self,x):
-        lstx=self.x
-        lsty=self.y
-        lstyev=self.yEv
-#        print lstx, lsty
-
-        for i in range(len(self.x)-1):
-#            print lstx[i], lstx[i+1], x
-#            print lstx[i]<=x and lstx[i+1]<=x
-            if lstx[i]<=x and lstx[i+1]>=x:
-                y1=(lsty[i]-lsty[i+1])/(lstx[i]-lstx[i+1])+lsty[i+1]
-                y2=(lstyev[i]-lstyev[i+1])/(lstx[i]-lstx[i+1])+lstyev[i+1]
-#                print y1, y2 , 'y1'
-                return [y1, y2]
+#    
+#    def functDia2(self,x):
+#        lstx=self.x
+#        lsty=self.y
+#        lstyEv=self.yEv
+#        lstky=self.ky
+#        lstkyEv=self.kyEv
+##        print lstx, lsty
+##        i3=len(lstx)-1
+##        i2=len(lstx)//2
+##        i1=0
+###        print 'i', i1,i2,i3
+###        print 'lst',lstx, x
+##        if lstx[0]<=x and lstx[-1]>=x:
+##            while i1!=i2:
+###                print 'i', i1, i2, i3
+##                if lstx[i1]<=x and lstx[i2]>=x:
+##                    if i2-i1==1:
+##                        y1=lstky[i2-1]*x+lsty[i2]
+##                        y2=lstkyEv[i2-1]*x+lstyEv[i2]
+###                        print '11'                        
+##                        return [y1, y2]
+##
+##                    else:
+##                        i3=i2
+##                        i2=(i2-i1)//2+i1
+##                        
+##                else:
+##                    i1=i2
+##                    i2=(i3-i2)//2+i2
+#                    
+#        for i in range(len(self.x)-1):
+##            print lstx[i], lstx[i+1], x
+##            print lstx[i]<=x and lstx[i+1]<=x
+#            if lstx[i]<=x<=lstx[i+1]:
+#                y1=lstky[i]*x+lsty[i+1]
+#                y2=lstkyEv[i]*x+lstyEv[i+1]
+##                print y1, y2 , 'y1'
+#                return [y1, y2]
             
     def functDia(self, typDia, typPS, typTime, typR, typRT):
         '''Отдача функции расчета sigma по e или v по e
@@ -395,7 +419,7 @@ class Concrete(object):
         y=np.array(y)        
     
         
-        funSigma=interpolate.interp1d(x,y, kind='linear',assume_sorted=True)
+        funSigma=interpolate.interp1d(x,y, kind='linear')
         ev=[]
         for i in range(len(x)):
             if x[i]!=0:
@@ -406,11 +430,19 @@ class Concrete(object):
                 else:
                     ev.append(y[i+1]/x[i+1])
                 
-        funEv=interpolate.interp1d(x,ev, kind='linear',assume_sorted=True)
+        funEv=interpolate.interp1d(x,ev, kind='linear')
         
-        self.x=x
-        self.y=y
-        self.yEv=ev
+        self.x=np.array(x)
+        self.y=np.array(y)
+        self.yEv=np.array(ev)
+        self.ky=[]
+        self.kyEv=[]
+        for i in range(len(x)-1):
+            self.ky.append((self.y[i+1]-self.y[i])/(self.x[i+1]-self.x[i]))
+            self.kyEv.append((self.yEv[i+1]-self.yEv[i])/(self.x[i+1]-self.x[i]))
+        self.ky=np.array(self.ky)
+        self.kyEv=np.array(self.kyEv)
+        
         return [funSigma, funEv]
 
     def propertiesApproxSP(self):
