@@ -7,6 +7,7 @@ Created on Fri Nov 07 17:49:22 2014
 from table import tables_csv
 import numpy as np
 from scipy import interpolate
+import unittest
 
 class Reinforced(object):
     '''Класс для работы с арматурой и всем что с ней связано'''
@@ -270,28 +271,28 @@ class Concrete(object):
         fil=tables_csv(filename='MaterialData\\concreteSP63.csv', typ='none')
         return fil.get_title_column()
 
-    def functDiaLst(self, lst):
-        '''Возвращает функцию по интерполяции по списку'''
-        x=lst[0]
-        y=lst[1]
-        x=np.array(x)
-    
-        y=np.array(y)        
-    
-        
-        funSigma=interpolate.interp1d(x,y, kind='linear')
-        ev=[]
-        for i in range(len(x)):
-            if x[i]!=0:
-                ev.append(y[i]/x[i])
-            else:
-                if i+1>len(x):
-                    ev.append(y[i-1]/x[i-1])
-                else:
-                    ev.append(y[i+1]/x[i+1])
-        funEv=interpolate.interp1d(x,ev, kind='linear')
-        
-        return [funSigma, funEv]
+#    def functDiaLst(self, lst):
+#        '''Возвращает функцию по интерполяции по списку'''
+#        x=lst[0]
+#        y=lst[1]
+#        x=np.array(x)
+#    
+#        y=np.array(y)        
+#    
+#        
+#        funSigma=interpolate.interp1d(x,y, kind='linear')
+#        ev=[]
+#        for i in range(len(x)):
+#            if x[i]!=0:
+#                ev.append(y[i]/x[i])
+#            else:
+#                if i+1>len(x):
+#                    ev.append(y[i-1]/x[i-1])
+#                else:
+#                    ev.append(y[i+1]/x[i+1])
+#        funEv=interpolate.interp1d(x,ev, kind='linear')
+#        
+#        return [funSigma, funEv]
         
     def title(self):
         return 'Concrete'
@@ -383,10 +384,10 @@ class Concrete(object):
         
         if typDia==2:
             x=[-e2,-e1red,0,et1red,et2]
-            y=[-r,-r,0,r,r]
+            y=[-r,-r,0,rt,rt]
         elif typDia==3:
             x=[-e2,-e0,-0.6*r/eb,0,0.6*rt/eb,et0,et2]
-            y=[-r,-r,-0.6*r,0,0.6*r,r,r]
+            y=[-r,-r,-0.6*r,0,0.6*rt,rt,rt]
     
         if typR==1:
             n=0
@@ -419,18 +420,15 @@ class Concrete(object):
         y=np.array(y)        
     
         
-        funSigma=interpolate.interp1d(x,y, kind='linear')
+#        funSigma=interpolate.interp1d(x,y, kind='linear')
         ev=[]
         for i in range(len(x)):
             if x[i]!=0:
                 ev.append(y[i]/x[i])
             else:
-                if i+1>len(x):
-                    ev.append(y[i-1]/x[i-1])
-                else:
-                    ev.append(y[i+1]/x[i+1])
+                ev.append(y[i-1]/x[i-1])
                 
-        funEv=interpolate.interp1d(x,ev, kind='linear')
+#        funEv=interpolate.interp1d(x,ev, kind='linear')
         
         self.x=np.array(x)
         self.y=np.array(y)
@@ -443,7 +441,7 @@ class Concrete(object):
         self.ky=np.array(self.ky)
         self.kyEv=np.array(self.kyEv)
         
-        return [funSigma, funEv]
+#        return [funSigma, funEv]
 
     def propertiesApproxSP(self):
         '''аппроксимирующие функции определния характеристик бетона с В10'''
@@ -473,7 +471,7 @@ class Concrete(object):
             rbt*=(100./9.81/self.yb)
             eb*=10000.
             
-            self.rbn,self.rb,self.rbtn,self.rbt,eb=rbn,rb,rbtn,rbt,eb
+            self.rbn,self.rb,self.rbtn,self.rbt,self.eb=rbn,rb,rbtn,rbt,eb
             
             self.ephi()
             return self.rbn, self.rb, self.rbtn, self.rbt, self.eb, self.eb0, self.eb2, self.eb1red, self.ebt0, self.ebt2, self.ebt1red, self.ebl0, self.ebl2, self.ebl1red, self.eblt0, self.eblt2, self.eblt1red, self.phi_crc
@@ -555,25 +553,427 @@ class Concrete(object):
         self.ebl0, self.ebl2, self.ebl1red, self.eblt0, self.eblt2, self.eblt1red=ebl0, ebl2, ebl1red, eblt0, eblt2, eblt1red
         self.phi_crc=phi_crc
 
+class Test(unittest.TestCase):
+    def testConcrete52(self):
+        print 'Concrete 52'
+        con=Concrete()
+        con.norme=52
+        con.b=25
+        con.initProperties()
+        
+        test=[u'10', u'15', u'20', u'25', u'30', u'35', u'40', u'45', u'50', u'55', u'60']
+        check=con.listSP52()
+        self.assertEqual(test,check)
+#        print con.listSP52()
+        
+        test=con.rbn
+        check=188
+        self.assertLess(abs(test-check)/check,0.01) 
+        
+        test=con.rb
+        check=148
+        self.assertLess(abs(test-check)/check,0.01) 
 
-if __name__ == "__main__": 
+        test=con.rbtn
+        check=15.8
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.rbt
+        check=10.7
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.eb
+        check=306000
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.eb0
+        check=0.002
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.eb2
+        check=0.0035
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.eb1red
+        check=0.0015
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.ebt0
+        check=0.0001
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.ebt2
+        check=0.00015
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.ebt1red
+        check=0.00008
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.ebl0
+        check=0.0034
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.ebl2
+        check=0.0048
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.ebl1red
+        check=0.0028
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.eblt0
+        check=0.00024
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.eblt2
+        check=0.00031
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.eblt1red
+        check=0.00022
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.phi_crc
+        check=2.5
+        self.assertLess(abs(test-check)/check,0.01) 
+        
+        self.assertEqual(con.title(),'Concrete')
+
+    def testConcrete63(self):
+        print 'Concrete 63'
+        con=Concrete()
+        con.norme=63
+        con.b=25
+        con.initProperties()
+
+#        print con.listSP63()
+        
+        test=[u'10', u'12.5', u'15', u'20', u'25', u'30', u'35', u'40', u'45', u'50', u'55', u'60', u'70', u'80', u'90', u'100']
+        check=con.listSP63()
+        self.assertEqual(test,check)
+        
+        test=con.rbn
+        check=188
+        self.assertLess(abs(test-check)/check,0.01) 
+        
+        test=con.rb
+        check=148
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.rbtn
+        check=15.8
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.rbt
+        check=10.7
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.eb
+        check=306000
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.eb0
+        check=0.002
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.eb2
+        check=0.0035
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.eb1red
+        check=0.0015
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.ebt0
+        check=0.0001
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.ebt2
+        check=0.00015
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.ebt1red
+        check=0.00008
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.ebl0
+        check=0.0034
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.ebl2
+        check=0.0048
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.ebl1red
+        check=0.0028
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.eblt0
+        check=0.00024
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.eblt2
+        check=0.00031
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.eblt1red
+        check=0.00022
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.phi_crc
+        check=2.5
+        self.assertLess(abs(test-check)/check,0.01) 
+
+    def testConcreteApprox(self):
+        print 'Concrete Approx'
+        con=Concrete()
+        con.approxSP=True
+        con.b=25
+        con.initProperties()
+        
+        
+        test=con.rbn
+        check=188
+        self.assertLess(abs(test-check)/check,0.01) 
+        
+        test=con.rb
+        check=148
+        self.assertLess(abs(test-check)/check,0.02) 
+
+        test=con.rbtn
+        check=15.8
+        self.assertLess(abs(test-check)/check,0.02) 
+
+        test=con.rbt
+        check=10.7
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.eb
+        check=306000
+        self.assertLess(abs(test-check)/check,0.02) 
+
+        test=con.eb0
+        check=0.002
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.eb2
+        check=0.0035
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.eb1red
+        check=0.0015
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.ebt0
+        check=0.0001
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.ebt2
+        check=0.00015
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.ebt1red
+        check=0.00008
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.ebl0
+        check=0.0034
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.ebl2
+        check=0.0048
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.ebl1red
+        check=0.0028
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.eblt0
+        check=0.00024
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.eblt2
+        check=0.00031
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.eblt1red
+        check=0.00022
+        self.assertLess(abs(test-check)/check,0.01) 
+
+        test=con.phi_crc
+        check=2.5
+        self.assertLess(abs(test-check)/check,0.01) 
+
+       
+# self.phi_crc        
+#        a=4*4
+#        jx=4*4**3/12.+4*4*3*3
+#        jy=4*4**3/12.+4*4*4*4
+#        self.assertLess(abs(rect.a()-a)/a,0.0001) 
+#        self.assertLess(abs(rect.sx()-a*4)/a,0.0001) 
+#        self.assertLess(abs(rect.sy()-a*3)/a,0.0001) 
+#        
+
+    def testConcreteDia(self):
+        '''Отдача функции расчета sigma по e или v по e
+        typDia - тип диаграммы для бетонна, 
+        typPS - тип предельного состояния, 
+        typTime - long или short для бетона, 
+        typR - для бетона, если 1 - просто режется все -, если 2 - после последнего значения - до 0, другое - продлеваем до max, 
+        typRT - для бетона, если 1 - просто режется все +, если 2 - после последнего значения - до 0, другое - продлеваем до max'''
+
+        print 'Concrete Dia'
+        con=Concrete()
+        con.approxSP=True
+        con.b=25
+        con.initProperties()
+        con.functDia(typDia=2, typPS=1, typTime='short', typR=3, typRT=3)
+        print "typDia=2, typPS=1, typTime='short', typR=3, typRT=3"
+#        print con.x
+
+        lstx=[-3.5*10**3,-0.0035,- 0.0015,0,0.00008,0.00015,150]
+        for i in range(len(lstx)):
+            test=con.x[i]
+            check=lstx[i]
+            if test!=0:
+                self.assertLess(abs((test-check)/check),0.01) 
+            else:
+                self.assertLess(abs(test-check),0.01) 
+            
+
+#        print con.y
+
+        lsty=[-148,-148,-148,0,10.7,10.7,10.7]
+        for i in range(len(lstx)):
+            test=con.y[i]
+            check=lsty[i]
+            if test!=0:
+                self.assertLess(abs((test-check)/check),0.02) 
+            else:
+                self.assertLess(abs(test-check),0.02) 
+        
+        
+        lstyEv=[]
+        for i in range(len(lstx)):
+            if lstx[i]==0:
+                lstyEv.append(lstyEv[i-1])
+            else:
+                lstyEv.append(float(lsty[i])/lstx[i])
+
+#        print con.yEv
+#        print lstyEv
+
+        for i in range(len(lstx)):
+            test=con.yEv[i]
+            check=lstyEv[i]
+            if test!=0:
+#                print test, check
+                self.assertLess(abs((test-check)/check),0.02) 
+            else:
+                self.assertLess(abs(test-check),0.02) 
+        
+        lstky=[]
+        lstkyEv=[]
+        for i in range(len(lstx)-1):
+            lstky.append((lsty[i+1]-lsty[i])/(lstx[i+1]-lstx[i]))
+            lstkyEv.append((lstyEv[i+1]-lstyEv[i])/(lstx[i+1]-lstx[i]))
+
+        for i in range(len(lstx)-1):
+            test=con.kyEv[i]
+            check=lstkyEv[i]
+            if test!=0:
+#                print test, check
+                self.assertLess(abs((test-check)/check),0.04) 
+            else:
+                self.assertLess(abs(test-check),0.02) 
+
+        for i in range(len(lstx)-1):
+            test=con.yEv[i]
+            check=lstyEv[i]
+            if test!=0:
+#                print test, check
+                self.assertLess(abs((test-check)/check),0.02) 
+            else:
+                self.assertLess(abs(test-check),0.02) 
+
+#        print con.ky
+#        print con.kyEv
+        con.functDia(typDia=3, typPS=2, typTime='long', typR=1, typRT=2)
+        print "typDia=3, typPS=2, typTime='long', typR=1, typRT=2"
+#        print con.x
+#        print con.y
+
+        lstx=[-4.8*10**3,-0.0048,-0.0034,-0.6*185/3.06/10**5*0.9*3.5,0,0.9*0.6*10.7*1.5/3.06/10**5*3.5,0.00024,0.00031,0.00031*1.001,310]
+        for i in range(len(lstx)):
+            test=con.x[i]
+            check=lstx[i]
+#            print test, check
+            if test!=0:
+                self.assertLess(abs((test-check)/check),0.04) 
+            else:
+                self.assertLess(abs(test-check),0.01) 
+            
+
+#        print con.y
+
+        lsty=[0,0,0,0,0,10.7*0.6*0.9*1.5,10.7*0.9*1.5,10.7*0.9*1.5,0,0]
+        for i in range(len(lstx)):
+            test=con.y[i]
+            check=lsty[i]
+            if test!=0:
+                self.assertLess(abs((test-check)/check),0.02) 
+            else:
+                self.assertLess(abs(test-check),0.02) 
+
+
+        con.functDia(typDia=3, typPS=1, typTime='short', typR=2, typRT=1)
+        print "typDia=3, typPS=1, typTime='short', typR=2, typRT=1"
+#        print con.x
+#        print con.y
+
+        lstx=[-3500.,-0.0035035,-0.0035,-0.002,-0.6*148/3./10**5,0,10.7*0.6/3./10**5, 0.0001,0.00015,150.]
+        for i in range(len(lstx)):
+            test=con.x[i]
+            check=lstx[i]
+#            print test, check
+            if test!=0:
+                self.assertLess(abs((test-check)/check),0.04) 
+            else:
+                self.assertLess(abs(test-check),0.01) 
+            
+
+#        print con.y
+
+        lsty=[0,0,-148,-148,-0.6*148,0,0,0,0,0]
+        for i in range(len(lstx)):
+            test=con.y[i]
+            check=lsty[i]
+            if test!=0:
+                self.assertLess(abs((test-check)/check),0.02) 
+            else:
+                self.assertLess(abs(test-check),0.02) 
+
+        
+if __name__ == "__main__":
+    unittest.main()
 
 
 
-    rc=Reinforced()
-    rc.rn=400
-    rc.typ='A'
-    print rc.propertiesSP52()
-    print rc.propertiesSP63()
-    print rc.listSP52()
-    print rc.listSP63()
-    print rc.propertiesApproxSP()
-    
-    con=Concrete()
-    con.b=25
-    print con.propertiesSP52()
-    print con.propertiesSP63()
-    print con.listSP52()
-    print con.listSP63()
-    print con.propertiesApproxSP()
+#    rc=Reinforced()
+#    rc.rn=400
+#    rc.typ='A'
+#    print rc.propertiesSP52()
+#    print rc.propertiesSP63()
+#    print rc.listSP52()
+#    print rc.listSP63()
+#    print rc.propertiesApproxSP()
+#    
+#    con=Concrete()
+#    con.b=25
+#    print con.propertiesSP52()
+#    print con.propertiesSP63()
+#    print con.listSP52()
+#    print con.listSP63()
+#    print con.propertiesApproxSP()
 
