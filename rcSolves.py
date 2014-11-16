@@ -4,12 +4,7 @@ Created on Fri Nov 07 23:42:52 2014
 
 @author: Pyltsin
 """
-from table import tables_csv
 import numpy as np
-import time
-import gc
-from scipy import interpolate
-import math
 import rcMaterial
 import rcMesh
 
@@ -481,6 +476,10 @@ if __name__ == "__main__":
         nmxmy=[-1,0,0]
         
         sol.nmxmy2e0rxry(nmxmy,100,0.001)
+#        
+    nmxmy=[-2,0,0]
+    
+    print sol.nmxmy2e0rxry(nmxmy,100,0.001)
 #        
 #    
 #def interpol(x):

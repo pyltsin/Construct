@@ -15,8 +15,8 @@ class Reinforced(object):
         
         self.norme=False 
         self.approxSP=False
-        self.typ=False
-        self.rn=False
+        self.typ='A'
+        self.a=False
         self.ys=False
         self.ysi=1
         self.ysni=1
@@ -37,11 +37,11 @@ class Reinforced(object):
     def setA(self, txt):
         '''назначить typm rn'''
         self.typ=txt[0]
-        self.rn=int(txt[1:])
+        self.a=int(txt[1:])
         
     def propertiesApproxSP(self):
         '''аппроксимирующие функции определния характеристик бетона с A240'''
-        a=self.rn
+        a=self.a
         ys=self.ys
         rsn=a*100/9.81
         rs=rsn/ys
@@ -54,10 +54,8 @@ class Reinforced(object):
             es=2.0*10**5*100/9.81
             
         if a>=600:
-            es0=rs/es+0.002
             es2=0.015
         else:
-            es0=rs/es
             es2=0.025
     
             
@@ -65,31 +63,31 @@ class Reinforced(object):
         if rsw>=300*100/9.81:
             rsw=300*100/9.81
         
-        self.rsn, self.rs, self.rsw, self.es, self.es0, self.es2=rsn,rs,rsw, es, es0, es2
-        return rsn,rs,rsw, es, es0, es2
+        self.rsn, self.rs, self.rsw, self.es, self.es2=rsn,rs,rsw, es, es2
+        return rsn,rs,rsw, es, es2
 
-    def functDiaLst(self, lst):
-        '''Возвращает функцию по интерполяции по списку'''
-        x=lst[0]
-        y=lst[1]
-        x=np.array(x)
-    
-        y=np.array(y)        
-    
-        
-        funSigma=interpolate.interp1d(x,y, kind='linear')
-        ev=[]
-        for i in range(len(x)):
-            if x[i]!=0:
-                ev.append(y[i]/x[i])
-            else:
-                if i+1>len(x):
-                    ev.append(y[i-1]/x[i-1])
-                else:
-                    ev.append(y[i+1]/x[i+1])
-        funEv=interpolate.interp1d(x,ev, kind='linear')
-        
-        return [funSigma, funEv]
+#    def functDiaLst(self, lst):
+#        '''Возвращает функцию по интерполяции по списку  - НЕТ ПРОВЕРКИ'''
+#        x=lst[0]
+#        y=lst[1]
+#        x=np.array(x)
+#    
+#        y=np.array(y)        
+#    
+#        
+#        funSigma=interpolate.interp1d(x,y, kind='linear')
+#        ev=[]
+#        for i in range(len(x)):
+#            if x[i]!=0:
+#                ev.append(y[i]/x[i])
+#            else:
+#                if i+1>len(x):
+#                    ev.append(y[i-1]/x[i-1])
+#                else:
+#                    ev.append(y[i+1]/x[i+1])
+#        funEv=interpolate.interp1d(x,ev, kind='linear')
+#        
+#        return [funSigma, funEv]
 
     def functDia(self, typPS):
         '''возвращает функцию по интерполяции по графику (общему)
@@ -100,16 +98,23 @@ class Reinforced(object):
         else:
             r=self.rsn
         
-        if self.rn<600:
-            x=[-self.es2,-self.es0,0,self.es0,self.es2]
+        if self.a<600:
+            es0=r/self.es
+        else:
+            es0=r/self.es+0.002
+            
+        if self.a<600:
+            x=[-self.es2,-es0,0,es0,self.es2]
             y=[-r,-r,0,r,r]
         else:
             es1=0.9*r/self.es
             sigmas1=0.9*r
             sigmas2=1.1*r
-            e3=(self.es2-es1)/1.1+es1
-            x=[-self.es2,-es1,-e3,0,e3, es1,self.es2]
-            y=[-sigmas2,-sigmas2,-sigmas1,0,sigmas1,sigmas2]
+#            es0=r/self.es
+            es3=2*(es0-es1)+es1
+#            e3=(self.es2-es1)/1.1+es1
+            x=[-self.es2,-es3,-es1,0,es1, es3,self.es2]
+            y=[-sigmas2,-sigmas2,-sigmas1,0,sigmas1,sigmas2,sigmas2]
             
         x.append(x[-1]*1000000.)
         y.append(y[-1])
@@ -119,23 +124,29 @@ class Reinforced(object):
 
     
         x=np.array(x)
-    
         y=np.array(y)        
     
-        
-        funSigma=interpolate.interp1d(x,y, kind='linear')
         ev=[]
+        
         for i in range(len(x)):
             if x[i]!=0:
                 ev.append(y[i]/x[i])
             else:
-                if i+1>len(x):
-                    ev.append(y[i-1]/x[i-1])
-                else:
-                    ev.append(y[i+1]/x[i+1])
-        funEv=interpolate.interp1d(x,ev, kind='linear')
+                ev.append(y[i-1]/x[i-1])
         
-        return [funSigma, funEv]
+        self.x=x
+        self.y=y
+        self.yEv=np.array(ev)
+        self.ky=[]
+        self.kyEv=[]
+        for i in range(len(x)-1):
+            self.ky.append((self.y[i+1]-self.y[i])/(self.x[i+1]-self.x[i]))
+            self.kyEv.append((self.yEv[i+1]-self.yEv[i])/(self.x[i+1]-self.x[i]))
+        self.ky=np.array(self.ky)
+        self.kyEv=np.array(self.kyEv)
+
+    
+        
 
         
     def listSP52(self):
@@ -149,7 +160,7 @@ class Reinforced(object):
     
     
     def propertiesSP52(self):
-        name=self.typ+str(self.rn)
+        name=self.typ+str(self.a)
         fil=tables_csv(filename='MaterialData\\reinfSP52.csv', typ='float')
         table=fil.get_table()
         index=False
@@ -158,7 +169,7 @@ class Reinforced(object):
             if name==i[0]:
                 index=i
         if index!=False:
-            self.rsn, self.rs, self.rsw, self.es, self.es0, self.es2, self.ys=index[1:]
+            self.rsn, self.rs, self.rsw, self.es, self.es2, self.ys=index[1:]
             self.rs/=self.ysi
             self.rsw/=self.ysi
             
@@ -167,10 +178,10 @@ class Reinforced(object):
             self.rsw*=(100/9.81)
             self.es*=(100/9.81)
             
-            return self.rsn, self.rs, self.rsw, self.es, self.es0, self.es2
+            return self.rsn, self.rs, self.rsw, self.es, self.es2
             
     def propertiesSP63(self):
-        name=self.typ+str(self.rn)
+        name=self.typ+str(self.a)
         fil=tables_csv(filename='MaterialData\\reinfSP63.csv', typ='float')
         table=fil.get_table()
         index=False
@@ -178,7 +189,7 @@ class Reinforced(object):
             if name==i[0]:
                 index=i
         if index!=False:
-            self.rsn, self.rs, self.rsw, self.es, self.es0, self.es2, self.ys=index[1:]
+            self.rsn, self.rs, self.rsw, self.es, self.es2, self.ys=index[1:]
             self.rs/=self.ysi
             self.rsw/=self.ysi
 
@@ -188,7 +199,7 @@ class Reinforced(object):
             self.es*=(100/9.81)
 
 
-            return self.rsn, self.rs, self.rsw, self.es, self.es0, self.es2
+            return self.rsn, self.rs, self.rsw, self.es, self.es2
     
     
 
@@ -296,45 +307,6 @@ class Concrete(object):
         
     def title(self):
         return 'Concrete'
-#    
-#    def functDia2(self,x):
-#        lstx=self.x
-#        lsty=self.y
-#        lstyEv=self.yEv
-#        lstky=self.ky
-#        lstkyEv=self.kyEv
-##        print lstx, lsty
-##        i3=len(lstx)-1
-##        i2=len(lstx)//2
-##        i1=0
-###        print 'i', i1,i2,i3
-###        print 'lst',lstx, x
-##        if lstx[0]<=x and lstx[-1]>=x:
-##            while i1!=i2:
-###                print 'i', i1, i2, i3
-##                if lstx[i1]<=x and lstx[i2]>=x:
-##                    if i2-i1==1:
-##                        y1=lstky[i2-1]*x+lsty[i2]
-##                        y2=lstkyEv[i2-1]*x+lstyEv[i2]
-###                        print '11'                        
-##                        return [y1, y2]
-##
-##                    else:
-##                        i3=i2
-##                        i2=(i2-i1)//2+i1
-##                        
-##                else:
-##                    i1=i2
-##                    i2=(i3-i2)//2+i2
-#                    
-#        for i in range(len(self.x)-1):
-##            print lstx[i], lstx[i+1], x
-##            print lstx[i]<=x and lstx[i+1]<=x
-#            if lstx[i]<=x<=lstx[i+1]:
-#                y1=lstky[i]*x+lsty[i+1]
-#                y2=lstkyEv[i]*x+lstyEv[i+1]
-##                print y1, y2 , 'y1'
-#                return [y1, y2]
             
     def functDia(self, typDia, typPS, typTime, typR, typRT):
         '''Отдача функции расчета sigma по e или v по e
@@ -419,19 +391,15 @@ class Concrete(object):
         x=np.array(x)
         y=np.array(y)        
     
-        
-#        funSigma=interpolate.interp1d(x,y, kind='linear')
         ev=[]
         for i in range(len(x)):
             if x[i]!=0:
                 ev.append(y[i]/x[i])
             else:
                 ev.append(y[i-1]/x[i-1])
-                
-#        funEv=interpolate.interp1d(x,ev, kind='linear')
         
-        self.x=np.array(x)
-        self.y=np.array(y)
+        self.x=x
+        self.y=y
         self.yEv=np.array(ev)
         self.ky=[]
         self.kyEv=[]
@@ -441,7 +409,6 @@ class Concrete(object):
         self.ky=np.array(self.ky)
         self.kyEv=np.array(self.kyEv)
         
-#        return [funSigma, funEv]
 
     def propertiesApproxSP(self):
         '''аппроксимирующие функции определния характеристик бетона с В10'''
@@ -806,14 +773,6 @@ class Test(unittest.TestCase):
         self.assertLess(abs(test-check)/check,0.01) 
 
        
-# self.phi_crc        
-#        a=4*4
-#        jx=4*4**3/12.+4*4*3*3
-#        jy=4*4**3/12.+4*4*4*4
-#        self.assertLess(abs(rect.a()-a)/a,0.0001) 
-#        self.assertLess(abs(rect.sx()-a*4)/a,0.0001) 
-#        self.assertLess(abs(rect.sy()-a*3)/a,0.0001) 
-#        
 
     def testConcreteDia(self):
         '''Отдача функции расчета sigma по e или v по e
@@ -954,26 +913,233 @@ class Test(unittest.TestCase):
             else:
                 self.assertLess(abs(test-check),0.02) 
 
+    def testReinforced52(self):
+        print 'Reinforced 52'
+        rein=Reinforced()
+        rein.norme=52
+        rein.typ='A'
+        rein.a=400
+        rein.ysi=0.7
+        rein.initProperties()
+
+#        print rein.listSP52()
         
+        test=[u'A240', u'A300', u'A400', u'A500', u'B500']
+        check=rein.listSP52()
+        self.assertEqual(test,check)
+
+        test=rein.rsn
+        check=4000
+        self.assertLess(abs(test-check)/check,0.02) 
+
+        test=rein.rs
+        check=4000/1.1/0.7
+        self.assertLess(abs(test-check)/check,0.02) 
+
+        test=rein.rsw
+        check=4000/1.1*0.8/0.7
+        self.assertLess(abs(test-check)/check,0.02) 
+
+        test=rein.es
+        check=2.06*10**6
+        self.assertLess(abs(test-check)/check,0.02) 
+
+        test=rein.es2
+        check=0.025
+        self.assertLess(abs(test-check)/check,0.02) 
+
+
+    def testReinforced63(self):
+        print 'Reinforced 63'
+        rein=Reinforced()
+        rein.norme=63
+        rein.typ='A'
+        rein.a=400
+        rein.ysi=1.3
+        rein.initProperties()
+
+#        print rein.listSP52()
+        
+        test=[u'A240', u'A400', u'A500', u'A600', u'A800', u'A1000', u'B500']
+        check=rein.listSP63()
+        self.assertEqual(test,check)
+
+        test=rein.rsn
+        check=4000
+        self.assertLess(abs(test-check)/check,0.02) 
+
+        test=rein.rs
+        check=400/1.15*100/9.81/1.3
+        self.assertLess(abs(test-check)/check,0.02) 
+
+        test=rein.rsw
+        check=400/1.15*100/9.81*0.8/1.3
+        self.assertLess(abs(test-check)/check,0.02) 
+
+        test=rein.es
+        check=2.06*10**6
+        self.assertLess(abs(test-check)/check,0.02) 
+
+        test=rein.es2
+        check=0.025
+        self.assertLess(abs(test-check)/check,0.02) 
+
+        
+        self.assertEqual('Reinforced', rein.title())
+
+    def testReinforcedApprox(self):
+        print 'Reinforced Approx'
+        rein=Reinforced()
+        rein.approxSP=True
+        rein.typ='A'
+        rein.a=400
+        rein.ys=1.1
+        rein.ysi=0.8
+        rein.initProperties()
+
+        
+
+        test=rein.rsn
+        check=4000
+        self.assertLess(abs(test-check)/check,0.02) 
+
+        test=rein.rs
+        check=4000/1.1/0.8
+        self.assertLess(abs(test-check)/check,0.02) 
+
+        test=rein.rsw
+        check=300*100/9.81
+        self.assertLess(abs(test-check)/check,0.02) 
+
+        test=rein.es
+        check=2.06*10**6
+        self.assertLess(abs(test-check)/check,0.02) 
+
+        test=rein.es2
+        check=0.025
+        self.assertLess(abs(test-check)/check,0.02) 
+
+    def testReinforcedDia(self):
+        print 'Reinforced Dia'
+        print "typDia=2, typPS=1"
+        rein=Reinforced()
+        rein.norme=52
+        rein.typ='A'
+        rein.a=400
+        rein.initProperties()
+        rein.functDia(typPS=1)
+        
+#        print rein.x
+#
+#        print rein.y        
+#        print rein.yEv
+#        
+#        print rein.ky
+#        print rein.kyEv
+        
+        lstx=[-2.5*10**4,-0.025,-400*100/9.81/2.1/10**6/1.1,0,400*100/9.81/2.1/10**6/1.1,0.025,25000]
+        for i in range(len(lstx)):
+            test=rein.x[i]
+            check=lstx[i]
+            if test!=0:
+                self.assertLess(abs((test-check)/check),0.01) 
+            else:
+                self.assertLess(abs(test-check),0.01) 
+            
+
+        lsty=[-3640,-3640,-3640,0,3640,3640,3640]
+        for i in range(len(lstx)):
+            test=rein.y[i]
+            check=lsty[i]
+            if test!=0:
+                self.assertLess(abs((test-check)/check),0.025) 
+            else:
+                self.assertLess(abs(test-check),0.025) 
+        
+        
+        lstyEv=[]
+        for i in range(len(lstx)):
+            if lstx[i]==0:
+                lstyEv.append(lstyEv[i-1])
+            else:
+                lstyEv.append(float(lsty[i])/lstx[i])
+
+#        print con.yEv
+#        print lstyEv
+
+        for i in range(len(lstx)):
+            test=rein.yEv[i]
+            check=lstyEv[i]
+            if test!=0:
+#                print test, check
+                self.assertLess(abs((test-check)/check),0.02) 
+            else:
+                self.assertLess(abs(test-check),0.02) 
+        
+        lstky=[]
+        lstkyEv=[]
+        for i in range(len(lstx)-1):
+            lstky.append((lsty[i+1]-lsty[i])/(lstx[i+1]-lstx[i]))
+            lstkyEv.append((lstyEv[i+1]-lstyEv[i])/(lstx[i+1]-lstx[i]))
+
+        for i in range(len(lstx)-1):
+            test=rein.kyEv[i]
+            check=lstkyEv[i]
+            if test!=0:
+#                print test, check
+                self.assertLess(abs((test-check)/check),0.04) 
+            else:
+                self.assertLess(abs(test-check),0.02) 
+
+        for i in range(len(lstx)-1):
+            test=rein.yEv[i]
+            check=lstyEv[i]
+            if test!=0:
+#                print test, check
+                self.assertLess(abs((test-check)/check),0.02) 
+            else:
+                self.assertLess(abs(test-check),0.02) 
+
+        
+        print "typDia=3, typPS=2"
+        
+        rein.norme=63
+        rein.typ='A'
+        rein.a=600
+        rein.initProperties()
+        rein.functDia(typPS=2)
+        
+        est=0.9*600*10/(2.06*10**6)+2*(0.002+0.1*600*10/2.06/10**6)
+#        print rein.x
+#
+#        print rein.y        
+#        print rein.yEv
+#        
+#        print rein.ky
+#        print rein.kyEv
+        
+        lstx=[-0.015*10**6,-0.015,-est,-0.9*600*100/9.8/(2.06*10**6),0,0.9*600*100/9.8/(2.06*10**6),est,0.015,0.015*10**6]
+        for i in range(len(lstx)):
+            test=rein.x[i]
+            check=lstx[i]
+#            print test, check
+            if test!=0:
+                self.assertLess(abs((test-check)/check),0.02) 
+            else:
+                self.assertLess(abs(test-check),0.02) 
+            
+        r=600*100/9.81
+        lsty=[-r*1.1,-r*1.1,-r*1.1,-0.9*r,0,0.9*r,r*1.1,r*1.1,r*1.1]
+        for i in range(len(lstx)):
+            test=rein.y[i]
+            check=lsty[i]
+            if test!=0:
+                self.assertLess(abs((test-check)/check),0.025) 
+            else:
+                self.assertLess(abs(test-check),0.025) 
+       
 if __name__ == "__main__":
     unittest.main()
 
 
-
-#    rc=Reinforced()
-#    rc.rn=400
-#    rc.typ='A'
-#    print rc.propertiesSP52()
-#    print rc.propertiesSP63()
-#    print rc.listSP52()
-#    print rc.listSP63()
-#    print rc.propertiesApproxSP()
-#    
-#    con=Concrete()
-#    con.b=25
-#    print con.propertiesSP52()
-#    print con.propertiesSP63()
-#    print con.listSP52()
-#    print con.listSP63()
-#    print con.propertiesApproxSP()
 
