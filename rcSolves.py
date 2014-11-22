@@ -218,56 +218,6 @@ class Solves(object):
         
 
 
-#    '''Версия 3 интерполяции - через функцию здесь'''
-#    def e2sigma3(self, e):
-#        '''возвращает матрицу sigma от e'''     
-##        print self.ufunE2sigma2()(e, self.elemMatr[3])
-#        return self.ufunE2sigma3()(e, self.elemMatr[3])
-#
-#
-#    def funE2sigma3(self, x, numMat):
-#        '''просто фнкция для определения e2sigma от номера материала - для перевода ее в uFun'''
-##        Вытаскиваем из lst список необходимых матриц и интеполция простым перебором
-#        num=int(numMat)
-#        lstx=self.lstx[num]
-#        lsty=self.lsty[num]
-#        lstky=self.lstky[num]
-#        for i in xrange(len(lstx)-1):
-#            if lstx[i]<=x<=lstx[i+1]:
-#                y1=lstky[i]*x+lsty[i+1]
-#                return y1
-#        
-#
-#    def ufunE2sigma3(self):
-#        '''возвращает функцию funE2ev для массивов'''
-#        return np.frompyfunc(self.funE2sigma3,2,1)
-#
-#
-#
-#    '''Версия 3 интерполяции - через функцию здесь'''
-#    def e2ev3(self, e):
-#        '''возвращает матрицу sigma от e'''     
-##        print self.ufunE2sigma2()(e, self.elemMatr[3])
-#        return self.ufunE2ev3()(e, self.elemMatr[3])
-#
-#
-#    def funE2ev3(self, x, numMat):
-#        '''просто фнкция для определения e2sigma от номера материала - для перевода ее в uFun'''
-##        Вытаскиваем из lst список необходимых матриц и интеполция простым перебором
-#        num=int(numMat)
-#        lstx=self.lstx[num]
-#        lsty=self.lstyEv[num]
-#        lstky=self.lstkyEv[num]
-#        for i in xrange(len(lstx)-1):
-#            if lstx[i]<=x<=lstx[i+1]:
-#                y1=lstky[i]*x+lsty[i+1]
-#                return y1
-#        
-#
-#    def ufunE2ev3(self):
-#        '''возвращает функцию funE2ev для массивов'''
-#        return np.frompyfunc(self.funE2ev3,2,1)
-
     
 
 
