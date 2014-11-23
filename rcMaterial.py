@@ -145,7 +145,10 @@ class Reinforced(object):
         self.ky=np.array(self.ky)
         self.kyEv=np.array(self.kyEv)
 
-    
+        for i in range(len(x)):
+            if x[i]==0:
+                self.dx=x[i+1]/1000000.
+                break    
         
 
         
@@ -205,6 +208,14 @@ class Reinforced(object):
 
     def title(self):
         return 'Reinforced'
+    
+    def kk(self, lste):
+        k=0
+        for i in lste:
+            kTemp=abs(i/self.es2)
+            if k<kTemp:
+                k=kTemp
+        return k
         
 class Concrete(object):
     '''Класс для работы с бетоном и всем что с ней связано'''
@@ -409,7 +420,11 @@ class Concrete(object):
         self.ky=np.array(self.ky)
         self.kyEv=np.array(self.kyEv)
         
-
+        for i in range(len(x)):
+            if x[i]==0:
+                self.dx=x[i+1]/1000000.
+                break
+            
     def propertiesApproxSP(self):
         '''аппроксимирующие функции определния характеристик бетона с В10'''
         b=self.b
@@ -519,6 +534,14 @@ class Concrete(object):
         self.eb0, self.eb2, self.eb1red, self.ebt0, self.ebt2, self.ebt1red=eb0, eb2, eb1red, ebt0, ebt2, ebt1red
         self.ebl0, self.ebl2, self.ebl1red, self.eblt0, self.eblt2, self.eblt1red=ebl0, ebl2, ebl1red, eblt0, eblt2, eblt1red
         self.phi_crc=phi_crc
+
+    def kk(self, lste):
+        k=0
+        for i in lste:
+            kTemp=abs(i/self.es2)
+            if k<kTemp:
+                k=kTemp
+        return k
 
 class Test(unittest.TestCase):
     def testConcrete52(self):

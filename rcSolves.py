@@ -83,6 +83,10 @@ class Solves(object):
         else:
             self.type0=True
         
+        self.jx=(matr[3]*matr[0]*matr[0]).sum
+        self.jy=(matr[3]*matr[1]*matr[1]).sum
+        
+        
     def e0rxry2e(self,e0=0,rx=0,ry=0):
         '''создаем матрицу e
         проверено - тестов нет'''
@@ -149,9 +153,9 @@ class Solves(object):
     def e2sigma4(self, e):
         '''e - матрица e
         проверено - тестов нет'''
-        xmatr=self.xmatr
-        ymatr=self.ymatr
-        kymatr=self.kymatr
+        xmatr=self.xmatr.copy()
+        ymatr=self.ymatr.copy()
+        kymatr=self.kymatr.copy()
 #        print e.shape
 #        print xmatr.shape
 #        print self.elemMatr
@@ -178,42 +182,18 @@ class Solves(object):
         xmatr*=boolmatr
         xmatr=np.sum(xmatr, axis=0)
         sigma=kymatr*(e-xmatr)+ymatr
-        
+#        print sigma
         return sigma
         
     def e2ev4(self, e):
         '''e - матрица e'''
-        xmatr=self.xmatr
-        ymatr=self.yEvmatr
-        kymatr=self.kyEvmatr
-#        print e.shape
-#        print xmatr.shape
-#        print self.elemMatr
+        ebool=(e==0)
+        ebool=ebool.astype(float)
+        de=self.dxmatr*ebool
         
-        boolmatr=(e>xmatr)
-#        print boolmatr
-#        print e
-#        print xmatr
-        one=np.zeros(boolmatr.shape[1])
-        
-        boolmatrInvert=np.vstack((boolmatr[1:],one))
-        boolmatrInvert=(boolmatrInvert==False)
-        boolmatr=(boolmatr==boolmatrInvert)
-        
-#        xmatr*=boolmatr
-#        xmatr=np.sum(xmatr, axis=0)
-        
-        ymatr*=boolmatr
-        ymatr=np.sum(ymatr, axis=0)
-        
-        kymatr*=boolmatr[:-1]
-        kymatr=np.sum(kymatr, axis=0)
-        
-        xmatr*=boolmatr
-        xmatr=np.sum(xmatr, axis=0)
-        
-        ev=kymatr*(e-xmatr)+ymatr
-        
+        eTotal=e+de 
+        sigma=self.e2sigma4(eTotal)
+        ev=sigma/eTotal
         return ev
         
 
@@ -242,9 +222,9 @@ class Solves(object):
         n, m_x, m_y=nmxmy
         d_11,d_12,d_13,d_22,d_23,d_33=dd
         if d_11*(d_22*d_33-d_23**2)-d_12*(d_12*d_33-d_13*d_23)+d_13*(d_12*d_23-d_13*d_22)!=0:
-            e0=(d_12*(d_33*m_y-d_23*n)+d_13*(d_22*n-d_23*m_y)+(d_23**2-d_22*d_33)*m_x)/(d_11*(d_23**2-d_22*d_33)+d_12**2*d_33-2*d_12*d_13*d_23+d_13**2*d_22)
-            rx=-(d_11*(d_33*m_y-d_23*n)+d_12*d_13*n-d_13**2*m_y+(d_13*d_23-d_12*d_33)*m_x)/(d_11*(d_23**2-d_22*d_33)+d_12**2*d_33-2*d_12*d_13*d_23+d_13**2*d_22)
-            ry=(d_11*(d_23*m_y-d_22*n)+d_12**2*n-d_12*d_13*m_y+(d_13*d_22-d_12*d_23)*m_x)/(d_11*(d_23**2-d_22*d_33)+d_12**2*d_33-2*d_12*d_13*d_23+d_13**2*d_22)
+            rx=(d_12*(d_33*m_y-d_23*n)+d_13*(d_22*n-d_23*m_y)+(d_23**2-d_22*d_33)*m_x)/(d_11*(d_23**2-d_22*d_33)+d_12**2*d_33-2*d_12*d_13*d_23+d_13**2*d_22)
+            ry=-(d_11*(d_33*m_y-d_23*n)+d_12*d_13*n-d_13**2*m_y+(d_13*d_23-d_12*d_33)*m_x)/(d_11*(d_23**2-d_22*d_33)+d_12**2*d_33-2*d_12*d_13*d_23+d_13**2*d_22)
+            e0=(d_11*(d_23*m_y-d_22*n)+d_12**2*n-d_12*d_13*m_y+(d_13*d_22-d_12*d_23)*m_x)/(d_11*(d_23**2-d_22*d_33)+d_12**2*d_33-2*d_12*d_13*d_23+d_13**2*d_22)
             error=0
         else:
             e0 = 0
@@ -258,7 +238,7 @@ class Solves(object):
         type0 - учет начального искривления  False - нет искривлени - считается автоматом
         Возвращает список: e0f, rxf, ryf, tol
         При ошибке tol==string'''
-        elemMatr=self.elemMatr
+        elemMatr=self.elemMatr.copy()
         
         type0=self.type0
                  
@@ -269,6 +249,7 @@ class Solves(object):
         n=0
         while True:
             ee=self.e0rxry2e(e0,rx,ry)
+#            print 'ee',ee[0:10]
             dd=self.e2d(ee)
             
             if type0==True:
@@ -288,21 +269,24 @@ class Solves(object):
             else:
                 nmxmyTemp=nmxmy
             e0f,rxf,ryf,error=self.matrSolve(nmxmyTemp,dd[0])
-            
+#            print '1f',e0, rx, ry
+#            print 'f',e0f, rxf, ryf, error
+#            print 'n',nmxmyTemp
+#            print 'dd',dd[0]
             if error==1:
-                return [False, False, False, 'Matr',[]]
+                return [False, False, False, 'Matr',n, []]
             else:
-                if e0f==0:
+                if e0f<10**(-20):
                     tolE=abs(e0f-e0)
                 else:
                     tolE=abs((e0f-e0)/e0f)
 
-                if rxf==0:
+                if rxf<10**(-20):
                     tolRx=abs(rxf-rx)
                 else:
                     tolRx=abs((rxf-rx)/rxf)
 
-                if ryf==0:
+                if ryf<10**(-20):
                     tolRy=abs(ryf-ry)
                 else:
                     tolRy=abs((ryf-ry)/ryf)
@@ -311,10 +295,10 @@ class Solves(object):
                 tol=max(tolE, tolRx, tolRy)
 
                 if tol<crit:
-                    return [e0f, rxf, ryf, tol, dd[0]]
+                    return [e0f, rxf, ryf, tol, n, dd[0]]
                 
                 if n>nn:
-                    return [False, False, False, 'Nmax',[]]
+                    return [False, False, False, 'Nmax',n,[]]
                 
                 e0, rx,ry=e0f, rxf, ryf  
                 n+=1
@@ -334,6 +318,8 @@ class Solves(object):
         lstky=[]
         lstyEv=[]
         lstkyEv=[]
+        lstdx=[]
+        
         for i in lstMat:
             if len(i.x)>maxx:
                 maxx=len(i.x)
@@ -343,7 +329,8 @@ class Solves(object):
             lstky.append(i.ky)
             lstyEv.append(i.yEv)
             lstkyEv.append(i.kyEv)
-                    
+            lstdx.append(i.dx) 
+                   
         '''приводим все к одному значению'''
         for j in range(len(lstx)):
             if len(lstx[j])<maxx:
@@ -364,6 +351,8 @@ class Solves(object):
         yEvmatr=None
         kyEvmatr=None
         
+        dxmatr=None
+        
         for i in self.formLst:
             ln=i.ln()
             xone=np.ones(ln)
@@ -372,7 +361,13 @@ class Solves(object):
             xmatrTemp=np.meshgrid(xmatrTemp,xone)
             xmatrTemp=xmatrTemp[0]
             xmatrTemp=xmatrTemp.transpose()
-                        
+
+            dxmatrTemp= np.array(lstdx[i.mat])
+            dxmatrTemp=np.meshgrid(dxmatrTemp,xone)
+            dxmatrTemp=dxmatrTemp[0]
+            dxmatrTemp=dxmatrTemp.transpose()
+
+
             ymatrTemp= np.array(lsty[i.mat])
             ymatrTemp=np.meshgrid(ymatrTemp,xone)
             ymatrTemp=ymatrTemp[0]
@@ -395,36 +390,101 @@ class Solves(object):
             
             if xmatr==None:
                 xmatr=xmatrTemp
+                dxmatr=dxmatrTemp
+ 
                 ymatr=ymatrTemp
                 kymatr=kymatrTemp
                 yEvmatr=yEvmatrTemp
                 kyEvmatr=kyEvmatrTemp
+
             else:
                 xmatr=np.hstack((xmatr,xmatrTemp))
+                dxmatr=np.hstack((dxmatr,dxmatrTemp))   
+#                print ymatr, ymatrTemp
                 ymatr=np.hstack((ymatr,ymatrTemp))
                 kymatr=np.hstack((kymatr,kymatrTemp))
                 yEvmatr=np.hstack((yEvmatr,yEvmatrTemp))
                 kyEvmatr=np.hstack((kyEvmatr,kyEvmatrTemp))
-                
+
         self.xmatr=xmatr
         self.ymatr=ymatr
         self.kymatr=kymatr
         self.yEvmatr=yEvmatr
         self.kyEvmatr=kyEvmatr
 #        print self.xmatr
-                
+        self.dxmatr=np.array(dxmatr)                
         
     def critPoint(self, e, rx,ry):
         lstCritPoint=[]
         for i in self.lstForm:
-            lstCritPoint+=i.critPoint(e,rx,ry)
+            lstCritPoint.append(i.critPoint(e,rx,ry))
         self.lstCritPoint=lstCritPoint
+
+        x,y=self.centerMass()
+
+        
+        for i in self.lstCritPoint:
+            i[0]-=x
+            i[1]-=y
         return lstCritPoint
+    
+    def findKult(self, nmxmy, nn, crit ):
+        '''Находим коэффициент к'''
+        
+#        определим начальный nmxmy
+        n,mx,my=nmxmy
+        lenN=(n**2+mx**2+my**2)**.5        
+        ndel=1
+        while True:
+            n/=100.
+            mx/=100.
+            my/=100.
+        
+            e0rxry=self.nmxmy2e0rxry([n,mx,my],nn, crit)
+            
+            if type(e0rxry[3])!=str:
+                break
+            else:
+                ndel+=1
+            
+            if ndel>4:
+                return 'error'
+                
+        k1=self.kk(e0rxry[0:3])
+        
+        e0rxryTemp=[e0rxry[0]/k1, e0rxry[1]/k1, e0rxry[2]/k1]
+        n=0
+        while True:
+            n+=1
+            if n>nn:
+                return 'error'
+            nmxmyTemp=self.e0rxry2nmxmy(e0rxryTemp)
+            nTemp,mxTemp,myTemp=nmxmyTemp            
+            cosa=(n*nTemp+mx*mxTemp+my*myTemp)/((n**2+mx**2+my**2)**0.5*(nTemp**2+mxTemp**2+myTemp**2)**0.5)
+            lenNTemp=(nTemp**2+mxTemp**2+myTemp**2)**.5   
+            lenNNormal=lenNTemp*cosa
+            kLen=lenNNormal/lenN
+            
+            nmxmyNormal=[n*kLen, mx*kLen, my*kLen]
+            e0rxryTemp=self.nmxmy2e0rxry(nmxmyNormal,nn, crit)
+            k1=self.kk(e0rxry[0:3])
+            
+            e0rxryTemp=[e0rxry[0]/k1, e0rxry[1]/k1, e0rxry[2]/k1]
+            
+            if abs(k1-1)<nn:
+                return k1, e0rxryTemp, n
+            
+
+
+    def kk(self,e0rxry):
+        '''определяем коэффициент исопльзования по всем нормам'''
+        
+        return k
 
     
 if __name__ == "__main__":
     lstForm=[
-    ['Rectangle',[[0.,0.],[50.,50.]],[100.,100.],0,1,[0,0,0]],
+    ['Rectangle',[[0.,0.],[50.,50.]],[30.,30.],0,1,[0,0,0]],
     ['Circle',[5,5,2],[],1,1,[0,0,0]],
     ['Circle',[45,45,2],[],1,1,[0,0,0]],
     ['Circle',[45,5,2],[],1,1,[0,0,0]],
@@ -441,7 +501,7 @@ if __name__ == "__main__":
     conc.norme=52
     conc.b=25
     conc.initProperties()
-    conc.functDia(typDia=2, typPS=1,typTime='short', typR=0, typRT=2)
+    conc.functDia(typDia=3, typPS=1,typTime='short', typR=0, typRT=2)
     
     rein=rcMaterial.Reinforced()
     rein.norme=52
@@ -453,22 +513,54 @@ if __name__ == "__main__":
     lstMat=[conc, rein]
 
     sol.loadMat(lstMat)
+
     xmatr=sol.xmatr
 #    print xmatr
 
     ymatr=sol.ymatr
 #    print ymatr
+    kymatr=sol.kymatr
+    yEvmatr=sol.yEvmatr
+    kyEvmatr=sol.kyEvmatr
 
     
-    e0rxry=[0.000501077552827452,0.0000272026093313562,0.0000272026093313562]
+    
+    nmxmy=[-10000,500000,500000]
+    out=sol.nmxmy2e0rxry(nmxmy, 5000, 0.000001)
+    print out
+
+    e0rxry=[out[0],out[1],out[2]]
     out=sol.e0rxry2nmxmy(e0rxry)
+    
     e=np.reshape(out[4][0:100], (10, 10))
     sigma=np.reshape(out[3][0:100], (10, 10))
     print out[0:3]
+
+    from mpl_toolkits.mplot3d import Axes3D
+    from matplotlib import cm
+    from matplotlib.ticker import LinearLocator, FormatStrFormatter
+    import matplotlib.pyplot as plt
     
-    nmxmy=[0,5,5]
-    out=sol.nmxmy2e0rxry(nmxmy, 1000, 0.0001)
-    print out
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    X = sol.elemMatr[0][0:900]
+    Y = sol.elemMatr[1][0:900]
+    Z=out[3][0:900]
+#    surf = ax.plot_surface(X, Y, Z)
+    surf=ax.plot_trisurf(X, Y, Z, cmap=cm.terrain, linewidth=0.1)
+#    Xtr=np.reshape(X, (30, 30))
+#    Ytr=np.reshape(Y, (30, 30))
+#    Ztr=np.reshape(Z, (30, 30))
+#
+#    surf = ax.plot_surface(Xtr, Ytr, Ztr, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+#    ax.set_zlim(-200, 200)
+    
+    ax.zaxis.set_major_locator(LinearLocator(20))
+    ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
+    
+    fig.colorbar(surf)
+#    
+    plt.show()    
 #    for i in range(10000):
 #    
 #        
