@@ -539,8 +539,8 @@ class Concrete(object):
 
     def kk(self, lste):
         '''критерий разрушения по бетону -  если есть разные знаки - i/self.eb2'''
-        emin=lste.min()
-        emax=lste.max()
+        emin=min(lste)
+        emax=max(lste)
         if emax>0 and emin<0:
             k=abs(emin/self.eb2)
         elif emax<0 and emin<0:

@@ -207,6 +207,7 @@ class Solves(object):
     def e0rxry2nmxmy(self,e0rxry):
         '''возвращает значение усилий по дополнительным деформациям
         проверено - тестов нет'''
+        print e0rxry
         e0,rx,ry=e0rxry
         e=self.e0rxry2e(e0,rx,ry) #получили e1
 #        print self.e2sigma2(e),'sigma' 
@@ -419,16 +420,19 @@ class Solves(object):
         
     def critPoint(self, e0, rx,ry):
         lstCritPoint=[]
-        for i in self.lstForm:
-            lstCritPoint.append(i.critPoint(e0,rx,ry))
+        for i in self.formLst:
+            lstCritPoint+=i.critPoint(e0,rx,ry)
         self.lstCritPoint=lstCritPoint
+#        print 'lst', lstCritPoint
 
         x,y=self.centerMass()
 
         
         for i in self.lstCritPoint:
+#            print 'i', i
             i[0]-=x
             i[1]-=y
+        print 'lstCritPoint', lstCritPoint
         return lstCritPoint
     
     def findKult(self, nmxmy, nn, crit ):
@@ -447,31 +451,35 @@ class Solves(object):
 
         
         k1=self.kk(e0rxry[0:3])
+        print 'k111', k1
         if k1==0:
-            return 'error'
+            return 'error 1'
         e0rxryTemp=[e0rxry[0]/k1, e0rxry[1]/k1, e0rxry[2]/k1]
         n=0
+        
         while True:
             n+=1
             if n>nn:
-                return 'error'
+                return 'error 2'
             nmxmyTemp=self.e0rxry2nmxmy(e0rxryTemp)
-            nTemp,mxTemp,myTemp=nmxmyTemp            
+            nTemp,mxTemp,myTemp, tt1, tt2=nmxmyTemp     
+            print 'nTemp,mxTemp,myTemp,', nTemp,mxTemp,myTemp,
             cosa=(n*nTemp+mx*mxTemp+my*myTemp)/((n**2+mx**2+my**2)**0.5*(nTemp**2+mxTemp**2+myTemp**2)**0.5)
             lenNTemp=(nTemp**2+mxTemp**2+myTemp**2)**.5   
             lenNNormal=lenNTemp*cosa
             kLen=lenNNormal/lenN
-            
+            print 'kLen', kLen
             nmxmyNormal=[n*kLen, mx*kLen, my*kLen]
             e0rxryTemp=self.nmxmy2e0rxry(nmxmyNormal,nn, crit)
-            k1=self.kk(e0rxry[0:3])
+            print 'e0rxryTemp', e0rxryTemp
+            k1=self.kk(e0rxryTemp[0:3])
             if k1==0:
-                return 'error'
+                return 'error 3'
             
             e0rxryTemp=[e0rxry[0]/k1, e0rxry[1]/k1, e0rxry[2]/k1]
-            
-            if abs(k1-1)<nn:
-                return k1, e0rxryTemp, n
+            print 'k1',k1
+            if abs(k1-1)<crit:
+                return kLen, e0rxryTemp, n
             
 
 
@@ -479,13 +487,15 @@ class Solves(object):
         '''определяем коэффициент исопльзования по всем нормам 
         - самое простое - переслать в материалы список emax и emin
         1. сначала вычисляем  расположение критических точек'''
+        print 'e0rxry', e0rxry
         e0, rx,ry=e0rxry
         lstCritPoint=self.critPoint(e0, rx,ry)      
         '''ищем максимальное число материалов'''
-        nMat=self.lstMat.len()
+        nMat=len(self.lstMat)
         nlst=[]
         for i in range(nMat):
             nlst.append([False, False])
+        print 'nlst', nlst
 
         '''вычисляем e для всех критических точек'''
                     
@@ -503,13 +513,15 @@ class Solves(object):
             else:
                 if nlst[mat][1]<e:
                     nlst[mat][1]=e
-        
+                    
+        print 'nlst2', nlst
         '''вычисляем k для каждого материала'''
         kk=[]
         for i in range(nMat):
-            kk.append(self.lstMat.kk(nlst[i]))
-        
-        k=kk.max()
+            kk.append(self.lstMat[i].kk(nlst[i]))
+            
+        print 'kk', kk
+        k=max(kk)
             
             
                         
@@ -536,7 +548,7 @@ if __name__ == "__main__":
     conc.norme=52
     conc.b=25
     conc.initProperties()
-    conc.functDia(typDia=3, typPS=1,typTime='short', typR=0, typRT=2)
+    conc.functDia(typDia=2, typPS=1,typTime='short', typR=0, typRT=2)
     
     rein=rcMaterial.Reinforced()
     rein.norme=52
@@ -559,17 +571,26 @@ if __name__ == "__main__":
     kyEvmatr=sol.kyEvmatr
 
     
-    nmxmy=[-10000,0,1000000]
-    out=sol.nmxmy2e0rxry(nmxmy, 5000, 0.000001)
+    nmxmy=[-100000,1000000,1000000]
+    out=sol.nmxmy2e0rxry(nmxmy, 500, 0.001)
 #    print out
 
     e0rxry=[out[0],out[1],out[2]]
-    print e0rxry
+    print 'e0rxry11', e0rxry
     out=sol.e0rxry2nmxmy(e0rxry)
     
     e=np.reshape(out[4][0:100], (10, 10))
     sigma=np.reshape(out[3][0:100], (10, 10))
     print out[0:3]
+
+    
+    kk=sol.findKult(nmxmy, 500,0.01)
+    
+    print 'kk', kk
+
+    e0rxry=kk[1]
+    out=sol.e0rxry2nmxmy(e0rxry)
+    print out[0], out[1] , out[2]   
 
     from mpl_toolkits.mplot3d import Axes3D
     from matplotlib import cm
@@ -597,24 +618,24 @@ if __name__ == "__main__":
 #    CS = plt.contour(X, Y, Z, 15, linewidths=0.5, colors='k')
 #    
     plt.show()    
-    
-
-    import matplotlib.tri as tri
-    triang = tri.Triangulation(X, Y)
-    plt.figure()
-    plt.gca().set_aspect('equal')
-    plt.tripcolor(triang, Z, shading='flat', cmap=plt.cm.rainbow)
-    plt.colorbar()
-    plt.title('tripcolor of Delaunay triangulation, flat shading')    
-    plt.show()
-#    for i in range(10000):
 #    
-#        
-#        nmxmy=[-1,0,0]
-#        
-#        sol.nmxmy2e0rxry(nmxmy,100,0.001)
-#       
-#    nmxmy=[-2,0,0]
-#    
-#    print sol.nmxmy2e0rxry(nmxmy,100,0.001)
+#
+#    import matplotlib.tri as tri
+#    triang = tri.Triangulation(X, Y)
+#    plt.figure()
+#    plt.gca().set_aspect('equal')
+#    plt.tripcolor(triang, Z, shading='flat', cmap=plt.cm.rainbow)
+#    plt.colorbar()
+#    plt.title('tripcolor of Delaunay triangulation, flat shading')    
+#    plt.show()
+##    for i in range(10000):
+##    
+##        
+##        nmxmy=[-1,0,0]
+##        
+##        sol.nmxmy2e0rxry(nmxmy,100,0.001)
+##       
+##    nmxmy=[-2,0,0]
+##    
+##    print sol.nmxmy2e0rxry(nmxmy,100,0.001)
 print 'ok'
