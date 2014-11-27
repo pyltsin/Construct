@@ -153,9 +153,11 @@ class Solves(object):
     def e2sigma4(self, e):
         '''e - матрица e
         проверено - тестов нет'''
+
         xmatr=self.xmatr.copy()
         ymatr=self.ymatr.copy()
         kymatr=self.kymatr.copy()
+
 #        print e.shape
 #        print xmatr.shape
 #        print self.elemMatr
@@ -183,6 +185,7 @@ class Solves(object):
         xmatr=np.sum(xmatr, axis=0)
         sigma=kymatr*(e-xmatr)+ymatr
 #        print sigma
+
         return sigma
         
     def e2ev4(self, e):
@@ -414,10 +417,10 @@ class Solves(object):
 #        print self.xmatr
         self.dxmatr=np.array(dxmatr)                
         
-    def critPoint(self, e, rx,ry):
+    def critPoint(self, e0, rx,ry):
         lstCritPoint=[]
         for i in self.lstForm:
-            lstCritPoint.append(i.critPoint(e,rx,ry))
+            lstCritPoint.append(i.critPoint(e0,rx,ry))
         self.lstCritPoint=lstCritPoint
 
         x,y=self.centerMass()
@@ -434,24 +437,18 @@ class Solves(object):
 #        определим начальный nmxmy
         n,mx,my=nmxmy
         lenN=(n**2+mx**2+my**2)**.5        
-        ndel=1
-        while True:
-            n/=100.
-            mx/=100.
-            my/=100.
+
+        e0,rx,ry=0,0,0
+        ee=self.e0rxry2e(e0,rx,ry)
+
+        dd=self.e2d(ee)
+
+        e0rxry=self.matrSolve(nmxmy,dd[0])
+
         
-            e0rxry=self.nmxmy2e0rxry([n,mx,my],nn, crit)
-            
-            if type(e0rxry[3])!=str:
-                break
-            else:
-                ndel+=1
-            
-            if ndel>4:
-                return 'error'
-                
         k1=self.kk(e0rxry[0:3])
-        
+        if k1==0:
+            return 'error'
         e0rxryTemp=[e0rxry[0]/k1, e0rxry[1]/k1, e0rxry[2]/k1]
         n=0
         while True:
@@ -468,6 +465,8 @@ class Solves(object):
             nmxmyNormal=[n*kLen, mx*kLen, my*kLen]
             e0rxryTemp=self.nmxmy2e0rxry(nmxmyNormal,nn, crit)
             k1=self.kk(e0rxry[0:3])
+            if k1==0:
+                return 'error'
             
             e0rxryTemp=[e0rxry[0]/k1, e0rxry[1]/k1, e0rxry[2]/k1]
             
@@ -477,8 +476,44 @@ class Solves(object):
 
 
     def kk(self,e0rxry):
-        '''определяем коэффициент исопльзования по всем нормам'''
+        '''определяем коэффициент исопльзования по всем нормам 
+        - самое простое - переслать в материалы список emax и emin
+        1. сначала вычисляем  расположение критических точек'''
+        e0, rx,ry=e0rxry
+        lstCritPoint=self.critPoint(e0, rx,ry)      
+        '''ищем максимальное число материалов'''
+        nMat=self.lstMat.len()
+        nlst=[]
+        for i in range(nMat):
+            nlst.append([False, False])
+
+        '''вычисляем e для всех критических точек'''
+                    
+        for i in lstCritPoint:
+            x,y,mat,e0t,rxt,ryt=i
+            e= e0t+x*rxt+y*ryt
+            if nlst[mat][0]==False:
+                nlst[mat][0]=e
+            else:
+                if nlst[mat][0]>e:
+                    nlst[mat][0]=e
+
+            if nlst[mat][1]==False:
+                nlst[mat][1]=e
+            else:
+                if nlst[mat][1]<e:
+                    nlst[mat][1]=e
         
+        '''вычисляем k для каждого материала'''
+        kk=[]
+        for i in range(nMat):
+            kk.append(self.lstMat.kk(nlst[i]))
+        
+        k=kk.max()
+            
+            
+                        
+            
         return k
 
     
@@ -524,12 +559,12 @@ if __name__ == "__main__":
     kyEvmatr=sol.kyEvmatr
 
     
-    
-    nmxmy=[-10000,500000,500000]
+    nmxmy=[-10000,0,1000000]
     out=sol.nmxmy2e0rxry(nmxmy, 5000, 0.000001)
-    print out
+#    print out
 
     e0rxry=[out[0],out[1],out[2]]
+    print e0rxry
     out=sol.e0rxry2nmxmy(e0rxry)
     
     e=np.reshape(out[4][0:100], (10, 10))
@@ -540,7 +575,7 @@ if __name__ == "__main__":
     from matplotlib import cm
     from matplotlib.ticker import LinearLocator, FormatStrFormatter
     import matplotlib.pyplot as plt
-    
+    from matplotlib.mlab import griddata    
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     X = sol.elemMatr[0][0:900]
@@ -559,8 +594,19 @@ if __name__ == "__main__":
     ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
     
     fig.colorbar(surf)
+#    CS = plt.contour(X, Y, Z, 15, linewidths=0.5, colors='k')
 #    
     plt.show()    
+    
+
+    import matplotlib.tri as tri
+    triang = tri.Triangulation(X, Y)
+    plt.figure()
+    plt.gca().set_aspect('equal')
+    plt.tripcolor(triang, Z, shading='flat', cmap=plt.cm.rainbow)
+    plt.colorbar()
+    plt.title('tripcolor of Delaunay triangulation, flat shading')    
+    plt.show()
 #    for i in range(10000):
 #    
 #        

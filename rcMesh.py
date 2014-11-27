@@ -41,10 +41,10 @@ class Rectangles(object):
         x=self.x
         y=self.y
         mat=self.mat
-        p1=[x,y, mat]
-        p2=[x+b,y+h, mat]
-        p3=[x+b,y, mat]
-        p4=[x,y+h, mat]
+        p1=[x,y, mat, self.e0rxry[0]+e, self.e0rxry[1]+rx,  self.e0rxry[2]+ry]
+        p2=[x+b,y+h, mat, self.e0rxry[0]+e, self.e0rxry[1]+rx,  self.e0rxry[2]+ry]
+        p3=[x+b,y, mat, self.e0rxry[0]+e, self.e0rxry[1]+rx,  self.e0rxry[2]+ry]
+        p4=[x,y+h, mat, self.e0rxry[0]+e, self.e0rxry[1]+rx,  self.e0rxry[2]+ry]
         return [p1,p2,p3,p4]
     def ln(self):
         '''возвращает длину массива'''
@@ -153,7 +153,7 @@ class Circles(object):
         x=self.x
         y=self.y
         mat=self.mat
-        p1=[x,y, mat]
+        p1=[x,y, mat, self.e0rxry[0]+e, self.e0rxry[1]+rx,  self.e0rxry[2]+ry]
         return [p1]
         
     def title(self):
@@ -289,8 +289,8 @@ class SolidCircles(object):
         x=self.x
         y=self.y
         mat=self.mat
-        p1=[x+x0,y+y0, mat]
-        p2=[x-x0,y-y0, mat]
+        p1=[x+x0,y+y0, mat, self.e0rxry[0]+e0t, self.e0rxry[1]+rxt,  self.e0rxry[2]+ryt]
+        p2=[x-x0,y-y0, mat, self.e0rxry[0]+e0t, self.e0rxry[1]+rxt,  self.e0rxry[2]+ryt]
 
         return [p1,p2]
 
@@ -350,9 +350,9 @@ class Triangles(object):
         y3=self.lstXY[2][1]
         
         mat=self.mat
-        p1=[x1,y1, mat]
-        p2=[x2,y2, mat]
-        p3=[x3,y3, mat]
+        p1=[x1,y1, mat, self.e0rxry[0]+e, self.e0rxry[1]+rx,  self.e0rxry[2]+ry]
+        p2=[x2,y2, mat, self.e0rxry[0]+e, self.e0rxry[1]+rx,  self.e0rxry[2]+ry]
+        p3=[x3,y3, mat, self.e0rxry[0]+e, self.e0rxry[1]+rx,  self.e0rxry[2]+ry]
         return [p1,p2,p3]
         
     def xcyc(self):

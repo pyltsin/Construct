@@ -210,6 +210,8 @@ class Reinforced(object):
         return 'Reinforced'
     
     def kk(self, lste):
+        '''критерий разрушения по металлу - i/self.es2'''
+
         k=0
         for i in lste:
             kTemp=abs(i/self.es2)
@@ -536,11 +538,15 @@ class Concrete(object):
         self.phi_crc=phi_crc
 
     def kk(self, lste):
-        k=0
-        for i in lste:
-            kTemp=abs(i/self.es2)
-            if k<kTemp:
-                k=kTemp
+        '''критерий разрушения по бетону -  если есть разные знаки - i/self.eb2'''
+        emin=lste.min()
+        emax=lste.max()
+        if emax>0 and emin<0:
+            k=abs(emin/self.eb2)
+        elif emax<0 and emin<0:
+            k=self.eb2-(self.eb2-self.eb0)*emax/emin
+        else:
+            k=0
         return k
 
 class Test(unittest.TestCase):
