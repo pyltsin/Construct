@@ -153,11 +153,14 @@ class Solves(object):
     def e2sigma4(self, e):
         '''e - матрица e
         проверено - тестов нет'''
-
+#        import time
+#        startTime=time.time()
         xmatr=self.xmatr.copy()
         ymatr=self.ymatr.copy()
         kymatr=self.kymatr.copy()
-
+#        print 'time1', (time.time()-startTime)*100000
+#        startTime=time.time()
+       
 #        print e.shape
 #        print xmatr.shape
 #        print self.elemMatr
@@ -171,9 +174,10 @@ class Solves(object):
         boolmatrInvert=np.vstack((boolmatr[1:],one))
         boolmatrInvert=(boolmatrInvert==False)
         boolmatr=(boolmatr==boolmatrInvert)
+
+#        print 'time2', (time.time()-startTime)*100000
+#        startTime=time.time()
         
-#        xmatr*=boolmatr
-#        xmatr=np.sum(xmatr, axis=0)
         
         ymatr*=boolmatr
         ymatr=np.sum(ymatr, axis=0)
@@ -185,6 +189,7 @@ class Solves(object):
         xmatr=np.sum(xmatr, axis=0)
         sigma=kymatr*(e-xmatr)+ymatr
 #        print sigma
+#        print 'time3', (time.time()-startTime)*100000
 
         return sigma
         
@@ -207,7 +212,7 @@ class Solves(object):
     def e0rxry2nmxmy(self,e0rxry):
         '''возвращает значение усилий по дополнительным деформациям
         проверено - тестов нет'''
-        print e0rxry
+#        print e0rxry
         e0,rx,ry=e0rxry
         e=self.e0rxry2e(e0,rx,ry) #получили e1
 #        print self.e2sigma2(e),'sigma' 
@@ -255,7 +260,7 @@ class Solves(object):
             ee=self.e0rxry2e(e0,rx,ry)
 #            print 'ee',ee[0:10]
             dd=self.e2d(ee)
-            
+#            print 'dd0',dd[0]
             if type0==True:
                 d11,d12,d13,d22,d23,d33= dd[1]           
                 dnTemp=d33*elemMatr[-3]+d13*elemMatr[-2]+d23*elemMatr[-1]
@@ -432,15 +437,15 @@ class Solves(object):
 #            print 'i', i
             i[0]-=x
             i[1]-=y
-        print 'lstCritPoint', lstCritPoint
+#        print 'lstCritPoint', lstCritPoint
         return lstCritPoint
     
-    def findKult(self, nmxmy, nn, crit ):
+    def findKult(self, nmxmy, nn, crit, typ='crit'):
         '''Находим коэффициент к'''
         
 #        определим начальный nmxmy
-        n,mx,my=nmxmy
-        lenN=(n**2+mx**2+my**2)**.5        
+        nFact,mxFact,myFact=nmxmy
+        lenN=(nFact**2+mxFact**2+myFact**2)**.5        
 
         e0,rx,ry=0,0,0
         ee=self.e0rxry2e(e0,rx,ry)
@@ -450,44 +455,61 @@ class Solves(object):
         e0rxry=self.matrSolve(nmxmy,dd[0])
 
         
-        k1=self.kk(e0rxry[0:3])
-        print 'k111', k1
+        k1=self.kk(e0rxry[0:3], typ)
+#        print 'k111', k1
         if k1==0:
             return 'error 1'
         e0rxryTemp=[e0rxry[0]/k1, e0rxry[1]/k1, e0rxry[2]/k1]
         n=0
-        
+        nmxmyTemp=self.e0rxry2nmxmy(e0rxryTemp)
+        nTemp,mxTemp,myTemp, tt1, tt2=nmxmyTemp     
+
+        nCrit, mxCrit, myCrit=nTemp,mxTemp,myTemp
         while True:
             n+=1
             if n>nn:
                 return 'error 2'
-            nmxmyTemp=self.e0rxry2nmxmy(e0rxryTemp)
-            nTemp,mxTemp,myTemp, tt1, tt2=nmxmyTemp     
-            print 'nTemp,mxTemp,myTemp,', nTemp,mxTemp,myTemp,
-            cosa=(n*nTemp+mx*mxTemp+my*myTemp)/((n**2+mx**2+my**2)**0.5*(nTemp**2+mxTemp**2+myTemp**2)**0.5)
+#            print 'nTemp,mxTemp,myTemp,', nTemp,mxTemp,myTemp,
+            cosa=(nFact*nTemp+mxFact*mxTemp+myFact*myTemp)/((nFact**2+mxFact**2+myFact**2)**0.5*(nTemp**2+mxTemp**2+myTemp**2)**0.5)
             lenNTemp=(nTemp**2+mxTemp**2+myTemp**2)**.5   
             lenNNormal=lenNTemp*cosa
             kLen=lenNNormal/lenN
-            print 'kLen', kLen
-            nmxmyNormal=[n*kLen, mx*kLen, my*kLen]
+#            print 'kLen', kLen
+            nmxmyNormal=[nFact*kLen, mxFact*kLen, myFact*kLen]
+#            print 'nmxmyNormal', nmxmyNormal
             e0rxryTemp=self.nmxmy2e0rxry(nmxmyNormal,nn, crit)
-            print 'e0rxryTemp', e0rxryTemp
-            k1=self.kk(e0rxryTemp[0:3])
+#            print 'e0rxryTemp', e0rxryTemp
+            k1=self.kk(e0rxryTemp[0:3], typ)
             if k1==0:
                 return 'error 3'
             
-            e0rxryTemp=[e0rxry[0]/k1, e0rxry[1]/k1, e0rxry[2]/k1]
-            print 'k1',k1
-            if abs(k1-1)<crit:
-                return kLen, e0rxryTemp, n
+            e0rxryTemp=[e0rxryTemp[0]/k1, e0rxryTemp[1]/k1, e0rxryTemp[2]/k1]
+#            print 'k1',k1
+
+            nmxmyTemp=self.e0rxry2nmxmy(e0rxryTemp)
+            nTemp,mxTemp,myTemp, tt1, tt2=nmxmyTemp     
+
+            if nCrit==0:
+                kN=abs(nTemp-nCrit)
+            else:
+                kN=abs(nTemp-nCrit)/abs(nTemp)
+
+                
+                
+            if kN<crit:
+                return kLen, e0rxryTemp, n, [nTemp,mxTemp,myTemp, tt1, tt2]
+            else:
+                nCrit, mxCrit, myCrit=nTemp,mxTemp,myTemp
+                
             
 
 
-    def kk(self,e0rxry):
+    def kk(self,e0rxry, typ='crit'):
         '''определяем коэффициент исопльзования по всем нормам 
         - самое простое - переслать в материалы список emax и emin
-        1. сначала вычисляем  расположение критических точек'''
-        print 'e0rxry', e0rxry
+        1. сначала вычисляем  расположение критических точек
+        typ=crit - расчет критической силы, если crc - расчет трещин'''
+#        print 'e0rxry', e0rxry
         e0, rx,ry=e0rxry
         lstCritPoint=self.critPoint(e0, rx,ry)      
         '''ищем максимальное число материалов'''
@@ -495,7 +517,7 @@ class Solves(object):
         nlst=[]
         for i in range(nMat):
             nlst.append([False, False])
-        print 'nlst', nlst
+#        print 'nlst', nlst
 
         '''вычисляем e для всех критических точек'''
                     
@@ -514,17 +536,19 @@ class Solves(object):
                 if nlst[mat][1]<e:
                     nlst[mat][1]=e
                     
-        print 'nlst2', nlst
+#        print 'nlst2', nlst
         '''вычисляем k для каждого материала'''
         kk=[]
-        for i in range(nMat):
-            kk.append(self.lstMat[i].kk(nlst[i]))
+        if typ=='crit':
+            for i in range(nMat):
+                kk.append(self.lstMat[i].kk(nlst[i]))
+        elif typ=='crc':
+            for i in range(nMat):
+                kk.append(self.lstMat[i].kcrc(nlst[i]))
             
-        print 'kk', kk
+            
+#        print 'kk', kk
         k=max(kk)
-            
-            
-                        
             
         return k
 
@@ -548,7 +572,7 @@ if __name__ == "__main__":
     conc.norme=52
     conc.b=25
     conc.initProperties()
-    conc.functDia(typDia=2, typPS=1,typTime='short', typR=0, typRT=2)
+    conc.functDia(typDia=3, typPS=1,typTime='short', typR=0, typRT=2)
     
     rein=rcMaterial.Reinforced()
     rein.norme=52
@@ -571,20 +595,19 @@ if __name__ == "__main__":
     kyEvmatr=sol.kyEvmatr
 
     
-    nmxmy=[-100000,1000000,1000000]
+    nmxmy=[-100000,500000,1000000]
     out=sol.nmxmy2e0rxry(nmxmy, 500, 0.001)
 #    print out
 
     e0rxry=[out[0],out[1],out[2]]
-    print 'e0rxry11', e0rxry
+#    print 'e0rxry11', e0rxry
     out=sol.e0rxry2nmxmy(e0rxry)
     
     e=np.reshape(out[4][0:100], (10, 10))
     sigma=np.reshape(out[3][0:100], (10, 10))
-    print out[0:3]
+#    print out[0:3]
 
-    
-    kk=sol.findKult(nmxmy, 500,0.01)
+    kk=sol.findKult(nmxmy, 100,0.001)
     
     print 'kk', kk
 
@@ -592,6 +615,8 @@ if __name__ == "__main__":
     out=sol.e0rxry2nmxmy(e0rxry)
     print out[0], out[1] , out[2]   
 
+    '''проверка скорости ключевой функции'''
+    
     from mpl_toolkits.mplot3d import Axes3D
     from matplotlib import cm
     from matplotlib.ticker import LinearLocator, FormatStrFormatter
