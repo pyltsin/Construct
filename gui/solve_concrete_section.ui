@@ -45,7 +45,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tabInputData">
        <attribute name="title">
@@ -219,9 +219,9 @@
        <widget class="QComboBox" name="boxCode_2">
         <property name="geometry">
          <rect>
-          <x>90</x>
+          <x>80</x>
           <y>30</y>
-          <width>231</width>
+          <width>201</width>
           <height>22</height>
          </rect>
         </property>
@@ -234,7 +234,7 @@
        <widget class="QLabel" name="labelCode_3">
         <property name="geometry">
          <rect>
-          <x>10</x>
+          <x>0</x>
           <y>20</y>
           <width>71</width>
           <height>31</height>
@@ -258,7 +258,7 @@
         <property name="geometry">
          <rect>
           <x>350</x>
-          <y>30</y>
+          <y>20</y>
           <width>71</width>
           <height>31</height>
          </rect>
@@ -408,6 +408,19 @@
         </property>
         <property name="text">
          <string>1</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButton">
+        <property name="geometry">
+         <rect>
+          <x>750</x>
+          <y>370</y>
+          <width>75</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Нарисовать</string>
         </property>
        </widget>
       </widget>

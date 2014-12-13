@@ -14,6 +14,33 @@ import rcMaterial
 
 class MyWindow(QtGui.QWidget):
     def __init__(self, parent=None):
+        
+        self.listSection=['Прямоугольник', 'Двутавр', 'Круг']
+        self.listSectionRein=[['Угловое', 'По периметру','Равное сверху/снизу' ,'Сверху и снизу', 'Свободное' ],['Сверху/снизу', 'Свободное'],['По кругу']]
+        self.listSectionProp=[['h, см', 'b, см'],['h1, см', 'h2, см',  'h3, см', 'b1, см', 'b2, см', 'b3, см'],['d, см']]
+        self.listSectionReinPropCheck=[
+                                        [['a, см', 'd, cм'],
+                                         ['n1, см', 'n2, см','a, см', 'd, cм'],
+                                         ['n1, см','a, см', 'd, cм'],
+                                         ['n1, см', 'n2, см','a1, см','a2, см', 'd1, cм', 'd2, cм']
+                                        ],
+                                        [['n1, см', 'n2, см','a1, см','a2, см', 'd1, cм', 'd2, cм']
+                                        ],
+                                        [['n1, см','a, см', 'd, cм']]
+                                    ]
+
+        self.listSectionReinPropCheck=[
+                                        [['a, см'],
+                                         ['a, см'],
+                                         ['a, см'],
+                                         ['a1, см','a2, см']
+                                        ],
+                                        [['a1, см','a2, см']
+                                        ],
+                                        [['a, см']]
+                                    ]
+                                    
+                                    
         QtGui.QWidget.__init__(self, parent)
         uic.loadUi("gui/solve_concrete_section.ui", self)
         
@@ -28,16 +55,18 @@ class MyWindow(QtGui.QWidget):
         self.changeTypeSolve()
         
 #       связываем прочность и трещиностойкость
-        self.checkBoxPS1.stateChanged.connect(self.changeCheckBoxSolve)
-        self.checkBoxPS2.stateChanged.connect(self.changeCheckBoxSolve)
-        self.checkBoxD.stateChanged.connect(self.changeCheckBoxSolve)
+        self.checkBoxPS1.clicked.connect(self.changeCheckBoxSolve)
+        self.checkBoxPS2.clicked.connect(self.changeCheckBoxSolve)
+        self.checkBoxD.clicked.connect(self.changeCheckBoxSolve)
         self.changeCheckBoxSolve()
+#загружаем формы
+        
         
     def changeCheckBoxSolve(self):
         '''работает при изменении что и как считаем'''
 #        первый случай - нет галок вообще
         if self.checkBoxPS1.isChecked()==False and self.checkBoxPS2.isChecked()==False:
-           
+        
             self.checkBoxPS1.setChecked(True)
             self.checkBoxD.setChecked(False)
             self.changeCheckBoxSolve()
@@ -60,12 +89,15 @@ class MyWindow(QtGui.QWidget):
         self.changeSolvePS2(self.checkBoxPS2.isChecked())
         self.changeSolveD(self.checkBoxD.isChecked())
         
-    def changeSolvePS1(self):
+    def changeSolvePS1(self, bol):
         '''переключаем при расчете по 1 ps'''
-    def changeSolvePS2(self):
+        pass
+    def changeSolvePS2(self, bol):
         '''переключаем при расчете по 1 ps'''
-    def changeSolveD(self):
+        pass
+    def changeSolveD(self,bol):
         '''переключаем при расчете по D'''
+        pass
         
     def changeTypeSolve(self):
         '''работает при изменении типа расчета'''
