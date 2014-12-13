@@ -508,7 +508,7 @@ class Test(unittest.TestCase):
         self.assertLess(abs(jxMesh-jx)/jx,0.005) 
         self.assertLess(abs(jyMesh-jy)/jy,0.005)   
 
-        self.assertEqual(rect.critPoint(),[[2,1,0],[6,5,0],[6,1,0],[2,5,0]])
+        self.assertEqual(rect.critPoint(),[[2,1,0,0, 0, 0],[6,5,0,0, 0, 0],[6,1,0,0, 0, 0],[2,5,0,0, 0, 0]])
 
         rect=Rectangles([[2,1],[6,5]],[1000,1000],1,-1,[3,4,5])
 
@@ -530,7 +530,7 @@ class Test(unittest.TestCase):
                 self.assertEquals(meshRect[i][j],lst[i][j])
         self.assertEqual(rect.ln(),4)
         
-        self.assertEqual(rect.critPoint(),[[2, 3, 1], [6, 5, 1], [6, 3, 1], [2, 5, 1]] )
+        self.assertEqual(rect.critPoint(),[[2, 3, 1,1.1,2,3], [6, 5, 1,1.1,2,3], [6, 3, 1,1.1,2,3], [2, 5, 1,1.1,2,3]] )
         self.assertEqual(rect.title(),'Rectangles' )
 
     def testCircles(self):
@@ -542,7 +542,7 @@ class Test(unittest.TestCase):
         self.assertEqual(circl.sy(),0)
         self.assertEqual(circl.mesh(),[[1.0], [2.0], [-14.136750000000001], [2], [4], [5], [6]])
         self.assertEqual(circl.ln(),1)
-        self.assertEqual(circl.critPoint(),[[1.,2.,2]])
+        self.assertEqual(circl.critPoint(),[[1.,2.,2,4, 5, 6]])
 
     def testSolidCircles(self):
         print 'SolidCircles'
@@ -563,7 +563,7 @@ class Test(unittest.TestCase):
 
         self.assertEqual(solidCircl.ln(),16)
 
-        self.assertEqual(solidCircl.critPoint(),[[3.0,2.,5],[-1.0,2.,5]])
+        self.assertEqual(solidCircl.critPoint(),[[3.0,2.,5,7,2,0],[-1.0,2.,5,7,2,0]])
 
         lst=[np.array([-0.5,  0.5,  1.5,  2.5, -0.5,  0.5,  1.5,  2.5, -0.5,  0.5,  1.5,
         2.5, -0.5,  0.5,  1.5,  2.5]), np.array([ 0.5,  0.5,  0.5,  0.5,  1.5,  1.5,  1.5,  1.5,  2.5,  2.5,  2.5,
@@ -598,7 +598,7 @@ class Test(unittest.TestCase):
 
         self.assertEqual(triangle.ln(),20)
         
-        self.assertEqual(triangle.critPoint(),[[1,0,5],[5,0,5],[4,3,5]])
+        self.assertEqual(triangle.critPoint(),[[1,0,5,7,2,0],[5,0,5,7,2,0],[4,3,5,7,2,0]])
 
         lst=[np.array([ 1.4,  2.2,  3. ,  3.8,  4.6,  1.4,  2.2,  3. ,  3.8,  4.6,  1.4,
         2.2,  3. ,  3.8,  4.6,  1.4,  2.2,  3. ,  3.8,  4.6]), np.array([ 0.375,  0.375,  0.375,  0.375,  0.375,  1.125,  1.125,  1.125,
