@@ -302,7 +302,7 @@
          </rect>
         </property>
        </widget>
-       <widget class="MatplotlibWidget" name="mplwidget">
+       <widget class="MatplotlibWidget" name="mplForm">
         <property name="geometry">
          <rect>
           <x>680</x>

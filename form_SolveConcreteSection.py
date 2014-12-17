@@ -6,11 +6,12 @@ Created on Sat Dec 13 18:55:48 2014
 """
 
 from  PyQt4 import QtCore, QtGui, uic
-
+from math import sin, cos, sqrt, tan
 import win32com.client
 import os
 import sys
 import rcMaterial
+import matplotlib
 
 class MyWindow(QtGui.QWidget):
     def __init__(self, parent=None):
@@ -19,14 +20,14 @@ class MyWindow(QtGui.QWidget):
         self.listSectionRein=[[u'Угловое', u'По периметру',u'Равное сверху/снизу' ,u'Сверху и снизу', u'Свободное' ],[u'Сверху/снизу', u'Свободное'],[u'По кругу', u'Свободное']]
         self.listSectionProp=[[u'h, см', u'b, см'],[u'b1, см', u'b2, см',  u'b3, см', u'h1, см', u'h2, см', u'h3, см'],[u'd, см']]
         self.listSectionReinPropCheck=[
-                                        [[u'a, см', u'd, см'],
-                                         [u'n1, см', u'n2, см',u'a, см', u'd, см'],
-                                         [u'n1, см',u'a, см', u'd, cм'],
-                                         [u'n1, см', u'n2, см',u'a1, см',u'a2, см', u'd1, см', u'd2, см']
+                                        [[u'a, см', u'd, мм'],
+                                         [u'n1', u'n2',u'a, см', u'd, мм'],
+                                         [u'n1',u'a, см', u'd, мм'],
+                                         [u'n1', u'n2',u'a1, см',u'a2, см', u'd1, мм', u'd2, мм']
                                         ],
-                                        [[u'n1, см', u'n2, см',u'a1, см',u'a2, см', u'd1, см', u'd2, см']
+                                        [[u'n1', u'n2',u'a1, см',u'a2, см', u'd1, смм', u'd2, мм']
                                         ],
-                                        [[u'n1, см',u'a, см', u'd, см']]
+                                        [[u'n1',u'a, см', u'd, мм']]
                                     ]
 
         self.listSectionReinPropFind=[
@@ -72,8 +73,16 @@ class MyWindow(QtGui.QWidget):
     def drawForm(self):
         '''получаем список и рисуем картинку'''
         lst=self.getLstForm()
+        print lst
         if lst!='Error':
-            pass
+            self.error('Data')
+        
+        plt=self.mplForm
+        for i in lst:
+            if i[0]=='Rectangle':
+                
+    def error(self, sign):
+        pass
         
     def getLstForm(self):
         '''берем таблицы, проверяем, меняем и возвращаем готовый список готовый и для rcSolve
@@ -96,12 +105,14 @@ class MyWindow(QtGui.QWidget):
 
         lstConc=self.getItemTable(tC)
         lstRein=self.getItemTable(tR)
-        
+        if lstRein=="Error" or lstConc=="Error":
+            return 'Error'
+        print lstRein, 'lstRein'
         nx=2
         ny=2        
         if indFormConc==0:
             y1=lstConc[0][0]
-            x1=lstConc[0][0]
+            x1=lstConc[1][0]
             
             lst1=['Rectangle',[[0,0],[x1,y1]],[nx,ny],0,1,[0,0,0]]
             lst.append(lst1)
@@ -109,17 +120,17 @@ class MyWindow(QtGui.QWidget):
             x11=0
             y11=0
             x12=lstConc[0][0]
-            y12=lstConc[0][3]
+            y12=lstConc[3][0]
             
-            x21=x12/2.-lstConc[0][1]/2.
-            x22=x21+lstConc[0][1]
+            x21=x12/2.-lstConc[1][0]/2.
+            x22=x21+lstConc[1][0]
             y21=y12
-            y22=y21+lstConc[0][4]
+            y22=y21+lstConc[4][0]
             
-            x31=x12/2.-lstConc[0][2]/2.
-            x32=x31+lstConc[0][2]
+            x31=x12/2.-lstConc[2][0]/2.
+            x32=x31+lstConc[2][0]
             y31=y22
-            y32=y31+lstConc[0][5]
+            y32=y31+lstConc[5][0]
             
             lst1=['Rectangle',[[x11,y11],[x12,y12]],[nx,ny],0,1,[0,0,0]]
             lst2=['Rectangle',[[x21,y11],[x22,y22]],[nx,ny],0,1,[0,0,0]]
@@ -129,45 +140,105 @@ class MyWindow(QtGui.QWidget):
             lst.append(lst3)
 
         elif  indFormConc==2:
-            d=lstConc[0][0]
-            lst1=['SolidCircle',[0,0,d],[nx,ny],0,1,[0,0,0]]
+            dd=lstConc[0][0]/1.
+            lst1=['SolidCircle',[0,0,dd],[nx,ny],0,1,[0,0,0]]
             lst.append(lst1)
-
+            
+        lstD=[]
         if indFormConc==0 and indFormRein==0:
-            a=lstRein[0][0]
-            d=lstRein[0][1]
+            a=lstRein[0][0]*1.
+            d=lstRein[1][0]/10.
             lstD=[[a,a,d],[x1-a,a,d],[x1-a,y1-a,d],[a,y1-a,d]]
         elif  indFormConc==0 and indFormRein==1:
             n1=lstRein[0][0]
-            n2=lstRein[0][1]
-            a=lstRein[0][2]
-            d=lstRein[0][3]
+            n2=lstRein[1][0]
+            a=lstRein[2][0]*1.
+            d=lstRein[3][0]/10.
             lstD=[[a,a,d],[x1-a,a,d],[x1-a,y1-a,d],[a,y1-a,d]]
             for i in range(n1):
-                lstTemp=[(x1-2*a)/(n1+1)*(1+i)+a,a,d]
-                lstTemp1=[(x1-2*a)/(n1+1)*(1+i)+a,y1-a,d]
-                lst.append(lstTemp)
-                lst.append(lstTemp1)
+                lstTemp=[(x1-2*a)*1./(n1+1)*(1+i)+a,a,d]
+                lstTemp1=[(x1-2*a)*1./(n1+1)*(1+i)+a,y1-a,d]
+                lstD.append(lstTemp)
+                lstD.append(lstTemp1)
 
             for i in range(n2):
-                lstTemp=[a,(y1-2*a)/(n2+1)*(1+i)+a,d]
-                lstTemp1=[x1-a,(y1-2*a)/(n2+1)*(1+i)+a,d]
-                lst.append(lstTemp)
-                lst.append(lstTemp1)
+                lstTemp=[a,(y1-2*a)*1./(n2+1)*(1+i)+a,d]
+                lstTemp1=[x1-a,(y1-2*a)*1./(n2+1)*(1+i)+a,d]
+                lstD.append(lstTemp)
+                lstD.append(lstTemp1)
 
                 
         elif  indFormConc==0 and indFormRein==2:
             n1=lstRein[0][0]
-            a=lstRein[0][1]
-            d=lstRein[0][2]
-            for i in range(n1):
-                lstTemp=[(x1-2*a)/(n1+1)*(1+i)+a,a,d]
-                lstTemp1=[(x1-2*a)/(n1+1)*(1+i)+a,y1-a,d]
-                lst.append(lstTemp)
-                lst.append(lstTemp1)
+            a=lstRein[1][0]*1.
+            d=lstRein[2][0]/10.
+            if n1!=1:
+                for i in range(n1):
+                    lstTemp=[(x1-2*a)*1./(n1-1)*(i)+a,a,d]
+                    lstTemp1=[(x1-2*a)*1./(n1-1)*(i)+a,y1-a,d]
+                    lstD.append(lstTemp)
+                    lstD.append(lstTemp1)
+                else:
+                    lstTemp=[x1/2.,a,d]
+                    lstTemp1=[x1/2.,y1-a,d]
+                    lstD.append(lstTemp)
+                    lstD.append(lstTemp1)
+                
             
+        elif   (indFormConc==0 and indFormRein==3) or (indFormConc==1 and indFormRein==0):
+            n1=lstRein[0][0]
+            n2=lstRein[1][0]
+            a1=lstRein[2][0]*1.
+            a2=lstRein[3][0]*1.
+            d1=lstRein[4][0]/10.
+            d2=lstRein[5][0]/10.
+            
+            if indFormConc==0:
+                x01=0
+                x02=0
+                xb1=x1
+                xb2=x1
+                h=y1
+            else:
+                x01=0
+                x02=x31
+                xb1=x12
+                xb2=x32
+                h=y32
+            
+            if n1!=1:
+                for i in range(n1):
+                    lstTemp=[(xb1-x01-2*a1)*1./(n1-1)*(i)+a1+x01,a1,d1]
+                    lstD.append(lstTemp)
+                else:
+                    lstTemp=[(xb1-x01)/2.+x01,a1,d1]
+                    lstD.append(lstTemp)
+                
+            if n2!=1:
+                for i in range(n2):
+                    lstTemp=[(xb2-x02-2*a2)*1./(n2-1)*(i)+a2+x02,h-a2,d2]
+                    lstD.append(lstTemp)
+                else:
+                    lstTemp=[(xb2-x02)/2.+x02,h-a2,d2]
+                    lstD.append(lstTemp)
+                
+        elif   (indFormConc==2 and indFormRein==0):
+            n=lstRein[0][0]
+            a=lstRein[1][0]*1.
+            d=lstRein[2][0]/10.
+            for i in range(n):
+                x=(dd/2.-a)*sin(3.1814*2/n*i)
+                y=(dd/2.-a)*cos(3.1814*2/n*i)
+                lstTemp=[x,y,d]
+                lstD.append(lstTemp)
+        else:
+            for i in lstRein:
+                lstD.append(i)
+                
+        for i in lstD:
+            lst.append(['Circle',i,[1,1],1,1,[0,0,0]])
         
-            
+        return lst
         
     def changeForm(self):
         '''загружаем данные для ввода 
@@ -188,7 +259,7 @@ class MyWindow(QtGui.QWidget):
                     text=widget.item(i,j).text()
                     if "," in text:
                         text=text.replace(',','.')
-                    text=float(text)
+                    text=int(text)
                     if text>=0:
                         widget.item(i,j).setText(str(text))
                     else:
