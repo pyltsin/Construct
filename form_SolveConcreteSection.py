@@ -12,6 +12,8 @@ import os
 import sys
 import rcMaterial
 import matplotlib
+import matplotlib.path as mpath
+import matplotlib.patches as mpatches
 
 class MyWindow(QtGui.QWidget):
     def __init__(self, parent=None):
@@ -25,7 +27,7 @@ class MyWindow(QtGui.QWidget):
                                          [u'n1',u'a, см', u'd, мм'],
                                          [u'n1', u'n2',u'a1, см',u'a2, см', u'd1, мм', u'd2, мм']
                                         ],
-                                        [[u'n1', u'n2',u'a1, см',u'a2, см', u'd1, смм', u'd2, мм']
+                                        [[u'n1', u'n2',u'a1, см',u'a2, см', u'd1, мм', u'd2, мм']
                                         ],
                                         [[u'n1',u'a, см', u'd, мм']]
                                     ]
@@ -76,11 +78,34 @@ class MyWindow(QtGui.QWidget):
         print lst
         if lst!='Error':
             self.error('Data')
-        
-        plt=self.mplForm
+        fig = self.mplForm.figure
+        ax=fig.add_subplot(111)   
+        ax.clear()
         for i in lst:
             if i[0]=='Rectangle':
+                rect = mpatches.Rectangle((i[1][0][0], i[1][0][1]),i[1][1][0]-i[1][0][0],i[1][1][1]-i[1][0][1])      
+        
+                ax.add_patch(rect)
+
+            elif i[0]=='Circle':
+                circle = mpatches.Circle((i[1][0],i[1][1]), radius=i[1][2]/2., color=[0.5,0.5,0.5])  
+        
+                ax.add_patch(circle)
+            elif i[0]=='SolidCircle':
+                circle = mpatches.Circle((i[1][0],i[1][1]), radius=i[1][2]/2., color=[1,0.0,0.0])  
+        
+                ax.add_patch(circle)
                 
+        ax.relim()
+        # update ax.viewLim using the new dataLim
+#        ax.autoscale_view()
+#        pyplot.draw()
+
+#        ax.set_xlim(-40,40)
+#        ax.set_ylim(auto=True)
+#        ax.autoscale(enable=True, axis=u'both', tight=None)
+        ax.autoscale_view(tight=True, scalex=True, scaley=True)
+        self.mplForm.draw()
     def error(self, sign):
         pass
         
@@ -133,7 +158,7 @@ class MyWindow(QtGui.QWidget):
             y32=y31+lstConc[5][0]
             
             lst1=['Rectangle',[[x11,y11],[x12,y12]],[nx,ny],0,1,[0,0,0]]
-            lst2=['Rectangle',[[x21,y11],[x22,y22]],[nx,ny],0,1,[0,0,0]]
+            lst2=['Rectangle',[[x21,y21],[x22,y22]],[nx,ny],0,1,[0,0,0]]
             lst3=['Rectangle',[[x31,y31],[x32,y32]],[nx,ny],0,1,[0,0,0]]
             lst.append(lst1)
             lst.append(lst2)
@@ -145,6 +170,7 @@ class MyWindow(QtGui.QWidget):
             lst.append(lst1)
             
         lstD=[]
+        
         if indFormConc==0 and indFormRein==0:
             a=lstRein[0][0]*1.
             d=lstRein[1][0]/10.
@@ -178,11 +204,11 @@ class MyWindow(QtGui.QWidget):
                     lstTemp1=[(x1-2*a)*1./(n1-1)*(i)+a,y1-a,d]
                     lstD.append(lstTemp)
                     lstD.append(lstTemp1)
-                else:
-                    lstTemp=[x1/2.,a,d]
-                    lstTemp1=[x1/2.,y1-a,d]
-                    lstD.append(lstTemp)
-                    lstD.append(lstTemp1)
+            else:
+                lstTemp=[x1/2.,a,d]
+                lstTemp1=[x1/2.,y1-a,d]
+                lstD.append(lstTemp)
+                lstD.append(lstTemp1)
                 
             
         elif   (indFormConc==0 and indFormRein==3) or (indFormConc==1 and indFormRein==0):
@@ -210,17 +236,17 @@ class MyWindow(QtGui.QWidget):
                 for i in range(n1):
                     lstTemp=[(xb1-x01-2*a1)*1./(n1-1)*(i)+a1+x01,a1,d1]
                     lstD.append(lstTemp)
-                else:
-                    lstTemp=[(xb1-x01)/2.+x01,a1,d1]
-                    lstD.append(lstTemp)
+            else:
+                lstTemp=[(xb1-x01)/2.+x01,a1,d1]
+                lstD.append(lstTemp)
                 
             if n2!=1:
                 for i in range(n2):
                     lstTemp=[(xb2-x02-2*a2)*1./(n2-1)*(i)+a2+x02,h-a2,d2]
                     lstD.append(lstTemp)
-                else:
-                    lstTemp=[(xb2-x02)/2.+x02,h-a2,d2]
-                    lstD.append(lstTemp)
+            else:
+                lstTemp=[(xb2-x02)/2.+x02,h-a2,d2]
+                lstD.append(lstTemp)
                 
         elif   (indFormConc==2 and indFormRein==0):
             n=lstRein[0][0]
@@ -233,7 +259,7 @@ class MyWindow(QtGui.QWidget):
                 lstD.append(lstTemp)
         else:
             for i in lstRein:
-                lstD.append(i)
+                lstD.append([i[0],i[1],i[2]/10.])
                 
         for i in lstD:
             lst.append(['Circle',i,[1,1],1,1,[0,0,0]])

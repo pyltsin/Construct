@@ -305,8 +305,8 @@
        <widget class="MatplotlibWidget" name="mplForm">
         <property name="geometry">
          <rect>
-          <x>680</x>
-          <y>40</y>
+          <x>640</x>
+          <y>50</y>
           <width>400</width>
           <height>300</height>
          </rect>
