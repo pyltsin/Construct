@@ -71,43 +71,75 @@ class MyWindow(QtGui.QWidget):
         self.changeRein()
 #рисуем формы если могем
         self.buttonDraw.clicked.connect(self.drawForm)
-    
+#связываем кнопку по умолчанию 1 пс
+        self.buttonPS1.clicked.connect(self.PS1Reset)
+        
+# связываем счетчик с дейтсвиями
+        self.boxCountLoadPS1.valueChanged.connect(self.changeCountTableLoadPS1)
+        self.boxCountLoadPS1.setValue(1)
+
+        self.boxCountLoadPS2.valueChanged.connect(self.changeCountTableLoadPS2)
+        self.boxCountLoadPS2.setValue(1)
+        
+        self.changeCountTableLoadPS1()
+        self.changeCountTableLoadPS2()
+
+    def changeCountTableLoadPS1(self):
+        self.changeCountTableLoad(self.boxCountLoadPS1.value(), self.tableLoadPS1)
+
+    def changeCountTableLoadPS2(self):
+        self.changeCountTableLoad(self.boxCountLoadPS2.value(), self.tableLoadPS2)
+
+
+    def changeCountTableLoad(self, i, widget):
+        '''изменяем кол-во строк при изенении счетчика'''
+        widget.setRowCount(i)
+        for j in range(widget.rowCount()):
+            for k in range(widget.columnCount()):
+                if widget.item(j,k)==None:
+                   widget.setItem(j, k, QtGui.QTableWidgetItem('0'))
+
+    def PS1Reset(self):
+        '''сбрасываем на умолчание'''
+        self.boxPS1Char.setCurrentIndex(0)
+        self.boxPS1Dia.setCurrentIndex(0)
+        self.boxPS1Rt.setCurrentIndex(0)
+        self.textPS1Tol.setText(u'0,0001')
+        self.textPS1Num.setText(u'100')
+     
+
     def drawForm(self):
         '''получаем список и рисуем картинку'''
         lst=self.getLstForm()
-        print lst
+
         if lst!='Error':
+            fig = self.mplForm.figure
+            ax=fig.add_subplot(111)   
+            ax.clear()
+            for i in lst:
+                if i[0]=='Rectangle':
+                    rect = mpatches.Rectangle((i[1][0][0], i[1][0][1]),i[1][1][0]-i[1][0][0],i[1][1][1]-i[1][0][1])      
+            
+                    ax.add_patch(rect)
+    
+                elif i[0]=='Circle':
+                    circle = mpatches.Circle((i[1][0],i[1][1]), radius=i[1][2]/2., color=[0.,1,0])  
+            
+                    ax.add_patch(circle)
+                elif i[0]=='SolidCircle':
+                    circle = mpatches.Circle((i[1][0],i[1][1]), radius=i[1][2]/2., color=[1,0.0,0.0])  
+            
+                    ax.add_patch(circle)
+                    
+            ax.relim()
+            ax.autoscale_view(tight=True, scalex=True, scaley=True)
+            self.mplForm.draw()
+        else:
             self.error('Data')
-        fig = self.mplForm.figure
-        ax=fig.add_subplot(111)   
-        ax.clear()
-        for i in lst:
-            if i[0]=='Rectangle':
-                rect = mpatches.Rectangle((i[1][0][0], i[1][0][1]),i[1][1][0]-i[1][0][0],i[1][1][1]-i[1][0][1])      
+            
         
-                ax.add_patch(rect)
-
-            elif i[0]=='Circle':
-                circle = mpatches.Circle((i[1][0],i[1][1]), radius=i[1][2]/2., color=[0.5,0.5,0.5])  
-        
-                ax.add_patch(circle)
-            elif i[0]=='SolidCircle':
-                circle = mpatches.Circle((i[1][0],i[1][1]), radius=i[1][2]/2., color=[1,0.0,0.0])  
-        
-                ax.add_patch(circle)
-                
-        ax.relim()
-        # update ax.viewLim using the new dataLim
-#        ax.autoscale_view()
-#        pyplot.draw()
-
-#        ax.set_xlim(-40,40)
-#        ax.set_ylim(auto=True)
-#        ax.autoscale(enable=True, axis=u'both', tight=None)
-        ax.autoscale_view(tight=True, scalex=True, scaley=True)
-        self.mplForm.draw()
     def error(self, sign):
-        pass
+        print 'Error:', sign
         
     def getLstForm(self):
         '''берем таблицы, проверяем, меняем и возвращаем готовый список готовый и для rcSolve
@@ -128,13 +160,13 @@ class MyWindow(QtGui.QWidget):
         tR=self.tableFormRein
         
 
-        lstConc=self.getItemTable(tC)
-        lstRein=self.getItemTable(tR)
+        lstConc=self.getItemTable(tC, '+')
+        lstRein=self.getItemTable(tR, '+')
         if lstRein=="Error" or lstConc=="Error":
             return 'Error'
         print lstRein, 'lstRein'
-        nx=2
-        ny=2        
+        nx=int(self.boxNx.value())
+        ny=int(self.boxNy.value())        
         if indFormConc==0:
             y1=lstConc[0][0]
             x1=lstConc[1][0]
@@ -166,7 +198,7 @@ class MyWindow(QtGui.QWidget):
 
         elif  indFormConc==2:
             dd=lstConc[0][0]/1.
-            lst1=['SolidCircle',[0,0,dd],[nx,ny],0,1,[0,0,0]]
+            lst1=['SolidCircle',[dd/2.,dd/2.,dd],[nx,ny],0,1,[0,0,0]]
             lst.append(lst1)
             
         lstD=[]
@@ -253,8 +285,8 @@ class MyWindow(QtGui.QWidget):
             a=lstRein[1][0]*1.
             d=lstRein[2][0]/10.
             for i in range(n):
-                x=(dd/2.-a)*sin(3.1814*2/n*i)
-                y=(dd/2.-a)*cos(3.1814*2/n*i)
+                x=(dd/2.-a)*sin(3.1814*2/n*i)+dd/2.
+                y=(dd/2.-a)*cos(3.1814*2/n*i)+dd/2.
                 lstTemp=[x,y,d]
                 lstD.append(lstTemp)
         else:
@@ -274,7 +306,7 @@ class MyWindow(QtGui.QWidget):
         
         self.loadTable(self.tableFormConc, self.listSectionProp[index], [''])
 
-    def getItemTable(self, widget):
+    def getItemTable(self, widget, sign):
         row=widget.rowCount()
         column=widget.columnCount()
         try:
@@ -286,10 +318,14 @@ class MyWindow(QtGui.QWidget):
                     if "," in text:
                         text=text.replace(',','.')
                     text=int(text)
-                    if text>=0:
-                        widget.item(i,j).setText(str(text))
+                    if sign=='+':
+                        if text>=0:
+                            widget.item(i,j).setText(str(text))
+                        else:
+                            return 'Error'
                     else:
-                        return 'Error'
+                        widget.item(i,j).setText(str(text))
+                        
                         
                     lstRow.append(text)
                 lst.append(lstRow)
@@ -324,31 +360,34 @@ class MyWindow(QtGui.QWidget):
 #   если расчет прочности галка стоит:
         if self.checkBoxPS1.isChecked()==True:
             self.checkBoxD.setEnabled(True)
-            self.tabLoad.setEnabled(True)
+#            self.tabLoad.setEnabled(True)
         else:
             self.checkBoxD.setEnabled(False)
             self.checkBoxD.setChecked(False)
-            self.tabLoad.setEnabled(False)
+#            self.tabLoad.setEnabled(False)
 
 
-        if self.checkBoxPS2.isChecked()==True:
-            self.tabNLoad.setEnabled(True)
-        else:
-            self.tabNLoad.setEnabled(False)
+#        if self.checkBoxPS2.isChecked()==True:
+#            self.tabNLoad.setEnabled(True)
+#        else:
+#            self.tabNLoad.setEnabled(False)
 
         self.changeSolvePS1(self.checkBoxPS1.isChecked())
         self.changeSolvePS2(self.checkBoxPS2.isChecked())
         self.changeSolveD(self.checkBoxD.isChecked())
         
     def changeSolvePS1(self, bol):
+        self.tabLoad.setEnabled(bol)  
+        self.boxPS1.setEnabled(bol)
         '''переключаем при расчете по 1 ps'''
-        pass
     def changeSolvePS2(self, bol):
         '''переключаем при расчете по 1 ps'''
-        pass
+        self.tabNLoad.setEnabled(bol)
+        self.boxPS2.setEnabled(bol)
+        
     def changeSolveD(self,bol):
         '''переключаем при расчете по D'''
-        pass
+        self.boxPSD.setEnabled(bol)
         
     def changeTypeSolve(self):
         '''работает при изменении типа расчета'''
@@ -357,6 +396,7 @@ class MyWindow(QtGui.QWidget):
     def changeTypeSection(self):
         '''работает при изменении типа сечения'''
         pass
+    
     def changeCode(self):
         '''работает при изменении и загрузки норм.
         1. загружаем типы материалов'''

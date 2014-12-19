@@ -18,6 +18,7 @@ class Reinforced(object):
         self.typ='A'
         self.a=False
         self.ys=False
+        self.ysc=1
         self.ysi=1
         self.ysni=1
     
@@ -43,6 +44,8 @@ class Reinforced(object):
         '''аппроксимирующие функции определния характеристик бетона с A240'''
         a=self.a
         ys=self.ys
+            
+
         rsn=a*100/9.81
         rs=rsn/ys
         
@@ -97,24 +100,35 @@ class Reinforced(object):
             r=self.rs
         else:
             r=self.rsn
+
+        
+        rc=r*self.ysc
         
         if self.a<600:
             es0=r/self.es
+            esc0=rc/self.es
         else:
             es0=r/self.es+0.002
-            
+            esc0=rc/self.es+0.002
         if self.a<600:
-            x=[-self.es2,-es0,0,es0,self.es2]
-            y=[-r,-r,0,r,r]
+            x=[-self.es2,-esc0,0,es0,self.es2]
+            y=[-rc,-rc,0,r,r]
         else:
             es1=0.9*r/self.es
+            esc1=0.9*rc/self.es
             sigmas1=0.9*r
             sigmas2=1.1*r
+            
+            sigmasc1=0.9*rc
+            sigmasc2=1.1*rc
+
 #            es0=r/self.es
             es3=2*(es0-es1)+es1
+            esc3=2*(esc0-esc1)+esc1
+
 #            e3=(self.es2-es1)/1.1+es1
-            x=[-self.es2,-es3,-es1,0,es1, es3,self.es2]
-            y=[-sigmas2,-sigmas2,-sigmas1,0,sigmas1,sigmas2,sigmas2]
+            x=[-self.es2,-esc3,-esc1,0,es1, es3,self.es2]
+            y=[-sigmasc2,-sigmasc2,-sigmasc1,0,sigmas1,sigmas2,sigmas2]
             
         x.append(x[-1]*1000000.)
         y.append(y[-1])
@@ -181,6 +195,7 @@ class Reinforced(object):
             self.rsw*=(100/9.81)
             self.es*=(100/9.81)
             
+            
             return self.rsn, self.rs, self.rsw, self.es, self.es2
             
     def propertiesSP63(self):
@@ -201,6 +216,10 @@ class Reinforced(object):
             self.rsw*=(100/9.81)
             self.es*=(100/9.81)
 
+            if (self.a==600 and self.typ=='A') or (self.a==500 and self.typ=='B'):
+                self.ysc=0.95
+            else:
+                self.ysc=1
 
             return self.rsn, self.rs, self.rsw, self.es, self.es2
     
@@ -1147,7 +1166,7 @@ class Test(unittest.TestCase):
 #        print rein.ky
 #        print rein.kyEv
         
-        lstx=[-0.015*10**6,-0.015,-est,-0.9*600*100/9.8/(2.06*10**6),0,0.9*600*100/9.8/(2.06*10**6),est,0.015,0.015*10**6]
+        lstx=[-0.015*10**6,-0.015,-est,-0.9*600*100/9.8/(2.06*10**6)*0.95,0,0.9*600*100/9.8/(2.06*10**6),est,0.015,0.015*10**6]
         for i in range(len(lstx)):
             test=rein.x[i]
             check=lstx[i]
@@ -1158,7 +1177,7 @@ class Test(unittest.TestCase):
                 self.assertLess(abs(test-check),0.02) 
             
         r=600*100/9.81
-        lsty=[-r*1.1,-r*1.1,-r*1.1,-0.9*r,0,0.9*r,r*1.1,r*1.1,r*1.1]
+        lsty=[-r*1.1*0.95,-r*1.1*0.95,-r*1.1*0.95,-0.9*r*0.95,0,0.9*r,r*1.1,r*1.1,r*1.1]
         for i in range(len(lstx)):
             test=rein.y[i]
             check=lsty[i]
