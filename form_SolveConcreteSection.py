@@ -104,8 +104,8 @@ class MyWindow(QtGui.QWidget):
         self.boxPS1Char.setCurrentIndex(0)
         self.boxPS1Dia.setCurrentIndex(0)
         self.boxPS1Rt.setCurrentIndex(0)
-        self.textPS1Tol.setText(u'0,0001')
-        self.textPS1Num.setText(u'100')
+        self.doubleBoxTol.setValue(0.001)
+        self.boxNum.setValue(100)
      
 
     def drawForm(self):
