@@ -552,7 +552,98 @@ class Solves(object):
             
         return k
 
-    
+    def nuD(self, lstNMxMy, typStat, lx, ly, l):
+        '''расчет внецентреного сжатия'''
+#        сначала определяем e0 в см
+        e01=1
+        e02=l/600.
+        
+#дальше определяем e для оси х
+        x1=False
+        x2=False
+        lstTempCritPointX=self.critPoint(0,1,0)
+        for i in lstTempCritPointX:
+            if x1==False and x2==False:
+                x1=i[0]
+                x2=i[0]
+            elif x1>i[0]:
+                x1=i[0]
+            elif x2<i[0]:
+                x2=i[0]
+        b=x2-x1
+        
+        e03x=b/30.
+        
+#дальше определяем e для оси х
+        y1=False
+        y2=False
+        lstTempCritPointY=self.critPoint(0,0,1)
+        for i in lstTempCritPointY:
+            if y1==False and y2==False:
+                y1=i[1]
+                y2=i[1]
+            elif y1>i[1]:
+                y1=i[1]
+            elif y2<i[1]:
+                y2=i[1]
+        h=y2-y1
+        e03y=h/30.
+        eax=max([e01, e02, e03x])
+        eay=max([e01, e02, e03y])
+        
+        matrNMxMy=np.array(lstNMxMy)
+
+#определяем phiL
+        phi1BolX=(matrNMxMy[1]==0)
+        phiBolX1=phi1BolX*1
+        phiLX=(phi1BolX==0)*(matrNMxMy[4]/(matrNMxMy[1]+phiBolX1))+1
+        phiLXBol=(phiLX>2)
+        phiLX=phiLX*(phiLXBol==0)+2*phiLXBol
+        
+        phi1BolY=(matrNMxMy[2]==0)
+        phiBolY1=phi1BolY*1
+        phiLY=(phi1BolY==0)*(matrNMxMy[5]/(matrNMxMy[2]+phiBolY1))+1
+        phiLYBol=(phiLY>2)
+        phiLY=phiLY*(phiLYBol==0)+2*phiLYBol
+        
+        e0xBol=(matrNMxMy[0]==0)
+        e0x=(e0xBol==0)*matrNMxMy[1]/(matrNMxMy[0]+e0xBol*1)
+
+        e0yBol=(matrNMxMy[0]==0)
+        e0y=(e0yBol==0)*matrNMxMy[2]/(matrNMxMy[0]+e0yBol*1)
+
+        if typStat==True:
+            e0x=e0x+eax
+            e0y=e0y+eay
+        else:
+            etx=(e0x<eax)
+            e0x=e0x*(etx==0)+eax*etx
+            
+            ety=(e0y<eay)
+            e0y=e0y*(ety==0)+eay*ety
+        
+        deltaX=e0x/b
+        deltaY=e0y/h
+
+#не хватате          Eb*Jx и Es*Jsx Eb*Jy и Es*Jsy
+        Dx=0.15*Eb*Jx/(phiLX*(0.3+delatX))+0.7*Es*Jsx
+        Dy=0.15*Eb*Jy/(phiLY*(0.3+delatY))+0.7*Es*Jsy
+        
+        NcrX=3.14**2*Dx/lx**2
+        NcrY=3.14**2*Dy/ly**2
+        
+        nx=1/(1-matrNMxMy[0]/NcrX)
+        ny=1/(1-matrNMxMy[0]/NcrY)
+
+        errorNcrX=matrNMxMy[0]>NcrX
+        errorNcrY=matrNMxMy[0]>NcrY
+        
+        mx=matrNMxMy[0]*e0x*nx
+        my=matrNMxMy[0]*e0y*ny
+        
+        return mx, my, errorNcrX, errorNcrY, nx, ny, NcrX, NcrY, Dx, Dy, deltaX, deltaY, e0x, e0y, phiLX, phiLY
+        
+
 if __name__ == "__main__":
     lstForm=[
     ['Rectangle',[[0.,0.],[50.,50.]],[30.,30.],0,1,[0,0,0]],

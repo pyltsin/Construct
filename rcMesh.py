@@ -291,8 +291,14 @@ class SolidCircles(object):
         mat=self.mat
         p1=[x+x0,y+y0, mat, self.e0rxry[0]+e0t, self.e0rxry[1]+rxt,  self.e0rxry[2]+ryt]
         p2=[x-x0,y-y0, mat, self.e0rxry[0]+e0t, self.e0rxry[1]+rxt,  self.e0rxry[2]+ryt]
+        p3=[d/2.+x, y, mat, self.e0rxry[0]+e0t, self.e0rxry[1]+rxt,  self.e0rxry[2]+ryt]
+        p4=[-d/2.+x, y, mat, self.e0rxry[0]+e0t, self.e0rxry[1]+rxt,  self.e0rxry[2]+ryt]
 
-        return [p1,p2]
+        p5=[x, d/2.+y, mat, self.e0rxry[0]+e0t, self.e0rxry[1]+rxt,  self.e0rxry[2]+ryt]
+
+        p6=[x, -d/2.+y, mat, self.e0rxry[0]+e0t, self.e0rxry[1]+rxt,  self.e0rxry[2]+ryt]
+
+        return [p1,p2,p3, p4, p5, p6]
 
 
 class Triangles(object):
