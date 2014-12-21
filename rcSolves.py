@@ -626,6 +626,7 @@ class Solves(object):
         deltaY=e0y/h
 
 #не хватате          Eb*Jx и Es*Jsx Eb*Jy и Es*Jsy
+#не хватает случая lx и ly==0
         Dx=0.15*Eb*Jx/(phiLX*(0.3+delatX))+0.7*Es*Jsx
         Dy=0.15*Eb*Jy/(phiLY*(0.3+delatY))+0.7*Es*Jsy
         
