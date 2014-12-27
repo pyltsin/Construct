@@ -7,7 +7,7 @@ Created on Sun Oct 19 18:10:06 2014
 import numpy as np
 
 from scipy.spatial import ConvexHull
-points = np.random.rand(100, 3)   # 30 random points in 2-D
+points = np.random.rand(5, 3)   # 30 random points in 2-D
 #points1 = np.random.rand(20, 3)   # 30 random points in 2-D
 
 #points*=points1

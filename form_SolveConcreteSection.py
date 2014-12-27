@@ -14,6 +14,14 @@ import rcMaterial
 import matplotlib
 import matplotlib.path as mpath
 import matplotlib.patches as mpatches
+from key_press_event import copy_past
+
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+
+import numpy as np
+from scipy.spatial import ConvexHull
 
 class MyWindow(QtGui.QWidget):
     def __init__(self, parent=None):
@@ -84,6 +92,34 @@ class MyWindow(QtGui.QWidget):
         self.changeCountTableLoadPS1()
         self.changeCountTableLoadPS2()
 
+#связываем изменения с функцией изменения
+        self.tableFormConc.itemChanged.connect(self.changed)
+        self.tableFormConc.itemChanged.connect(self.changed)
+        self.tableFormRein.itemChanged.connect(self.changed)
+        self.boxCodeConc.currentIndexChanged.connect(self.changed)
+        self.boxCodeRein.currentIndexChanged.connect(self.changed)
+
+
+        self.doubleBoxYbi.valueChanged.connect(self.changed)
+        self.doubleBoxYsi.valueChanged.connect(self.changed)
+        self.boxNx.valueChanged.connect(self.changed)
+        self.boxNy.valueChanged.connect(self.changed)
+
+        self.tableLoadPS1.itemChanged.connect(self.changed)
+        self.tableLoadPS2.itemChanged.connect(self.changed)
+
+
+#кнопка расчета
+        self.buttonSolve.clicked.connect(self.solve)
+    def solve(self):
+        slv=Solve(self)
+        bol=slv.critSolve()
+        if bol==False:
+            return False
+    def keyPressEvent(self, e):
+        """обеспечивает возможность копирования, вставить"""
+        copy_past(e, [window.tableLoadPS1,window.tableLoadPS2], [], window)
+
     def changeCountTableLoadPS1(self):
         self.changeCountTableLoad(self.boxCountLoadPS1.value(), self.tableLoadPS1)
 
@@ -139,7 +175,15 @@ class MyWindow(QtGui.QWidget):
             
         
     def error(self, sign):
-        print 'Error:', sign
+        self.labelComment.setText('Error:'+str(sign))
+    def changed(self):
+        '''Ловиться только изменения общих данных, и стандартное сечение'''
+        self.labelComment.setText(u'Данные изменились')
+        self.tabCrShort.setEnabled(False)
+        self.tabCrLong.setEnabled(False)
+        self.tabCrNorm.setEnabled(False)
+
+#        print 'Error:', sign
         
     def getLstForm(self):
         '''берем таблицы, проверяем, меняем и возвращаем готовый список готовый и для rcSolve
@@ -164,7 +208,7 @@ class MyWindow(QtGui.QWidget):
         lstRein=self.getItemTable(tR, '+')
         if lstRein=="Error" or lstConc=="Error":
             return 'Error'
-        print lstRein, 'lstRein'
+#        print lstRein, 'lstRein'
         nx=int(self.boxNx.value())
         ny=int(self.boxNy.value())        
         if indFormConc==0:
@@ -301,6 +345,7 @@ class MyWindow(QtGui.QWidget):
     def changeForm(self):
         '''загружаем данные для ввода 
         и заодно способ ввода арматуры'''
+        self.changed()
         index=self.boxFormConc.currentIndex()
         self.loadComboBox(self.boxFormRein, self.listSectionRein[index])
         
@@ -377,27 +422,38 @@ class MyWindow(QtGui.QWidget):
         self.changeSolveD(self.checkBoxD.isChecked())
         
     def changeSolvePS1(self, bol):
+        self.changed()
+
         self.tabLoad.setEnabled(bol)  
         self.boxPS1.setEnabled(bol)
         '''переключаем при расчете по 1 ps'''
     def changeSolvePS2(self, bol):
         '''переключаем при расчете по 1 ps'''
+        self.changed()
+
         self.tabNLoad.setEnabled(bol)
         self.boxPS2.setEnabled(bol)
         
     def changeSolveD(self,bol):
         '''переключаем при расчете по D'''
+        self.changed()
+
         self.boxPSD.setEnabled(bol)
         
     def changeTypeSolve(self):
         '''работает при изменении типа расчета'''
+        self.changed()
+
         pass
 
     def changeTypeSection(self):
         '''работает при изменении типа сечения'''
+        self.changed()
+
         pass
     
     def changeCode(self):
+        self.changed()
         '''работает при изменении и загрузки норм.
         1. загружаем типы материалов'''
         if self.boxCode.currentIndex()==0:
@@ -433,7 +489,219 @@ class MyWindow(QtGui.QWidget):
         for i in range(indexV):
             for j in range(indexG):
                 widget.setItem(i, j, QtGui.QTableWidgetItem('0'))
+
+class Solve(object):
+    def __init__(self, window):
+        self.wnd=window
+    def critSolve(self):
+        '''считаем критические точки'''
+        res1, res2=True, True
+        if self.wnd.tabLoad.isEnabled()==True:
+            res1=self.critSolvePS1()
+        if self.wnd.tabNLoad.isEnabled()==True:
+            res2=self.critSolvePS2()
+        if res1==True and res2==True:
+            return True
+        else:
+            False
+    def critSolvePS1(self):
+        matrix=self.getTableLoad(self.wnd.tableLoadPS1)
+        if matrix[1]==False:
+            return False
+#        print matrix[0]
+        hull=self.hull(matrix[0])
+#        print hull
+        mtr=np.array(matrix[0])
+        self.wnd.tabCrShort.setEnabled(True)
+        self.wnd.tabCrLong.setEnabled(True)
+
+        self.loadTableMatPlot(self.wnd.tableLoadPS1Short, self.wnd.mplCrShort, hull[0], hull[1], hull[2], mtr, [0,1,2,3,4,5])        
+        self.loadTableMatPlot(self.wnd.tableLoadPS1Long, self.wnd.mplCrLong, hull[0], hull[1], hull[2], mtr, [3,4,5,3,4,5])        
+
+        return True    
+
+    def critSolvePS2(self):
+        matrix=self.getTableLoad(self.wnd.tableLoadPS2)
+        if matrix[1]==False:
+            return False
+#        print matrix[0]
+        hull=self.hull(matrix[0])
+        print hull
+        mtr=np.array(matrix[0])
+        self.wnd.tabCrNorm.setEnabled(True)
+        self.loadTableMatPlot(self.wnd.tableLoadPS2Norm, self.wnd.mplCrNorm, hull[0], hull[1], hull[2], mtr, [0,1,2,3,4,5])        
+
+        return True    
+
+    def loadTableMatPlot(self, table, matPlot, s, cur, reb, l, order):
+        '''загружаеам данные и рисуем картинку
+        1 - тблаица
+        2 - матплот
+        3 - список с каким работаем
+        4 - номера из списка
+        5- ребра
+        6 - общий список
+        7 - порядок
+        '''    
+#        загружаем данные в таблице и блокируем для изменения
+        lny=len(cur)
+        table.setRowCount(lny)
+        for i in range(6):
+            for j in range(lny):
+                table.setItem(j, i, QtGui.QTableWidgetItem(""))
+                txt="%.2f"%(s[cur[j]][order[i]])
+                table.item(j,i).setText(txt)
+                table.item(j,i).setFlags(QtCore.Qt.ItemFlags(1+2+4+8+6+12+64))
+
+#рисуем по 3 первым точкам точки))
+
+        fig = matPlot.figure
+        ax = fig.gca(projection='3d')
+        ax.clear()
+        ax.plot(l[:,order[0]], l[:,order[1]], l[:,order[2]],'o')
+#рисуем по 3 точкам ))
+        if type(reb)!=bool:
+            for i in cur:
+#                print s[i][0],s[i][1],s[i][2]
+                ax.plot([s[i][0]],[s[i][1]],[s[i][2]], c='r', marker='o')
+        matPlot.draw()
+
+#        if type(reb)!=bool:
+#            for simplex in reb:
+#                for i in range(len(reb[0])):
+##                    print simplex
+#                    a=i
+#                    b=i+1
+#                    if b>len(reb[0])-1:
+#                        b=0
+##                    print simplex[a],order[0]
+#                    px=[s[simplex[a],order[0]],s[simplex[b],order[0]]]
+#                    py=[s[simplex[a],order[1]],s[simplex[b],order[1]]]
+#                    pz=[s[simplex[a],order[2]],s[simplex[b],order[2]]]
+#                    
+#                    ax.plot(px,py,pz, c='r', marker='o')
         
+    def hull(self,mtr):
+        '''hull
+        1. убрать дубли
+        2. убрать умножение
+        3. убрать лишние размерности
+        2. подготовить данные для qHull - копланарность?'''
+        lst2=mtr
+#        lst1=[mtr[0]]
+#        for i in mtr[1:]:
+#            flag=False
+#            for j in lst1:
+#                if i==j:
+#                    flag=True
+#                    break
+#            if flag==False:
+#                lst1.append(i)
+#        
+#        lst2=[lst1[0]]
+#        for i in lst1[1:]:
+#            for j in lst2:
+#                kk=[]
+#                for k in range(6):
+#                    if j[k]!=0:
+#                        kk.append(i[k]/j[k])
+#                flagK=True
+#                for k in kk[1:]:
+#                    if kk[0]!=k:
+#                        flagK=False
+#                        break
+#                if flagK==True and kk[0]>1:
+#                    lst2.remove(j)
+#            lst2.append(i)
+        
+        lst3=[]
+        for i in lst2:
+            if i!=[0.,0.,0.,0.,0.,0.]:
+                lst3.append(i)
+        
+        
+        lst=np.array(lst3)
+
+        if len(lst)<10:
+            return lst, range(len(lst)), False
+        else:
+
+            matr=np.array(lst3)
+            matr=np.transpose(matr)
+            zero=np.zeros(len(matr[0]))
+            
+            flagMatr=False
+            for i in range(len(matr)):
+                if list(zero*i)!=list(matr[i]):
+                    if flagMatr==False:
+                        matrSel=matr[i]
+                        flagMatr=True
+                    else:
+                        matrSel=np.vstack((matrSel, matr[i]))
+                        
+            matrSel=np.transpose(matrSel)
+
+
+            hull=ConvexHull(matrSel, qhull_options='QJ')
+            return lst, hull.vertices, hull.simplices
+            
+    
+    def getTableLoad(self, widget):
+        try:
+            lst=[]
+            nxMax=widget.rowCount()
+            nyMax=widget.columnCount()
+            for i in range(nxMax):
+                lstRow=[]
+                for j in range(nyMax):
+                    text=widget.item(i,j).text()
+                    if "," in text:
+                        text=text.replace(',','.')
+                    if text=='':
+                        text='0'
+                    text=float(text)
+                    widget.item(i,j).setText(str(text))
+                    lstRow.append(text)
+                lst.append(lstRow)
+            mtr=lst
+            bol=self.checkTableLoad(mtr)
+            if bol==True:
+                return mtr, True
+            else:
+                self.error('Data')
+                return mtr, False
+        except:
+            self.error('Data')
+            return False, False
+    def checkTableLoad(self, mtr):
+        for i in mtr:
+            k1,k2,k3=0,0,0
+            if i[0]!=0:
+                k1=i[3]/i[0]
+            else:
+                if i[3]!=0:
+                    k1=10
+            if i[1]!=0:
+                k2=i[4]/i[1]
+            else:
+                if i[4]!=0:
+                    k2=10
+
+            if i[2]!=0:
+                k3=i[5]/i[2]
+            else:
+                if i[5]!=0:
+                    k3=10
+            
+            if (k1<0 or k1>1) or (k2<0 or k2>1) or (k3<0 or k3>1):
+                return False
+        return True
+    def error(self, txt):
+        self.wnd.error(txt)
+        return False
+
+class Error():
+    pass
 if __name__=="__main__":
     app=QtGui.QApplication(sys.argv)
     window=MyWindow()

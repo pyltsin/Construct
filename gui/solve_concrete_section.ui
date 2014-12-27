@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1239</width>
+    <width>1232</width>
     <height>675</height>
    </rect>
   </property>
@@ -45,7 +45,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="tabInputData">
        <attribute name="title">
@@ -939,7 +939,7 @@
         <bool>false</bool>
        </property>
        <attribute name="title">
-        <string>Расчетные нагрузки</string>
+        <string>Расчетные усилия</string>
        </attribute>
        <widget class="QTableWidget" name="tableLoadPS1">
         <property name="geometry">
@@ -1024,7 +1024,7 @@
          <number>1</number>
         </property>
         <property name="maximum">
-         <number>100</number>
+         <number>100000</number>
         </property>
         <property name="singleStep">
          <number>1</number>
@@ -1039,7 +1039,7 @@
         <bool>false</bool>
        </property>
        <attribute name="title">
-        <string>Нормативные нагрузки</string>
+        <string>Нормативные усилия</string>
        </attribute>
        <widget class="QTableWidget" name="tableLoadPS2">
         <property name="geometry">
@@ -1134,47 +1134,259 @@
         </property>
        </widget>
       </widget>
-      <widget class="QWidget" name="tabOutputData">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+      <widget class="QWidget" name="tabCrShort">
        <attribute name="title">
-        <string>Вывод по значениям</string>
+        <string>Крит. крат. усилия</string>
        </attribute>
-       <widget class="QTableWidget" name="tableOutLoad">
+       <widget class="QTableWidget" name="tableLoadPS1Short">
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>0</y>
-          <width>1041</width>
-          <height>521</height>
+          <y>10</y>
+          <width>431</width>
+          <height>511</height>
+         </rect>
+        </property>
+        <row>
+         <property name="text">
+          <string>1</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>2</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>3</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>4</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>5</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>6</string>
+         </property>
+        </row>
+        <column>
+         <property name="text">
+          <string>N, т</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Mx, т*м</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>My, т*м</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Nl, т</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Mxl, т*м</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Myl, т*м</string>
+         </property>
+        </column>
+       </widget>
+       <widget class="MatplotlibWidget" name="mplCrShort">
+        <property name="geometry">
+         <rect>
+          <x>439</x>
+          <y>10</y>
+          <width>591</width>
+          <height>501</height>
          </rect>
         </property>
        </widget>
       </widget>
-      <widget class="QWidget" name="tabGeneralOutputData">
+      <widget class="QWidget" name="tabCrLong">
        <attribute name="title">
-        <string>Общий вывод</string>
+        <string>Крит. длит. усилия</string>
        </attribute>
-       <widget class="QTableWidget" name="tableOutK">
+       <widget class="MatplotlibWidget" name="mplCrLong">
+        <property name="geometry">
+         <rect>
+          <x>630</x>
+          <y>0</y>
+          <width>400</width>
+          <height>351</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QTableWidget" name="tableLoadPS1Long">
         <property name="geometry">
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>441</width>
-          <height>531</height>
+          <width>621</width>
+          <height>501</height>
+         </rect>
+        </property>
+        <row>
+         <property name="text">
+          <string>1</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>2</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>3</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>4</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>5</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>6</string>
+         </property>
+        </row>
+        <column>
+         <property name="text">
+          <string>N, т</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Mx, т*м</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>My, т*м</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Nl, т</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Mxl, т*м</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Myl, т*м</string>
+         </property>
+        </column>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tabCrNorm">
+       <attribute name="title">
+        <string>Крит. норм. усилия</string>
+       </attribute>
+       <widget class="MatplotlibWidget" name="mplCrNorm">
+        <property name="geometry">
+         <rect>
+          <x>630</x>
+          <y>0</y>
+          <width>400</width>
+          <height>351</height>
          </rect>
         </property>
        </widget>
-       <widget class="QTableWidget" name="tableOutGeneral">
+       <widget class="QTableWidget" name="tableLoadPS2Norm">
         <property name="geometry">
          <rect>
-          <x>450</x>
+          <x>0</x>
           <y>0</y>
-          <width>441</width>
-          <height>531</height>
+          <width>621</width>
+          <height>501</height>
          </rect>
         </property>
+        <row>
+         <property name="text">
+          <string>1</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>2</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>3</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>4</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>5</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>6</string>
+         </property>
+        </row>
+        <column>
+         <property name="text">
+          <string>N, т</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Mx, т*м</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>My, т*м</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Nl, т</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Mxl, т*м</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Myl, т*м</string>
+         </property>
+        </column>
        </widget>
       </widget>
      </widget>
