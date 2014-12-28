@@ -170,6 +170,20 @@ class MyWindow(QtGui.QWidget):
             ax.relim()
             ax.autoscale_view(tight=True, scalex=True, scaley=True)
             self.mplForm.draw()
+#получаем границы
+            xlim=ax.get_xlim()
+            ylim=ax.get_ylim()
+#            print xlim
+            if xlim[1]-xlim[0]>ylim[1]-ylim[0]:
+                ylim0=(ylim[0]+ylim[1])/2.-(xlim[1]-xlim[0])/2.
+                ylim1=(ylim[0]+ylim[1])/2.+(xlim[1]-xlim[0])/2.
+                ax.set_ylim(ylim0,ylim1)
+            else:
+                xlim0=(xlim[0]+xlim[1])/2.-(ylim[1]-ylim[0])/2.
+                xlim1=(xlim[0]+xlim[1])/2.+(ylim[1]-ylim[0])/2.
+                ax.set_xlim(xlim0, xlim1)
+            self.mplForm.draw()
+                
         else:
             self.error('Data')
             
@@ -558,29 +572,18 @@ class Solve(object):
         fig = matPlot.figure
         ax = fig.gca(projection='3d')
         ax.clear()
-        ax.plot(l[:,order[0]], l[:,order[1]], l[:,order[2]],'o')
+        ax.plot(l[:,order[1]], l[:,order[2]], l[:,order[0]],'o')
 #рисуем по 3 точкам ))
         if type(reb)!=bool:
             for i in cur:
 #                print s[i][0],s[i][1],s[i][2]
-                ax.plot([s[i][0]],[s[i][1]],[s[i][2]], c='r', marker='o')
+                ax.plot([s[i][order[1]]],[s[i][order[2]]],[s[i][order[0]]], c='r', marker='o')
+        ax.set_xlabel('Mx')
+        ax.set_ylabel('My')
+        ax.set_zlabel('N')
         matPlot.draw()
 
-#        if type(reb)!=bool:
-#            for simplex in reb:
-#                for i in range(len(reb[0])):
-##                    print simplex
-#                    a=i
-#                    b=i+1
-#                    if b>len(reb[0])-1:
-#                        b=0
-##                    print simplex[a],order[0]
-#                    px=[s[simplex[a],order[0]],s[simplex[b],order[0]]]
-#                    py=[s[simplex[a],order[1]],s[simplex[b],order[1]]]
-#                    pz=[s[simplex[a],order[2]],s[simplex[b],order[2]]]
-#                    
-#                    ax.plot(px,py,pz, c='r', marker='o')
-        
+
     def hull(self,mtr):
         '''hull
         1. убрать дубли
@@ -628,6 +631,29 @@ class Solve(object):
 
             matr=np.array(lst3)
             matr=np.transpose(matr)
+            
+#            flagL=False
+#            if list(matr[0]!=matr[3]):
+#                if flagL==False:
+#                    matrL=matr[3]
+#                    flagL=True
+#                else:
+#                    matrL=np.vstack((matrL, matr[3]))
+#            if list(matr[1]!=matr[4]):
+#                if flagL==False:
+#                    matrL=matr[4]
+#                    flagL=True
+#                else:
+#                    matrL=np.vstack((matrL, matr[4]))
+#            if list(matr[2]!=matr[5]):
+#                if flagL==False:
+#                    matrL=matr[5]
+#                    flagL=True
+#                else:
+#                    matrL=np.vstack((matrL, matr[5]))
+#            
+#            matr=np.vstack((matr[0:2], matrL))
+            
             zero=np.zeros(len(matr[0]))
             
             flagMatr=False
@@ -641,6 +667,7 @@ class Solve(object):
                         
             matrSel=np.transpose(matrSel)
 
+#            hull=ConvexHull(matrSel)
 
             hull=ConvexHull(matrSel, qhull_options='QJ')
             return lst, hull.vertices, hull.simplices
@@ -664,7 +691,8 @@ class Solve(object):
                     lstRow.append(text)
                 lst.append(lstRow)
             mtr=lst
-            bol=self.checkTableLoad(mtr)
+#            bol=self.checkTableLoad(mtr)
+            bol=True
             if bol==True:
                 return mtr, True
             else:
