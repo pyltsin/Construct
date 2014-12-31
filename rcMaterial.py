@@ -20,7 +20,6 @@ class Reinforced(object):
         self.ys=False
         self.ysc=1
         self.ysi=1
-        self.ysni=1
     
     def initProperties(self):
         '''расчет и запись исходных значений для отображения, возвращает список;

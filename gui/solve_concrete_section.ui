@@ -45,7 +45,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>8</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tabInputData">
        <attribute name="title">
@@ -350,14 +350,14 @@
         <widget class="QLabel" name="labelCode_6">
          <property name="geometry">
           <rect>
-           <x>70</x>
+           <x>20</x>
            <y>340</y>
-           <width>41</width>
+           <width>91</width>
            <height>31</height>
           </rect>
          </property>
          <property name="text">
-          <string>ybi</string>
+          <string>ybi (к расч. хар.)</string>
          </property>
         </widget>
         <widget class="QTableWidget" name="tableFormConc">
@@ -438,6 +438,35 @@
          </property>
          <property name="value">
           <double>1.000000000000000</double>
+         </property>
+        </widget>
+        <widget class="QLabel" name="labelCode_9">
+         <property name="geometry">
+          <rect>
+           <x>70</x>
+           <y>310</y>
+           <width>41</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>phi</string>
+         </property>
+        </widget>
+        <widget class="QSpinBox" name="spinBoxPhi">
+         <property name="geometry">
+          <rect>
+           <x>130</x>
+           <y>320</y>
+           <width>42</width>
+           <height>22</height>
+          </rect>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>75</number>
          </property>
         </widget>
        </widget>
@@ -527,20 +556,20 @@
         <widget class="QLabel" name="labelCode_7">
          <property name="geometry">
           <rect>
-           <x>40</x>
+           <x>20</x>
            <y>360</y>
-           <width>41</width>
+           <width>91</width>
            <height>31</height>
           </rect>
          </property>
          <property name="text">
-          <string>ysi</string>
+          <string>ysi (к расч. хар.)</string>
          </property>
         </widget>
         <widget class="QDoubleSpinBox" name="doubleBoxYsi">
          <property name="geometry">
           <rect>
-           <x>90</x>
+           <x>130</x>
            <y>360</y>
            <width>62</width>
            <height>22</height>
@@ -1439,7 +1468,7 @@
         </column>
         <column>
          <property name="text">
-          <string>N, cry, т</string>
+          <string>Ncry, т</string>
          </property>
         </column>
        </widget>

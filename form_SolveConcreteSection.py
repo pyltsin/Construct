@@ -19,6 +19,7 @@ from key_press_event import copy_past
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
+import rcSolves
 
 import numpy as np
 from scipy.spatial import ConvexHull
@@ -117,7 +118,10 @@ class MyWindow(QtGui.QWidget):
         if bol==False:
             return False
         
-        slv.loadFormMat()
+        bol=slv.loadFormMatSimple()
+        if bol==False:
+            return False
+
         slv.DSolve()
         
     def keyPressEvent(self, e):
@@ -150,7 +154,7 @@ class MyWindow(QtGui.QWidget):
 
     def drawForm(self):
         '''получаем список и рисуем картинку'''
-        lst=self.getLstForm()
+        lst=self.getLstFormSimple()
 
         if lst!='Error':
             fig = self.mplForm.figure
@@ -209,8 +213,32 @@ class MyWindow(QtGui.QWidget):
         self.tabCrNorm.setEnabled(False)
 
 #        print 'Error:', sign
+    def getLstMatSimple(self):
+        '''возвращаем готовый для rcSolve список материалов, благо их всего 2 штуки'''
+#        определяем нориы
+        code=self.code        
+        con=rcMaterial.Concrete()
+        con.norme=code 
+        con.approxSP=False
         
-    def getLstForm(self):
+        
+        con.phi=self.spinBoxPhi.value()
+        con.b=self.boxCodeConc.text()
+        con.yb=self.doubleBoxYbi.value()
+        con.initProperties()
+        
+        rein=rcMaterial.Reinforced()
+        
+        rein.norme=code 
+        rein.approxSP=False
+        rein.typ='A'
+        rein.a=self.boxCodeRein.text()
+        rein.ysi=self.doubleBoxYsi.value()
+        rein.initProperties()
+
+        lst=[con,rein]
+        return lst
+    def getLstFormSimple(self):
         '''берем таблицы, проверяем, меняем и возвращаем готовый список готовый и для rcSolve
                 lst=[['Rectangle',[[-1,-1],[1,1]],[100,100],1,1,[0,0,0]],
                  ['Circle',[1,0,-1],[1,1],1,2,[0,0,0]],
@@ -518,6 +546,24 @@ class MyWindow(QtGui.QWidget):
 class SolveWindow(object):
     def __init__(self, window):
         self.wnd=window
+        
+    def loadFormMatSimple(self):
+        '''загрузка формы и материалов'''
+        lstForm=self.wnd.getLstFormSimple()
+        lstMat=self.wnd.getLstMatSimple()
+        if lstForm!=[] and lstMat!=[]: 
+            solve=rcSolves.Solves()
+            solve.loadForm(lstForm)
+            solve.loadMat(lstMat)
+            solve.formGen()
+            self.solve=solve
+            return True
+        else:
+            self.error('Data')
+            return False
+    def DSolve(self):
+        '''расчет критических значений'''
+        
     def critSolve(self):
         '''считаем критические точки'''
         res1, res2=True, True
