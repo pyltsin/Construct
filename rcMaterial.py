@@ -483,7 +483,7 @@ class Concrete(object):
             return self.rbn, self.rb, self.rbtn, self.rbt, self.eb, self.eb0, self.eb2, self.eb1red, self.ebt0, self.ebt2, self.ebt1red, self.ebl0, self.ebl2, self.ebl1red, self.eblt0, self.eblt2, self.eblt1red, self.phi_crc
 
     def ephi(self):
-        b=self.b
+        b=float(self.b)
         phi=self.phi
         
         eb0=0.002

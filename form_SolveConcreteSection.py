@@ -197,7 +197,7 @@ class MyWindow(QtGui.QWidget):
             
         
     def error(self, sign):
-        self.labelComment.setText('Error:'+str(sign))
+        self.labelComment.setText(u'Error:'+str(sign))
         self.labelComment.setStyleSheet("background: red")
     def changed(self):
         '''Ловиться только изменения общих данных, и стандартное сечение'''
@@ -222,17 +222,16 @@ class MyWindow(QtGui.QWidget):
         con.approxSP=False
         
         
-        con.phi=self.spinBoxPhi.value()
-        con.b=self.boxCodeConc.text()
+        con.phi=float(self.spinBoxPhi.value())
+        con.b=self.boxCodeConc.currentText()
         con.yb=self.doubleBoxYbi.value()
         con.initProperties()
-        
         rein=rcMaterial.Reinforced()
         
         rein.norme=code 
         rein.approxSP=False
         rein.typ='A'
-        rein.a=self.boxCodeRein.text()
+        rein.setA(self.boxCodeRein.currentText())
         rein.ysi=self.doubleBoxYsi.value()
         rein.initProperties()
 
@@ -417,7 +416,7 @@ class MyWindow(QtGui.QWidget):
                         text=text.replace(',','.')
                     text=int(text)
                     if sign=='+':
-                        if text>=0:
+                        if text>0:
                             widget.item(i,j).setText(str(text))
                         else:
                             return 'Error'
@@ -551,11 +550,12 @@ class SolveWindow(object):
         '''загрузка формы и материалов'''
         lstForm=self.wnd.getLstFormSimple()
         lstMat=self.wnd.getLstMatSimple()
-        if lstForm!=[] and lstMat!=[]: 
+        if type(lstForm)!=type('Error') and type(lstMat)!=type('Error'): 
             solve=rcSolves.Solves()
             solve.loadForm(lstForm)
-            solve.loadMat(lstMat)
+            solve.loadLstMat(lstMat)
             solve.formGen()
+            solve.formGenS()
             self.solve=solve
             return True
         else:
@@ -563,7 +563,43 @@ class SolveWindow(object):
             return False
     def DSolve(self):
         '''расчет критических значений'''
+        lstShort=self.getTableLoadlstItem(self.wnd.tableLoadPS1Short, [0,1,2,3,4,5])
+        lstLong=self.getTableLoadlstItem(self.wnd.tableLoadPS1Long, [0,1,2,3,4,5])
         
+        if lstShort==[] or lstLong==[]:
+            self.error(u'Введите усилия')
+            return False
+        if self.wnd.checkBoxD.isChecked()==True:
+            l=self.wnd.doubleBoxL.value()
+            lx=self.wnd.doubleBoxLx.value()
+            ly=self.wnd.doubleBoxLy.value()
+            typStat=self.wnd.boxStatOpr.currentIndex()
+            if typStat==0:
+                typStat=False
+            else:
+                typStat=True
+        else:
+            l=0
+            lx=0
+            ly=0
+            typStat=False
+#        решаем задачу D
+        lstDShort=self.solve.nuD(lstShort, typStat, lx, ly, l)
+        lstDLong=self.solve.nuD(lstLong, typStat, lx, ly, l)
+
+        if lstDShort[1]==False and  lstDLong[1]==False:
+            self.error(u'Увеличить сечение: N>Ncr')
+            return False
+        
+        
+#загружаем данные, если все нормально
+        self.loadTableMatPlot(self.wnd.tableLoadPS1DShort, self.wnd.mplCrDShort, lstDShort[0], range(len(lstDShort[0])),[] , lstShort, range(len(lstDShort[0][0])))
+        
+        self.loadTableMatPlot(self.wnd.tableLoadPS1DLong, self.wnd.mplCrDLong, lstDLong[0], range(len(lstDLong[0])), [], lstLong, range(len(lstDLong[0][0])))
+
+        self.wnd.tabDShort.setEnabled(True)
+        self.wnd.tabDLong.setEnabled(True)
+
     def critSolve(self):
         '''считаем критические точки'''
         res1, res2=True, True
@@ -617,10 +653,14 @@ class SolveWindow(object):
 #        загружаем данные в таблице и блокируем для изменения
         lny=len(cur)
         table.setRowCount(lny)
-        for i in range(6):
+        for i in range(len(order)):
             for j in range(lny):
                 table.setItem(j, i, QtGui.QTableWidgetItem(""))
-                txt="%.2f"%(s[cur[j]][order[i]])
+                txt=(s[cur[j]][order[i]])
+                if type(txt)==type(0.1) or type(txt)==np.float64:
+                    txt="%.2f"%txt
+                else:
+                    txt=str(txt)
                 table.item(j,i).setText(txt)
                 table.item(j,i).setFlags(QtCore.Qt.ItemFlags(1+2+4+8+6+12+64))
 
@@ -629,6 +669,7 @@ class SolveWindow(object):
         fig = matPlot.figure
         ax = fig.gca(projection='3d')
         ax.clear()
+        l=np.array(l)
         ax.plot(l[:,order[1]], l[:,order[2]], l[:,order[0]],'o')
 #рисуем по 3 точкам ))
         if type(reb)!=bool:
@@ -708,6 +749,20 @@ class SolveWindow(object):
             hull=ConvexHull(matrSel, qhull_options='QJ')
             return lst, hull.vertices, hull.simplices
             
+    def getTableLoadlstItem(self, widget, lstItem):
+        lst=[]
+        nxMax=widget.rowCount()
+        nyMax=widget.columnCount()
+        for i in range(nxMax):
+            lstRow=[]
+            for j in range(nyMax):
+                if j in lstItem:
+                    text=widget.item(i,j).text()
+                    text=float(text)
+                    lstRow.append(text)
+            lst.append(lstRow)
+        mtr=lst
+        return mtr
     
     def getTableLoad(self, widget):
         try:

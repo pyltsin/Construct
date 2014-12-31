@@ -49,6 +49,27 @@ class Solves(object):
         y=sy/a
         return x,y
         
+    def formGenS(self):
+        '''Создает матрицу элементов
+        type0 - флаг если начальные искривления
+        Проверено, тесты не сделаны'''
+        lst=self.formLst
+        matrS=False
+        firstS=False
+        for i in lst:
+            if self.lstMat[i.mat].title()=='Reinforced':
+                print 'tut'
+                if firstS==False:
+                    matrS=np.array(i.mesh())
+                    firstS=True
+                else:
+                    matrS=np.concatenate((matrS,i.mesh()) ,axis=1)
+                
+        self.elemMatrS=matrS
+        x,y=self.centerMass()
+        self.elemMatrS[0]-=x
+        self.elemMatrS[1]-=y
+        
     def formGen(self):
         '''Создает матрицу элементов
         type0 - флаг если начальные искривления
@@ -62,11 +83,15 @@ class Solves(object):
                 first=True
             else:
                 matr=np.concatenate((matr,i.mesh()) ,axis=1)
-            
+
+                
         self.elemMatr=matr
         x,y=self.centerMass()
         self.elemMatr[0]-=x
         self.elemMatr[1]-=y
+        
+        
+        
 #        print 'elemMatr', self.elemMatr
 
         e0=(matr[-3]!=0).astype(float)
@@ -312,7 +337,8 @@ class Solves(object):
                 n+=1
                 
         
-    
+    def loadLstMat(self, lstMat):
+        self.lstMat=lstMat
     def loadMat(self, lstMat):
         '''загружаем материалы и создаем список функций
         в принципе правильно - без тестов''' 
@@ -556,12 +582,12 @@ class Solves(object):
         matrBolB=np.zeros(ln)
 
         for i in range(len(self.lstMat)):
-            if i.title=='Concrete':
+            if self.lstMat[i].title()=='Concrete':
                 matrBolTemp=(self.elemMatr[3]==i)
-                matrBolB+=matrBolTemp*self.lstMat[i].eb()
+                matrBolB+=matrBolTemp*self.lstMat[i].e()
             else:
                 matrBolTemp=(self.elemMatr[3]==i)
-                matrBolS+=matrBolTemp*self.lstMat[i].es()
+                matrBolS+=matrBolTemp*self.lstMat[i].e()
                 
         matrEbJx=self.elemMatr[0]*self.elemMatr[0]*self.elemMatr[2]*matrBolB
         EbJx=matrEbJx.sum()
@@ -595,9 +621,9 @@ class Solves(object):
                 x1=i[0]
             elif x2<i[0]:
                 x2=i[0]
-        b=x2-x1
+        b=(x2-x1)/100.
         
-        e03x=b/30./100.
+        e03x=b/30.
         
 #дальше определяем e для оси y
         y1=False
@@ -611,8 +637,8 @@ class Solves(object):
                 y1=i[1]
             elif y2<i[1]:
                 y2=i[1]
-        h=y2-y1
-        e03y=h/30./100.
+        h=(y2-y1)/100.
+        e03y=h/30.
         eax=max([e01, e02, e03x])
         eay=max([e01, e02, e03y])
         
@@ -620,10 +646,11 @@ class Solves(object):
         
         
         
-        error=False
+        error=True
         out=[]
 #закольцовываем расчет
         for nmxmy in lstNMxMy:
+            print 'nmxmy', nmxmy
             n,mx,my, nl, mxl, myl =nmxmy
 #определяем усилие при N:
             if n>=0:
@@ -648,8 +675,11 @@ class Solves(object):
             else:
                 ex=mx/n
                 ey=my/n
+                
+                exl=mxl/nl
+                eyl=myl/nl
 #уточняем усилие по e                
-                if typStat==True:
+                if typStat==False:
                     if abs(ex)<abs(eax):
                         if ex>=0:
                             ex=abs(eax)
@@ -657,9 +687,21 @@ class Solves(object):
                             ex=-abs(eax)
                     if abs(ey)<abs(eay):
                         if ey>=0:
-                            ex=abs(eay)
+                            ey=abs(eay)
                         else:
-                            ex=-abs(eay)
+                            ey=-abs(eay)
+                            
+                    if abs(exl)<abs(eax):
+                        if exl>=0:
+                            exl=abs(eax)
+                        else:
+                            exl=-abs(eax)
+                    if abs(eyl)<abs(eay):
+                        if eyl>=0:
+                            eyl=abs(eay)
+                        else:
+                            eyl=-abs(eay)
+
                 else:
                     if ex>=0:
                         ex+=eax
@@ -669,19 +711,46 @@ class Solves(object):
                         ey+=eay
                     else:
                         ey-=eay
+
+                    if exl>=0:
+                        exl+=eax
+                    else:
+                        exl-=eax
+                    if eyl>=0:
+                        eyl+=eay
+                    else:
+                        eyl-=eay
+
                 
                 Mx=n*ex
                 My=n*ey
-#определеяем phiL
-            cosx=(n*nl+mx*mxl)/((n**2+mx**2)**0.5*(nl**2+mxl**2)**0.5)
-            lenNTempx=(nl**2+mxl**2)**.5   
-            lenNNormalx=lenNTempx*cosx
-            phiLx=1+lenNNormalx/(n**2+mx**2)**0.5
+                
+                Mxl=nl*exl
+                Myl=nl*eyl
 
-            cosy=(n*nl+my*myl)/((n**2+my**2)**0.5*(nl**2+myl**2)**0.5)
-            lenNTempy=(nl**2+myl**2)**.5   
-            lenNNormaly=lenNTempy*cosy
-            phiLy=1+lenNNormaly/(n**2+my**2)**0.5
+#определеяем phiL
+            if n==0 and Mx==0:
+                phiLx=1
+            else:
+                lstmxT=[]
+                lstmxlT=[]
+                matrS=np.transpose(self.elemMatrS)
+                for i in matrS:
+                    lstmxT.append(Mx+n*i[0]/100.)
+                    lstmxlT.append(Mxl+nl*i[0]/100.)
+                phiLx=max(lstmxlT)/max(lstmxT)+1.
+
+            if n==0 and My==0:
+                phiLy=1
+            else:
+                lstmyT=[]
+                lstmylT=[]
+                matrS=np.transpose(self.elemMatrS)
+                for i in matrS:
+                    lstmyT.append(My+n*i[1]/100.)
+                    lstmylT.append(Myl+nl*i[1]/100.)
+                phiLy=max(lstmylT)/max(lstmyT)+1.
+                
                     
             if phiLx>2:
                 phiLx=2
@@ -693,7 +762,7 @@ class Solves(object):
             if phiLy<1:
                 phiLy=1
 #определяем deltaE
-                
+
             deltaEx=abs(ex/b)
             deltaEy=abs(ey/h)
             
@@ -703,8 +772,8 @@ class Solves(object):
             kbx=0.15/(phiLx*(0.3+deltaEx))
             kby=0.15/(phiLy*(0.3+deltaEy))
             
-            Dx=kbx*EbJx+0.7*EsJx
-            Dy=kby*EbJy+0.7*EsJy
+            Dx=(kbx*EbJx+0.7*EsJx)/1000./100./100.
+            Dy=(kby*EbJy+0.7*EsJy)/1000./100./100.
             
             if lx==0:
                 Ncrx=''
@@ -715,7 +784,7 @@ class Solves(object):
                 Ncrx=3.14*3.14*Dx/lx**2
                 NcrNx=abs(n/Ncrx)
                 if NcrNx>=1:
-                    error=True
+                    error=False
                     nux='Error'
                     MxNux='Error'
                 else:
@@ -731,7 +800,7 @@ class Solves(object):
                 Ncry=3.14*3.14*Dy/ly**2
                 NcrNy=abs(n/Ncry)
                 if NcrNy>=1:
-                    error=True
+                    error=False
                     nuy='Error'
                     MyNuy='Error'
                     
@@ -855,4 +924,4 @@ if __name__ == "__main__":
 ##    nmxmy=[-2,0,0]
 ##    
 ##    print sol.nmxmy2e0rxry(nmxmy,100,0.001)
-print 'ok'
+#print 'ok'

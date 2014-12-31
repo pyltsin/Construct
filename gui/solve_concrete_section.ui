@@ -847,7 +847,7 @@
           <string>Конструкция статически определима?</string>
          </property>
         </widget>
-        <widget class="QDoubleSpinBox" name="doubleBoxX">
+        <widget class="QDoubleSpinBox" name="doubleBoxLx">
          <property name="geometry">
           <rect>
            <x>130</x>
@@ -885,7 +885,7 @@
           <string>Длина отн. Х, м</string>
          </property>
         </widget>
-        <widget class="QDoubleSpinBox" name="doubleBoxY">
+        <widget class="QDoubleSpinBox" name="doubleBoxLy">
          <property name="geometry">
           <rect>
            <x>130</x>
@@ -923,7 +923,7 @@
           <string>Длина отн.Y, м</string>
          </property>
         </widget>
-        <widget class="QDoubleSpinBox" name="doubleBoxY_2">
+        <widget class="QDoubleSpinBox" name="doubleBoxL">
          <property name="geometry">
           <rect>
            <x>130</x>
@@ -1337,7 +1337,7 @@
        <attribute name="title">
         <string>Крат. усилия D</string>
        </attribute>
-       <widget class="QTableWidget" name="tableLoadPS1DSh">
+       <widget class="QTableWidget" name="tableLoadPS1DShort">
         <property name="geometry">
          <rect>
           <x>1</x>
@@ -1487,7 +1487,7 @@
        <attribute name="title">
         <string>Длит. усилия D</string>
        </attribute>
-       <widget class="MatplotlibWidget" name="mplCrDLond">
+       <widget class="MatplotlibWidget" name="mplCrDLong">
         <property name="geometry">
          <rect>
           <x>439</x>
