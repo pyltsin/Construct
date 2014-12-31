@@ -8,7 +8,6 @@ import numpy as np
 import rcMaterial
 import rcMesh
 
-
 class Solves(object):
     '''все расчеты производятся относительно центра массы'''
     def __init__(self):
@@ -555,7 +554,7 @@ class Solves(object):
     def nuD(self, lstNMxMy, typStat, lx, ly, l):
         '''расчет внецентреного сжатия'''
 #        сначала определяем e0 в см
-        e01=1
+        e01=0.01
         e02=l/600.
         
 #дальше определяем e для оси х
@@ -572,9 +571,9 @@ class Solves(object):
                 x2=i[0]
         b=x2-x1
         
-        e03x=b/30.
+        e03x=b/30./100.
         
-#дальше определяем e для оси х
+#дальше определяем e для оси y
         y1=False
         y2=False
         lstTempCritPointY=self.critPoint(0,0,1)
@@ -587,64 +586,142 @@ class Solves(object):
             elif y2<i[1]:
                 y2=i[1]
         h=y2-y1
-        e03y=h/30.
+        e03y=h/30./100.
         eax=max([e01, e02, e03x])
         eay=max([e01, e02, e03y])
         
-        matrNMxMy=np.array(lstNMxMy)
-
-#определяем phiL
-        phi1BolX=(matrNMxMy[1]==0)
-        phiBolX1=phi1BolX*1
-        phiLX=(phi1BolX==0)*(matrNMxMy[4]/(matrNMxMy[1]+phiBolX1))+1
-        phiLXBol=(phiLX>2)
-        phiLX=phiLX*(phiLXBol==0)+2*phiLXBol
+        EbJx=self.EbJ('x')
+        EbJy=self.EbJ('y')
         
-        phi1BolY=(matrNMxMy[2]==0)
-        phiBolY1=phi1BolY*1
-        phiLY=(phi1BolY==0)*(matrNMxMy[5]/(matrNMxMy[2]+phiBolY1))+1
-        phiLYBol=(phiLY>2)
-        phiLY=phiLY*(phiLYBol==0)+2*phiLYBol
+        EsJx=self.EsJ('x')
+        EsJy=self.EsJ('y')
         
-        e0xBol=(matrNMxMy[0]==0)
-        e0x=(e0xBol==0)*matrNMxMy[1]/(matrNMxMy[0]+e0xBol*1)
+        
+        error=False
+        out=[]
+#закольцовываем расчет
+        for nmxmy in lstNMxMy:
+            n,mx,my, nl, mxl, myl =nmxmy
+#определяем усилие при N:
+            if n>=0:
+                ex=0
+                ey=0
+                NcrNx=0
+                NcrNy=0
+                nux=1
+                nuy=1
+                MxNux=mx
+                Mx=mx
+                MyNuy=my
+                My=my
+                phiLx=''
+                phiLy=''
+                deltaEx=''
+                deltaEy=''
+                Dx=''
+                Dy=''
+                Ncrx=''
+                Ncry=''
+            else:
+                ex=mx/n
+                ey=my/n
+#уточняем усилие по e                
+                if typStat==True:
+                    if abs(ex)<abs(eax):
+                        if ex>=0:
+                            ex=abs(eax)
+                        else:
+                            ex=-abs(eax)
+                    if abs(ey)<abs(eay):
+                        if ey>=0:
+                            ex=abs(eay)
+                        else:
+                            ex=-abs(eay)
+                else:
+                    if ex>=0:
+                        ex+=eax
+                    else:
+                        ex-=eax
+                    if ey>=0:
+                        ey+=eay
+                    else:
+                        ey-=eay
+                
+                Mx=n*ex
+                My=n*ey
+#определеяем phiL
+            cosx=(n*nl+mx*mxl)/((n**2+mx**2)**0.5*(nl**2+mxl**2)**0.5)
+            lenNTempx=(nl**2+mxl**2)**.5   
+            lenNNormalx=lenNTempx*cosx
+            phiLx=1+lenNNormalx/(n**2+mx**2)**0.5
 
-        e0yBol=(matrNMxMy[0]==0)
-        e0y=(e0yBol==0)*matrNMxMy[2]/(matrNMxMy[0]+e0yBol*1)
-
-        if typStat==True:
-            e0x=e0x+eax
-            e0y=e0y+eay
-        else:
-            etx=(e0x<eax)
-            e0x=e0x*(etx==0)+eax*etx
+            cosy=(n*nl+my*myl)/((n**2+my**2)**0.5*(nl**2+myl**2)**0.5)
+            lenNTempy=(nl**2+myl**2)**.5   
+            lenNNormaly=lenNTempy*cosy
+            phiLy=1+lenNNormaly/(n**2+my**2)**0.5
+                    
+            if phiLx>2:
+                phiLx=2
+            if phiLx<1:
+                phiLx=1
+                
+            if phiLy>2:
+                phiLy=2
+            if phiLy<1:
+                phiLy=1
+#определяем deltaE
+                
+            deltaEx=abs(ex/b)
+            deltaEy=abs(ey/h)
             
-            ety=(e0y<eay)
-            e0y=e0y*(ety==0)+eay*ety
+            deltaEx=max(deltaEx, 0.15)
+            deltaEy=max(deltaEy, 0.15)
+            
+            kbx=0.15/(phiLx*(0.3+deltaEx))
+            kby=0.15/(phiLy*(0.3+deltaEy))
+            
+            Dx=kbx*EbJx+0.7*EsJx
+            Dy=kby*EbJy+0.7*EsJy
+            
+            if lx==0:
+                Ncrx=''
+                NcrNx=0
+                MxNux=Mx
+                nux=1
+            else:
+                Ncrx=3.14*3.14*Dx/lx**2
+                NcrNx=abs(n/Ncrx)
+                if NcrNx>=1:
+                    error=True
+                    nux='Error'
+                    MxNux='Error'
+                else:
+                    nux=1/(1-NcrNx)
+                    MxNux=nux*Mx
+                    
+            if ly==0:
+                Ncry=''
+                NcrNy=0
+                MyNuy=My
+                nuy=1
+            else:
+                Ncry=3.14*3.14*Dy/ly**2
+                NcrNy=abs(n/Ncry)
+                if NcrNy>=1:
+                    error=True
+                    nuy='Error'
+                    MyNuy='Error'
+                    
+                else:
+                    nuy=1/(1-NcrNy)
+                    MyNuy=nuy*My
         
-        deltaX=e0x/b
-        deltaY=e0y/h
+            outitem=[n, MxNux, MyNuy, NcrNx, NcrNy, nux, nuy, Mx, My, ex, ey, phiLx, phiLy, deltaEx, deltaEy, Dx, Dy, Ncrx, Ncry]
+            out.append(outitem)    
 
-#не хватате          Eb*Jx и Es*Jsx Eb*Jy и Es*Jsy
-#не хватает случая lx и ly==0
-        Dx=0.15*Eb*Jx/(phiLX*(0.3+delatX))+0.7*Es*Jsx
-        Dy=0.15*Eb*Jy/(phiLY*(0.3+delatY))+0.7*Es*Jsy
-        
-        NcrX=3.14**2*Dx/lx**2
-        NcrY=3.14**2*Dy/ly**2
-        
-        nx=1/(1-matrNMxMy[0]/NcrX)
-        ny=1/(1-matrNMxMy[0]/NcrY)
+        return out, error
 
-        errorNcrX=matrNMxMy[0]>NcrX
-        errorNcrY=matrNMxMy[0]>NcrY
-        
-        mx=matrNMxMy[0]*e0x*nx
-        my=matrNMxMy[0]*e0y*ny
-        
-        return mx, my, errorNcrX, errorNcrY, nx, ny, NcrX, NcrY, Dx, Dy, deltaX, deltaY, e0x, e0y, phiLX, phiLY
-        
-
+                    
 if __name__ == "__main__":
     lstForm=[
     ['Rectangle',[[0.,0.],[50.,50.]],[30.,30.],0,1,[0,0,0]],

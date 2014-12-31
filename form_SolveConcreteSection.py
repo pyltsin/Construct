@@ -540,7 +540,7 @@ class Solve(object):
             return False
 #        print matrix[0]
         hull=self.hull(matrix[0])
-        print hull
+#        print hull
         mtr=np.array(matrix[0])
         self.wnd.tabCrNorm.setEnabled(True)
         self.loadTableMatPlot(self.wnd.tableLoadPS2Norm, self.wnd.mplCrNorm, hull[0], hull[1], hull[2], mtr, [0,1,2,3,4,5])        
@@ -587,19 +587,18 @@ class Solve(object):
     def hull(self,mtr):
         '''hull
         1. убрать дубли
-        2. убрать умножение
         3. убрать лишние размерности
         2. подготовить данные для qHull - копланарность?'''
-        lst2=mtr
-#        lst1=[mtr[0]]
-#        for i in mtr[1:]:
-#            flag=False
-#            for j in lst1:
-#                if i==j:
-#                    flag=True
-#                    break
-#            if flag==False:
-#                lst1.append(i)
+#        lst2=mtr
+        lst1=[mtr[0]]
+        for i in mtr[1:]:
+            flag=False
+            for j in lst1:
+                if i==j:
+                    flag=True
+                    break
+            if flag==False:
+                lst1.append(i)
 #        
 #        lst2=[lst1[0]]
 #        for i in lst1[1:]:
@@ -617,6 +616,7 @@ class Solve(object):
 #                    lst2.remove(j)
 #            lst2.append(i)
         
+        lst2=lst1
         lst3=[]
         for i in lst2:
             if i!=[0.,0.,0.,0.,0.,0.]:
@@ -632,27 +632,6 @@ class Solve(object):
             matr=np.array(lst3)
             matr=np.transpose(matr)
             
-#            flagL=False
-#            if list(matr[0]!=matr[3]):
-#                if flagL==False:
-#                    matrL=matr[3]
-#                    flagL=True
-#                else:
-#                    matrL=np.vstack((matrL, matr[3]))
-#            if list(matr[1]!=matr[4]):
-#                if flagL==False:
-#                    matrL=matr[4]
-#                    flagL=True
-#                else:
-#                    matrL=np.vstack((matrL, matr[4]))
-#            if list(matr[2]!=matr[5]):
-#                if flagL==False:
-#                    matrL=matr[5]
-#                    flagL=True
-#                else:
-#                    matrL=np.vstack((matrL, matr[5]))
-#            
-#            matr=np.vstack((matr[0:2], matrL))
             
             zero=np.zeros(len(matr[0]))
             
