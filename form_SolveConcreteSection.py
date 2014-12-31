@@ -112,10 +112,14 @@ class MyWindow(QtGui.QWidget):
 #кнопка расчета
         self.buttonSolve.clicked.connect(self.solve)
     def solve(self):
-        slv=Solve(self)
+        slv=SolveWindow(self)
         bol=slv.critSolve()
         if bol==False:
             return False
+        
+        slv.loadFormMat()
+        slv.DSolve()
+        
     def keyPressEvent(self, e):
         """обеспечивает возможность копирования, вставить"""
         copy_past(e, [window.tableLoadPS1,window.tableLoadPS2], [], window)
@@ -190,9 +194,16 @@ class MyWindow(QtGui.QWidget):
         
     def error(self, sign):
         self.labelComment.setText('Error:'+str(sign))
+        self.labelComment.setStyleSheet("background: red")
     def changed(self):
         '''Ловиться только изменения общих данных, и стандартное сечение'''
         self.labelComment.setText(u'Данные изменились')
+        self.labelComment.setStyleSheet("background: yellow")
+
+        self.tabDShort.setEnabled(False)
+        self.tabDLong.setEnabled(False)
+
+
         self.tabCrShort.setEnabled(False)
         self.tabCrLong.setEnabled(False)
         self.tabCrNorm.setEnabled(False)
@@ -504,7 +515,7 @@ class MyWindow(QtGui.QWidget):
             for j in range(indexG):
                 widget.setItem(i, j, QtGui.QTableWidgetItem('0'))
 
-class Solve(object):
+class SolveWindow(object):
     def __init__(self, window):
         self.wnd=window
     def critSolve(self):

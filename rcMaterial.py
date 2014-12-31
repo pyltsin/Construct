@@ -237,6 +237,8 @@ class Reinforced(object):
             if k<kTemp:
                 k=kTemp
         return k
+    def e(self):
+        return self.es
         
 class Concrete(object):
     '''Класс для работы с бетоном и всем что с ней связано'''
@@ -250,6 +252,8 @@ class Concrete(object):
         self.c1=False
         self.c2=False
 
+    def e(self):
+        return self.eb
     def initProperties(self):
         '''расчет и запись исходных значений для отображения, возвращает список;
         если approx=True - по аппроксимации, по а и ys

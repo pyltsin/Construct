@@ -550,7 +550,33 @@ class Solves(object):
         k=max(kk)
             
         return k
+    def EJ(self):
+        ln=len(self.elemMatr[0])
+        matrBolS=np.zeros(ln)
+        matrBolB=np.zeros(ln)
 
+        for i in range(len(self.lstMat)):
+            if i.title=='Concrete':
+                matrBolTemp=(self.elemMatr[3]==i)
+                matrBolB+=matrBolTemp*self.lstMat[i].eb()
+            else:
+                matrBolTemp=(self.elemMatr[3]==i)
+                matrBolS+=matrBolTemp*self.lstMat[i].es()
+                
+        matrEbJx=self.elemMatr[0]*self.elemMatr[0]*self.elemMatr[2]*matrBolB
+        EbJx=matrEbJx.sum()
+
+        matrEbJy=self.elemMatr[1]*self.elemMatr[1]*self.elemMatr[2]*matrBolB
+        EbJy=matrEbJy.sum()
+
+        matrEsJx=self.elemMatr[0]*self.elemMatr[0]*self.elemMatr[2]*matrBolS
+        EsJx=matrEsJx.sum()
+
+        matrEsJy=self.elemMatr[1]*self.elemMatr[1]*self.elemMatr[2]*matrBolS
+        EsJy=matrEsJy.sum()
+        
+        return EbJx, EbJy, EsJx, EsJy
+        
     def nuD(self, lstNMxMy, typStat, lx, ly, l):
         '''расчет внецентреного сжатия'''
 #        сначала определяем e0 в см
@@ -590,11 +616,8 @@ class Solves(object):
         eax=max([e01, e02, e03x])
         eay=max([e01, e02, e03y])
         
-        EbJx=self.EbJ('x')
-        EbJy=self.EbJ('y')
+        EbJx, EbJy, EsJx, EsJy=self.EJ()
         
-        EsJx=self.EsJ('x')
-        EsJy=self.EsJ('y')
         
         
         error=False
