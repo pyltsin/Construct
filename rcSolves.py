@@ -650,7 +650,7 @@ class Solves(object):
         out=[]
 #закольцовываем расчет
         for nmxmy in lstNMxMy:
-            print 'nmxmy', nmxmy
+#            print 'nmxmy', nmxmy
             n,mx,my, nl, mxl, myl =nmxmy
 #определяем усилие при N:
             if n>=0:
