@@ -603,7 +603,7 @@ class Solves(object):
         
         return EbJx, EbJy, EsJx, EsJy
         
-    def nuD(self, lstNMxMy, typStat, lx, ly, l):
+    def nuD(self, lstNMxMy, typStat, lx, ly, l, typD):
         '''расчет внецентреного сжатия'''
 #        сначала определяем e0 в см
         e01=0.01
@@ -653,7 +653,7 @@ class Solves(object):
 #            print 'nmxmy', nmxmy
             n,mx,my, nl, mxl, myl =nmxmy
 #определяем усилие при N:
-            if n>=0:
+            if n>=0 or typD==False:
                 ex=0
                 ey=0
                 NcrNx=0

@@ -267,6 +267,9 @@ class MyWindow(QtGui.QWidget):
             y1=lstConc[0][0]
             x1=lstConc[1][0]
             
+            if x1==0 or y1==0:
+                return 'Error'
+                
             lst1=['Rectangle',[[0,0],[x1,y1]],[nx,ny],0,1,[0,0,0]]
             lst.append(lst1)
         elif  indFormConc==1:
@@ -285,6 +288,8 @@ class MyWindow(QtGui.QWidget):
             y31=y22
             y32=y31+lstConc[5][0]
             
+            if lstConc[0][0]==0 or lstConc[3][0]==0:
+                return 'Error'
             lst1=['Rectangle',[[x11,y11],[x12,y12]],[nx,ny],0,1,[0,0,0]]
             lst2=['Rectangle',[[x21,y21],[x22,y22]],[nx,ny],0,1,[0,0,0]]
             lst3=['Rectangle',[[x31,y31],[x32,y32]],[nx,ny],0,1,[0,0,0]]
@@ -294,6 +299,8 @@ class MyWindow(QtGui.QWidget):
 
         elif  indFormConc==2:
             dd=lstConc[0][0]/1.
+            if dd==0:
+                return "Error"
             lst1=['SolidCircle',[dd/2.,dd/2.,dd],[nx,ny],0,1,[0,0,0]]
             lst.append(lst1)
             
@@ -302,12 +309,18 @@ class MyWindow(QtGui.QWidget):
         if indFormConc==0 and indFormRein==0:
             a=lstRein[0][0]*1.
             d=lstRein[1][0]/10.
+            
+            if d==0:
+                return "Error"
             lstD=[[a,a,d],[x1-a,a,d],[x1-a,y1-a,d],[a,y1-a,d]]
         elif  indFormConc==0 and indFormRein==1:
             n1=lstRein[0][0]
             n2=lstRein[1][0]
             a=lstRein[2][0]*1.
             d=lstRein[3][0]/10.
+            if d==0:
+                return "Error"
+
             lstD=[[a,a,d],[x1-a,a,d],[x1-a,y1-a,d],[a,y1-a,d]]
             for i in range(n1):
                 lstTemp=[(x1-2*a)*1./(n1+1)*(1+i)+a,a,d]
@@ -326,6 +339,9 @@ class MyWindow(QtGui.QWidget):
             n1=lstRein[0][0]
             a=lstRein[1][0]*1.
             d=lstRein[2][0]/10.
+            if d==0 or n1==0:
+                return "Error"
+
             if n1!=1:
                 for i in range(n1):
                     lstTemp=[(x1-2*a)*1./(n1-1)*(i)+a,a,d]
@@ -346,7 +362,9 @@ class MyWindow(QtGui.QWidget):
             a2=lstRein[3][0]*1.
             d1=lstRein[4][0]/10.
             d2=lstRein[5][0]/10.
-            
+            if (d1==0 or n1==0) and (n2==0 or d2==0) :
+                return "Error"
+
             if indFormConc==0:
                 x01=0
                 x02=0
@@ -380,6 +398,9 @@ class MyWindow(QtGui.QWidget):
             n=lstRein[0][0]
             a=lstRein[1][0]*1.
             d=lstRein[2][0]/10.
+            if d==0 and n==0:
+                return "Error"
+
             for i in range(n):
                 x=(dd/2.-a)*sin(3.1814*2/n*i)+dd/2.
                 y=(dd/2.-a)*cos(3.1814*2/n*i)+dd/2.
@@ -416,7 +437,7 @@ class MyWindow(QtGui.QWidget):
                         text=text.replace(',','.')
                     text=int(text)
                     if sign=='+':
-                        if text>0:
+                        if text>=0:
                             widget.item(i,j).setText(str(text))
                         else:
                             return 'Error'
@@ -574,6 +595,7 @@ class SolveWindow(object):
             lx=self.wnd.doubleBoxLx.value()
             ly=self.wnd.doubleBoxLy.value()
             typStat=self.wnd.boxStatOpr.currentIndex()
+            typD=True
             if typStat==0:
                 typStat=False
             else:
@@ -583,9 +605,10 @@ class SolveWindow(object):
             lx=0
             ly=0
             typStat=False
+            typD=False
 #        решаем задачу D
-        lstDShort=self.solve.nuD(lstShort, typStat, lx, ly, l)
-        lstDLong=self.solve.nuD(lstLong, typStat, lx, ly, l)
+        lstDShort=self.solve.nuD(lstShort, typStat, lx, ly, l, typD)
+        lstDLong=self.solve.nuD(lstLong, typStat, lx, ly, l, typD)
 
         if lstDShort[1]==False and  lstDLong[1]==False:
             self.error(u'Увеличить сечение: N>Ncr')
