@@ -82,7 +82,7 @@ class MyWindow(QtGui.QWidget):
         self.buttonDraw.clicked.connect(self.drawForm)
 #связываем кнопку по умолчанию 1 пс
         self.buttonPS1.clicked.connect(self.PS1Reset)
-        
+        self.PS1Reset()
 # связываем счетчик с дейтсвиями
         self.boxCountLoadPS1.valueChanged.connect(self.changeCountTableLoadPS1)
         self.boxCountLoadPS1.setValue(1)
@@ -145,9 +145,16 @@ class MyWindow(QtGui.QWidget):
 
     def PS1Reset(self):
         '''сбрасываем на умолчание'''
-        self.boxPS1Char.setCurrentIndex(0)
-        self.boxPS1Dia.setCurrentIndex(0)
-        self.boxPS1Rt.setCurrentIndex(0)
+        self.boxPS1ShortChar.setCurrentIndex(0)
+        self.boxPS1ShortDia.setCurrentIndex(0)
+        self.boxPS1ShortRt.setCurrentIndex(0)
+        self.boxPS1Short.setCurrentIndex(0)
+
+        self.boxPS1LongChar.setCurrentIndex(0)
+        self.boxPS1LongDia.setCurrentIndex(0)
+        self.boxPS1LongRt.setCurrentIndex(0)
+        self.boxPS1Long.setCurrentIndex(1)
+        
         self.doubleBoxTol.setValue(0.001)
         self.boxNum.setValue(100)
      
@@ -576,7 +583,6 @@ class SolveWindow(object):
             solve.loadForm(lstForm)
             solve.loadLstMat(lstMat)
             solve.formGen()
-            solve.formGenS()
             self.solve=solve
             return True
         else:
