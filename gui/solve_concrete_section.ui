@@ -747,7 +747,7 @@
            </property>
           </item>
          </widget>
-         <widget class="QPushButton" name="buttonPS1_2">
+         <widget class="QPushButton" name="buttonGrafConcreteShort">
           <property name="geometry">
            <rect>
             <x>10</x>
@@ -760,7 +760,7 @@
            <string>График бетона</string>
           </property>
          </widget>
-         <widget class="QPushButton" name="buttonPS1_3">
+         <widget class="QPushButton" name="buttonGrafReinShort">
           <property name="geometry">
            <rect>
             <x>10</x>
@@ -918,7 +918,7 @@
            </property>
           </item>
          </widget>
-         <widget class="QPushButton" name="buttonPS1_4">
+         <widget class="QPushButton" name="buttonGrafReinLong">
           <property name="geometry">
            <rect>
             <x>0</x>
@@ -931,7 +931,7 @@
            <string>График арматуры</string>
           </property>
          </widget>
-         <widget class="QPushButton" name="buttonPS1_5">
+         <widget class="QPushButton" name="buttonGrafConcreteLong">
           <property name="geometry">
            <rect>
             <x>0</x>
@@ -965,7 +965,7 @@
           <x>680</x>
           <y>10</y>
           <width>331</width>
-          <height>491</height>
+          <height>211</height>
          </rect>
         </property>
         <property name="title">
@@ -1217,15 +1217,16 @@
           <string>Длина факт, м</string>
          </property>
         </widget>
-        <zorder>boxStatOpr</zorder>
-        <zorder>labelTypeSection_5</zorder>
-        <zorder>doubleBoxLx</zorder>
-        <zorder>labelCode_11</zorder>
-        <zorder>doubleBoxLy</zorder>
-        <zorder>labelCode_12</zorder>
-        <zorder>doubleBoxL</zorder>
-        <zorder>labelCode_13</zorder>
-        <zorder>groupBox</zorder>
+       </widget>
+       <widget class="MatplotlibWidget" name="mplGrafMat">
+        <property name="geometry">
+         <rect>
+          <x>700</x>
+          <y>230</y>
+          <width>311</width>
+          <height>271</height>
+         </rect>
+        </property>
        </widget>
       </widget>
       <widget class="QWidget" name="tabLoad">

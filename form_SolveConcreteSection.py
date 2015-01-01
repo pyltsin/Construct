@@ -112,6 +112,88 @@ class MyWindow(QtGui.QWidget):
 
 #кнопка расчета
         self.buttonSolve.clicked.connect(self.solve)
+        
+#показать графики
+        self.buttonGrafConcreteShort.clicked.connect(self.grafConcreteShort)
+        self.buttonGrafConcreteLong.clicked.connect(self.grafConcreteLong)
+        self.buttonGrafReinShort.clicked.connect(self.grafReinShort)
+        self.buttonGrafReinLong.clicked.connect(self.grafReinLong)
+    
+    def grafConcreteShort(self):
+        '''график бетона'''
+        item=self.initMatSimple()[0][0]
+        self.plotMatSimpleWindow(item)
+        
+    def grafConcreteLong(self):
+        '''график бетона'''        
+        item=self.initMatSimple()[1][0]
+        self.plotMatSimpleWindow(item)
+        
+    def grafReinShort(self):
+        '''график арматуры'''        
+
+        item=self.initMatSimple()[0][1]
+        self.plotMatSimpleWindow(item)
+
+    def grafReinLong(self):
+        '''график арматуры'''        
+        item=self.initMatSimple()[1][1]
+        self.plotMatSimpleWindow(item)
+        
+    def initMatSimple(self):
+        '''инициализация материалов и их загрузка'''
+#        загружаем материалы
+        lstMatShort=self.getLstMatSimple()
+        lstMatLong=self.getLstMatSimple()
+#       берем данные для кратковр.
+        '''Отдача функции расчета sigma по e или v по e
+        typDia - тип диаграммы для бетонна, 
+        typPS - тип предельного состояния, 
+        typTime - long или short для бетона, 
+        typR - для бетона, если 1 - просто режется все -, если 2 - после последнего значения - до 0, другое - продлеваем до max, 
+        typRT - для бетона, если 1 - просто режется все +, если 2 - после последнего значения - до 0, другое - продлеваем до max'''
+        typPSShort=self.boxPS1ShortChar.currentIndex()+1
+        typTimeShort=self.boxPS1Short.currentIndex()
+        if typTimeShort==0:
+            typTimeShort='short'
+        else:
+            typTimeShort='long'
+        typDiaShort=3-self.boxPS1ShortDia.currentIndex() 
+        typRTShort=self.boxPS1ShortRt.currentIndex()+1
+        lstMatShort[0].functDia(typDia=typDiaShort, typPS=typPSShort, typTime=typTimeShort, typR=2, typRT=typRTShort)
+        lstMatShort[1].functDia(typPS=typPSShort)
+
+#       берем данные для длит нагрузки.
+        typPSLong=self.boxPS1LongChar.currentIndex()+1
+        typTimeLong=self.boxPS1Long.currentIndex()
+        if typTimeLong==0:
+            typTimeLong='short'
+        else:
+            typTimeLong='long'
+        typDiaLong=3-self.boxPS1LongDia.currentIndex() 
+        typRTLong=self.boxPS1LongRt.currentIndex()+1
+
+        lstMatLong[0].functDia(typDia=typDiaLong, typPS=typPSLong, typTime=typTimeLong, typR=2, typRT=typRTLong)
+        lstMatLong[1].functDia(typPS=typPSLong)
+        
+        return [lstMatShort, lstMatLong]
+    def plotMatSimpleWindow(self, mat):
+        '''пишем материал в новом окне'''
+        lst=[]
+        print mat.x
+        print mat.y
+        for i in range(len(mat.x)):
+            if 1>abs(mat.x[i]):
+                lst.append([mat.x[i],mat.y[i]])
+        array=np.array(lst)
+
+        fig = self.mplGrafMat.figure
+        ax=fig.add_subplot(111)   
+        ax.clear()
+
+        ax.plot(array[:,0],array[:,1])
+        self.mplGrafMat.draw()
+
     def solve(self):
         slv=SolveWindow(self)
         bol=slv.critSolve()
@@ -233,6 +315,7 @@ class MyWindow(QtGui.QWidget):
         con.b=self.boxCodeConc.currentText()
         con.yb=self.doubleBoxYbi.value()
         con.initProperties()
+#        print con.eb2
         rein=rcMaterial.Reinforced()
         
         rein.norme=code 
