@@ -203,9 +203,18 @@ class MyWindow(QtGui.QWidget):
         bol=slv.loadFormMatSimple()
         if bol==False:
             return False
-
-        slv.DSolve()
         
+        if self.checkBoxPS1.isChecked()==True:
+        
+            bol=slv.DSolve()
+            if bol==False:
+                return False
+            
+            bol=slv.solvePS1()
+            
+        if self.checkBoxPS2.isChecked()==True:
+            bol=slv.solvePS2()
+            
     def keyPressEvent(self, e):
         """обеспечивает возможность копирования, вставить"""
         copy_past(e, [window.tableLoadPS1,window.tableLoadPS2], [], window)
@@ -656,7 +665,14 @@ class MyWindow(QtGui.QWidget):
 class SolveWindow(object):
     def __init__(self, window):
         self.wnd=window
+    
+    def solvePS1(self):
+        '''расчет 1 п.с.'''
+#        загружаем усилия в lstN
+        lstN=self.getTableLoadlstItem(self.wnd.tableLoadPS1DShort, [0,1,2])
         
+    def solvePS2(self):
+        '''расчет 2 п.с.'''
     def loadFormMatSimple(self):
         '''загрузка формы и материалов'''
         lstForm=self.wnd.getLstFormSimple()
@@ -698,9 +714,13 @@ class SolveWindow(object):
 #        решаем задачу D
         lstDShort=self.solve.nuD(lstShort, typStat, lx, ly, l, typD)
         lstDLong=self.solve.nuD(lstLong, typStat, lx, ly, l, typD)
-
-        if lstDShort[1]==False and  lstDLong[1]==False:
+        self.wnd.tabDShort.setEnabled(True)
+        self.wnd.tabDLong.setEnabled(True)
+        if lstDShort[-1]==False or  lstDLong[-1]==False:
             self.error(u'Увеличить сечение: N>Ncr')
+            self.loadTableMatPlot(self.wnd.tableLoadPS1DShort, self.wnd.mplCrDShort, lstDShort[0], range(len(lstDShort[0])),[] , lstShort, range(len(lstDShort[0][0])), False)
+            
+            self.loadTableMatPlot(self.wnd.tableLoadPS1DLong, self.wnd.mplCrDLong, lstDLong[0], range(len(lstDLong[0])), [], lstLong, range(len(lstDLong[0][0])), False)
             return False
         
         
@@ -709,9 +729,7 @@ class SolveWindow(object):
         
         self.loadTableMatPlot(self.wnd.tableLoadPS1DLong, self.wnd.mplCrDLong, lstDLong[0], range(len(lstDLong[0])), [], lstLong, range(len(lstDLong[0][0])))
 
-        self.wnd.tabDShort.setEnabled(True)
-        self.wnd.tabDLong.setEnabled(True)
-
+        return True
     def critSolve(self):
         '''считаем критические точки'''
         res1, res2=True, True
@@ -752,7 +770,7 @@ class SolveWindow(object):
 
         return True    
 
-    def loadTableMatPlot(self, table, matPlot, s, cur, reb, l, order):
+    def loadTableMatPlot(self, table, matPlot, s, cur, reb, l, order, boolPlot=True):
         '''загружаеам данные и рисуем картинку
         1 - тблаица
         2 - матплот
@@ -777,21 +795,21 @@ class SolveWindow(object):
                 table.item(j,i).setFlags(QtCore.Qt.ItemFlags(1+2+4+8+6+12+64))
 
 #рисуем по 3 первым точкам точки))
-
-        fig = matPlot.figure
-        ax = fig.gca(projection='3d')
-        ax.clear()
-        l=np.array(l)
-        ax.plot(l[:,order[1]], l[:,order[2]], l[:,order[0]],'o')
-#рисуем по 3 точкам ))
-        if type(reb)!=bool:
-            for i in cur:
-#                print s[i][0],s[i][1],s[i][2]
-                ax.plot([s[i][order[1]]],[s[i][order[2]]],[s[i][order[0]]], c='r', marker='o')
-        ax.set_xlabel('Mx')
-        ax.set_ylabel('My')
-        ax.set_zlabel('N')
-        matPlot.draw()
+        if boolPlot==True:
+            fig = matPlot.figure
+            ax = fig.gca(projection='3d')
+            ax.clear()
+            l=np.array(l)
+            ax.plot(l[:,order[1]], l[:,order[2]], l[:,order[0]],'o')
+    #рисуем по 3 точкам ))
+            if type(reb)!=bool:
+                for i in cur:
+    #                print s[i][0],s[i][1],s[i][2]
+                    ax.plot([s[i][order[1]]],[s[i][order[2]]],[s[i][order[0]]], c='r', marker='o')
+            ax.set_xlabel('Mx')
+            ax.set_ylabel('My')
+            ax.set_zlabel('N')
+            matPlot.draw()
 
 
     def hull(self,mtr):

@@ -235,7 +235,9 @@ class Reinforced(object):
             kTemp=abs(i/self.es2)
             if k<kTemp:
                 k=kTemp
-        return k
+        return [k, self.es2, min(lste), max(lste)]
+    def kkStart(self, lste):
+        return self.kk(lste)
     def e(self):
         return self.es
         
@@ -564,13 +566,22 @@ class Concrete(object):
         emin=min(lste)
         emax=max(lste)
         if emax>0 and emin<0:
+            m=self.eb2
             k=abs(emin/self.eb2)
         elif emax<0 and emin<0:
-            k=self.eb2-(self.eb2-self.eb0)*emax/emin
+            m=self.eb2-(self.eb2-self.eb0)*emax/emin
+            k=abs(emin/m)
         else:
             k=0
-        return k
-
+            m=0
+        return [k,m, emin, emax] 
+    def kkStart(self, lste):
+        emin=min(lste)
+        emax=max(lste)
+        m=self.eb2
+        k=abs(emin/self.eb2)
+        return [k,m, emin, emax] 
+        
 class Test(unittest.TestCase):
     def testConcrete52(self):
         print 'Concrete 52'

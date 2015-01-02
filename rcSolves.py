@@ -472,60 +472,94 @@ class Solves(object):
         '''Находим коэффициент к'''
         
 #        определим начальный nmxmy
-        nFact,mxFact,myFact=nmxmy
-        lenN=(nFact**2+mxFact**2+myFact**2)**.5        
+        nFact,mxFact,myFact=nmxmy #фиксируем усилия
+        if nFact==0 and mxFact==0 and myFact==0:
+            return nmxmy, 0, 0, [0,0,0],  [0,0,0], [], [], []
+            
+        lenN=(nFact**2+mxFact**2+myFact**2)**.5    #определяем длину    
 
-        e0,rx,ry=0,0,0
-        ee=self.e0rxry2e(e0,rx,ry)
+        e0,rx,ry=0,0,0#устанавливаем начальные деофрмации
+        ee=self.e0rxry2e(e0,rx,ry) #расчитываем матрицу деформаций
 
-        dd=self.e2d(ee)
+        ddel=self.e2d(ee) #определяем начальные dd
 
-        e0rxry=self.matrSolve(nmxmy,dd[0])
+        e0rxry=self.matrSolve(nmxmy,ddel[0]) #определяем упругие деформации
 
-        
-        k1=self.kk(e0rxry[0:3], typ)
+        klst=self.kk(e0rxry[0:3], typ)
+        k1=klst[0]#получаем коэффициент k - насколько надо разделить деформации, чтобы получить предельные 
 #        print 'k111', k1
+        print 'klst', klst
+
         if k1==0:
             return 'error 1'
-        e0rxryTemp=[e0rxry[0]/k1, e0rxry[1]/k1, e0rxry[2]/k1]
-        n=0
-        nmxmyTemp=self.e0rxry2nmxmy(e0rxryTemp)
+            
+        e0rxryTemp=[e0rxry[0]/(k1/1.), e0rxry[1]/(k1/1.), e0rxry[2]/(k1/1.)] #получаем предельные дформации
+        n=0#счетчик
+        nmxmyTemp=self.e0rxry2nmxmy(e0rxryTemp) #получаем усилия временные
         nTemp,mxTemp,myTemp, tt1, tt2=nmxmyTemp     
 
-        nCrit, mxCrit, myCrit=nTemp,mxTemp,myTemp
+        nCrit, mxCrit, myCrit=nTemp,mxTemp,myTemp #фиксируем значения для проверки схожимости
         while True:
             n+=1
             if n>nn:
-                return 'error 2'
-#            print 'nTemp,mxTemp,myTemp,', nTemp,mxTemp,myTemp,
+                print 'n', n
+                return 'error 2' #ошибка превышения количества итераций
+
             cosa=(nFact*nTemp+mxFact*mxTemp+myFact*myTemp)/((nFact**2+mxFact**2+myFact**2)**0.5*(nTemp**2+mxTemp**2+myTemp**2)**0.5)
             lenNTemp=(nTemp**2+mxTemp**2+myTemp**2)**.5   
-            lenNNormal=lenNTemp*cosa
-            kLen=lenNNormal/lenN
-#            print 'kLen', kLen
-            nmxmyNormal=[nFact*kLen, mxFact*kLen, myFact*kLen]
+            lenNNormal=lenNTemp*cosa #нормализованная длина
+            print 'cosa', cosa, 'nmxmyTemp', nmxmyTemp[0:3]
+            kLen=lenNNormal/lenN #коэффициент- отношение длины предельной к фактической
+            print 'kLen', kLen
+            nmxmyNormal=[nFact*kLen, mxFact*kLen, myFact*kLen] #получем нормализованные усилия
+            print 'nmxmyNormal', nmxmyNormal
 #            print 'nmxmyNormal', nmxmyNormal
-            e0rxryTemp=self.nmxmy2e0rxry(nmxmyNormal,nn, crit)
+            e0rxryTemp=self.nmxmy2e0rxry(nmxmyNormal,nn, crit)#получем нормализованные перемещения
 #            print 'e0rxryTemp', e0rxryTemp
-            k1=self.kk(e0rxryTemp[0:3], typ)
+            klst=self.kk(e0rxryTemp[0:3], typ)
+            k1=klst[0] #получаем коэффициент k - насколько надо разделить деформации, чтобы получить предельные 
             if k1==0:
-                return 'error 3'
+                return 'error 1'
             
-            e0rxryTemp=[e0rxryTemp[0]/k1, e0rxryTemp[1]/k1, e0rxryTemp[2]/k1]
+            print 'k1', k1
+            e0rxryTemp=[e0rxryTemp[0]/k1, e0rxryTemp[1]/k1, e0rxryTemp[2]/k1] #получаем предельные дформации
 #            print 'k1',k1
 
-            nmxmyTemp=self.e0rxry2nmxmy(e0rxryTemp)
-            nTemp,mxTemp,myTemp, tt1, tt2=nmxmyTemp     
+            nmxmyTemp=self.e0rxry2nmxmy(e0rxryTemp)  #получаем усилия временные
+            nTemp,mxTemp,myTemp, sigmaT, eT=nmxmyTemp     
+            print 'nmxmyTemp', nmxmyTemp[0:3]
 
             if nCrit==0:
                 kN=abs(nTemp-nCrit)
             else:
                 kN=abs(nTemp-nCrit)/abs(nTemp)
 
+            if mxTemp==0:
+                kMx=abs(mxTemp-mxCrit)
+            else:
+                kMx=abs(mxTemp-mxCrit)/abs(mxTemp)
+
+            if myTemp==0:
+                kMy=abs(myTemp-myCrit)
+            else:
+                kMy=abs(myTemp-myCrit)/abs(myTemp)
+
+            kMax=max(kN, kMx, kMy)
+#            if kMax<crit and abs(k1-1)<0.1:
                 
-                
-            if kN<crit:
-                return kLen, e0rxryTemp, n, [nTemp,mxTemp,myTemp, tt1, tt2]
+            if kMax<crit:
+                '''возвращаем
+                1 - усилия
+                2- коэффициент
+                3 - сколько итераций было
+                4 - e0rxry для предельного состочняи
+                5 - предельные усилия
+                6 - d
+                7 - d/de
+                8 - klst - список макс e/emax'''
+                dd=self.e2d(eT)[0]
+                dddel=[dd[0]/ddel[0][0],dd[3]/ddel[0][3],dd[5]/ddel[0][5]]
+                return nmxmy, kLen,n, e0rxryTemp,  [nTemp,mxTemp,myTemp], dd,dddel, klst[1]
             else:
                 nCrit, mxCrit, myCrit=nTemp,mxTemp,myTemp
                 
@@ -539,6 +573,7 @@ class Solves(object):
         typ=crit - расчет критической силы, если crc - расчет трещин'''
 #        print 'e0rxry', e0rxry
         e0, rx,ry=e0rxry
+#        print 'e0rxry', e0rxry
         lstCritPoint=self.critPoint(e0, rx,ry)      
         '''ищем максимальное число материалов'''
         nMat=len(self.lstMat)
@@ -564,21 +599,29 @@ class Solves(object):
                 if nlst[mat][1]<e:
                     nlst[mat][1]=e
                     
+        print 'nlst', nlst
+                    
 #        print 'nlst2', nlst
         '''вычисляем k для каждого материала'''
         kk=[]
+        klst=[]
         if typ=='crit':
             for i in range(nMat):
-                kk.append(self.lstMat[i].kk(nlst[i]))
+                item=self.lstMat[i].kk(nlst[i])
+                kk.append(item[0])
+                klst.append(item)
         elif typ=='crc':
             for i in range(nMat):
-                kk.append(self.lstMat[i].kcrc(nlst[i]))
+                item=self.lstMat[i].kcrc(nlst[i])
+                kk.append(item[0])
+                klst.append(item)
             
             
 #        print 'kk', kk
         k=max(kk)
             
-        return k
+        return k, klst 
+        
     def EJ(self):
         ln=len(self.elemMatr[0])
         matrBolS=np.zeros(ln)
@@ -653,7 +696,7 @@ class Solves(object):
         out=[]
 #закольцовываем расчет
         for nmxmy in lstNMxMy:
-            print 'nmxmy', nmxmy
+#            print 'nmxmy', nmxmy
             n,mx,my, nl, mxl, myl =nmxmy
 #определяем усилие при N:
             if n>=0 or typD==False:
@@ -821,7 +864,7 @@ class Solves(object):
             outitem=[n, MxNux, MyNuy, NcrNx, NcrNy, nux, nuy, Mx, My, ex, ey, phiLx, phiLy, deltaEx, deltaEy, Dx, Dy, Ncrx, Ncry]
             out.append(outitem)    
 
-        return out, error
+        return [out, error]
 
                     
 if __name__ == "__main__":
@@ -841,7 +884,7 @@ if __name__ == "__main__":
     conc.norme=52
     conc.b=25
     conc.initProperties()
-    conc.functDia(typDia=3, typPS=1,typTime='short', typR=0, typRT=2)
+    conc.functDia(typDia=3, typPS=1,typTime='short', typR=3, typRT=1)
     
     rein=rcMaterial.Reinforced()
     rein.norme=52
@@ -868,10 +911,14 @@ if __name__ == "__main__":
     yEvmatr=sol.yEvmatr
     kyEvmatr=sol.kyEvmatr
 
+    nmxmy=[-200000,500000,1000000]
+#    nmxmy=[-200000,500000,1000000] - [-200000,600000,1000000] - граничное ошибка 
     
-    nmxmy=[-100000,500000,1000000]
-    out=sol.nmxmy2e0rxry(nmxmy, 500, 0.001)
-#    print out
+#    nmxmy=[-100000,500000,1000000]
+#    nmxmy=[-200000,1000000,4000000]
+
+    out=sol.nmxmy2e0rxry(nmxmy, 100, 0.00001)
+#    print 'out', out
 
     e0rxry=[out[0],out[1],out[2]]
 #    print 'e0rxry11', e0rxry
@@ -881,11 +928,11 @@ if __name__ == "__main__":
     sigma=np.reshape(out[3][0:100], (10, 10))
 #    print out[0:3]
 
-    kk=sol.findKult(nmxmy, 100,0.001)
+    kk=sol.findKult(nmxmy, 1000,0.0001)
     
     print 'kk', kk
 
-    e0rxry=kk[1]
+    e0rxry=kk[3]
     out=sol.e0rxry2nmxmy(e0rxry)
     print out[0], out[1] , out[2]   
 
