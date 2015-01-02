@@ -476,7 +476,7 @@ class Solves(object):
         if nFact==0 and mxFact==0 and myFact==0:
             return nmxmy, 0, 0, [0,0,0],  [0,0,0], [], [], []
             
-        lenN=(nFact**2+mxFact**2+myFact**2)**.5    #определяем длину    
+        lenN=(nFact**2+(mxFact*0.100)**2+(myFact*0.100)**2)**.5    #определяем длину    
 
         e0,rx,ry=0,0,0#устанавливаем начальные деофрмации
         ee=self.e0rxry2e(e0,rx,ry) #расчитываем матрицу деформаций
@@ -505,8 +505,8 @@ class Solves(object):
                 print 'n', n
                 return 'error 2' #ошибка превышения количества итераций
 
-            cosa=(nFact*nTemp+mxFact*mxTemp+myFact*myTemp)/((nFact**2+mxFact**2+myFact**2)**0.5*(nTemp**2+mxTemp**2+myTemp**2)**0.5)
-            lenNTemp=(nTemp**2+mxTemp**2+myTemp**2)**.5   
+            cosa=(nFact*nTemp+mxFact*mxTemp*0.100*0.100+myFact*myTemp*0.100*0.100)/((nFact**2+(mxFact*0.100)**2+(myFact*0.100)**2)**0.5*(nTemp**2+(mxTemp*0.100)**2+(myTemp*0.100)**2)**0.5)
+            lenNTemp=(nTemp**2+(mxTemp*0.100)**2+(myTemp*0.100)**2)**.5   
             lenNNormal=lenNTemp*cosa #нормализованная длина
             print 'cosa', cosa, 'nmxmyTemp', nmxmyTemp[0:3]
             kLen=lenNNormal/lenN #коэффициент- отношение длины предельной к фактической
