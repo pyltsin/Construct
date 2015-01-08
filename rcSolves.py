@@ -224,11 +224,11 @@ class Solves(object):
         '''e - матрица e'''
         ebool=(e==0)
         ebool=ebool.astype(float)
-        de=self.dxmatr*ebool
+        dev=self.dxmatr*ebool
         
-        eTotal=e+de 
-        sigma=self.e2sigma4(eTotal)
-        ev=sigma/eTotal
+        eTotal=e+ebool
+        sigma=self.e2sigma4(e)
+        ev=sigma/eTotal+dev
         return ev
         
 
@@ -257,7 +257,7 @@ class Solves(object):
         '''расчет матрицы'''
         n, m_x, m_y=nmxmy
         d_11,d_12,d_13,d_22,d_23,d_33=dd
-        if d_11*(d_22*d_33-d_23**2)-d_12*(d_12*d_33-d_13*d_23)+d_13*(d_12*d_23-d_13*d_22)!=0:
+        if d_11*(d_22*d_33-d_23**2)-d_12*(d_12*d_33-d_13*d_23)+d_13*(d_12*d_23-d_13*d_22)!=0 and (d_11*(d_23**2-d_22*d_33)+d_12**2*d_33-2*d_12*d_13*d_23+d_13**2*d_22)!=0:
             rx=(d_12*(d_33*m_y-d_23*n)+d_13*(d_22*n-d_23*m_y)+(d_23**2-d_22*d_33)*m_x)/(d_11*(d_23**2-d_22*d_33)+d_12**2*d_33-2*d_12*d_13*d_23+d_13**2*d_22)
             ry=-(d_11*(d_33*m_y-d_23*n)+d_12*d_13*n-d_13**2*m_y+(d_13*d_23-d_12*d_33)*m_x)/(d_11*(d_23**2-d_22*d_33)+d_12**2*d_33-2*d_12*d_13*d_23+d_13**2*d_22)
             e0=(d_11*(d_23*m_y-d_22*n)+d_12**2*n-d_12*d_13*m_y+(d_13*d_22-d_12*d_23)*m_x)/(d_11*(d_23**2-d_22*d_33)+d_12**2*d_33-2*d_12*d_13*d_23+d_13**2*d_22)
@@ -467,7 +467,421 @@ class Solves(object):
             i[1]-=y
 #        print 'lstCritPoint', lstCritPoint
         return lstCritPoint
-    
+    def findKult3(self, nmxmy, nn, crit, typ='crit'):
+        '''расчет в лоб.
+        ограничение - <100 и >100'''
+        nFact,mxFact,myFact=nmxmy
+        nTemp,mxTemp,myTemp=nmxmy     
+        
+        nn3=10 #количество итераци на предвариловке
+        crit3=crit*10
+        n=0 #счетчик
+        iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn3, crit3)
+        #попытка поймать где есть возможность расчета
+        if type(iterTemp[3])==type('error'):
+            while True:
+#                print 'n1', n
+                n+=1
+                nTemp,mxTemp,myTemp=nTemp/10.,mxTemp/10.,myTemp/10.
+                iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn3, crit3)
+                if type(iterTemp[3])==type('error'):
+                    if n>1:
+                        return ['>100']
+                    else:
+                        continue
+                else:
+                    break
+            
+        klst=self.kk(iterTemp[0:3], typ)
+        k1=klst[0]
+        if k1==0:
+            return 'error 1'
+        if k1<1:
+            nTemp1,mxTemp1,myTemp1=nTemp,mxTemp,myTemp
+#            print 'nTemp1,mxTemp1,myTemp1', nTemp1,mxTemp1,myTemp1
+        #пытаемся определисть iter2
+            kn2=3.
+            knlast=1.
+            n=0
+            nm=0
+#            print 'n0', nTemp
+            flagNM=False
+            while True:
+                nTemp,mxTemp,myTemp=nTemp1*kn2,mxTemp1*kn2,myTemp1*kn2
+#                print 'nTemp', nTemp
+                iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn3, crit3)
+                if type(iterTemp[3])==type('error'):
+#                    print 'nm',nm
+                    kn2=(kn2+knlast)/2.
+                    flagNM=True
+                    if nm>10:
+                        return 'error 11'
+                    else:
+                        nm+=1
+                        continue
+                n+=1
+#                print 'n2', n
+
+                nm=0
+#                print 'iterTemp[0:3]', iterTemp[0:3]
+                klst=self.kk(iterTemp[0:3], typ)
+                k1=klst[0]
+#                print 'k1', klst
+#                print 'kn2', kn2, knlast
+                if k1==0:
+                    return 'error 12'
+                if k1<1:
+                    if flagNM==False:
+                        knlast=kn2
+                        kn2=kn2*3.
+                    else:
+                        knTemp=knlast
+                        knlast=kn2
+                        kn2=kn2*kn2/knTemp                       
+                    if kn2>100:
+                        return ['<0.01']
+                    elif n>10:
+                        return 'error 13'
+                    else:
+                        continue
+                else:
+                    nTemp2,mxTemp2,myTemp2=nTemp,mxTemp,myTemp
+                    break
+#определяем iter 1
+        else:
+            nTemp2,mxTemp2,myTemp2=nTemp,mxTemp,myTemp
+            kn2=10.
+            knlast=0.
+            n=0.
+            while True:
+#                print 'n3', n
+                n+=1
+                nTemp,mxTemp,myTemp=nTemp2/10.,mxTemp2/10.,myTemp2/10.
+                iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn3, crit3)
+                if type(iterTemp[3])==type('error'):
+                    return 'error 21'
+                klst=self.kk(iterTemp[0:3], typ)
+                k1=klst[0]
+                if k1>1:
+                    if n>3:
+                        return 'error22'
+                    else:
+                        continue
+                else:
+                    nTemp1,mxTemp1,myTemp1=nTemp,mxTemp,myTemp
+                    break
+
+        n=0
+        while True:
+#            print 'n1, n2', nTemp1, nTemp2
+#            print 'n4', n
+            n+=1
+            if n>nn:
+                return 'error 3'
+            nTemp,mxTemp,myTemp=(nTemp1+nTemp2)/2.,(mxTemp1+mxTemp2)/2.,(myTemp1+myTemp2)/2.
+            iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn, crit)
+            if type(iterTemp[3])==type('error'):
+                return 'error 31'
+            klst=self.kk(iterTemp[0:3], typ)
+            k1=klst[0]
+#            print 'klst', klst
+            if k1>1:
+                nTemp2,mxTemp2,myTemp2=nTemp,mxTemp,myTemp
+            else:
+                nTemp1,mxTemp1,myTemp1=nTemp,mxTemp,myTemp
+
+            if nFact==0:
+                kN=abs(nTemp2-nTemp1)
+            else:
+                kN=abs(nTemp2-nTemp1)/abs(nTemp2)
+
+            if kN<crit:
+                '''возвращаем
+                1 - усилия
+                2- коэффициент
+                3 - сколько итераций было
+                4 - e0rxry для предельного состочняи
+                5 - предельные усилия
+                6 - d
+                7 - d/de
+                8 - klst - список макс e/emax'''
+                nTemp,mxTemp,myTemp=(nTemp1+nTemp2)/2.,(mxTemp1+mxTemp2)/2.,(myTemp1+myTemp2)/2.
+                kLen=nTemp/nFact
+                e0rxryTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn, crit)
+#                print 'e0rxry', e0rxryTemp
+                ee=self.e0rxry2e(e0rxryTemp[0],e0rxryTemp[1],e0rxryTemp[2]) #     
+                dd=self.e2d(ee)[0]
+                
+                e0,rx,ry=0,0,0#устанавливаем начальные деофрмации
+                ee=self.e0rxry2e(e0,rx,ry) #расчитываем матрицу деформаций
+        
+                ddel=self.e2d(ee) #определяем начальные dd
+  
+
+                dddel=[dd[0]/ddel[0][0],dd[3]/ddel[0][3],dd[5]/ddel[0][5]]
+                return nmxmy, kLen,n, e0rxryTemp[0:3],  [nTemp,mxTemp,myTemp], dd,dddel, klst[1]
+                
+            else:
+                continue
+            
+    def findKult4(self, nmxmy, nn, crit, typ='crit'):
+        '''расчет в лоб.
+        ограничение - <100 и >100'''
+        nFact,mxFact,myFact=nmxmy
+        nTemp,mxTemp,myTemp=nmxmy     
+        
+        nn3=10 #количество итераци на предвариловке
+        crit3=crit*10
+        n=0 #счетчик
+        iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn3, crit3)
+        #попытка поймать где есть возможность расчета
+        if type(iterTemp[3])==type('error'):
+            while True:
+#                print 'n1', n
+                n+=1
+                nTemp,mxTemp,myTemp=nTemp/10.,mxTemp/10.,myTemp/10.
+                iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn3, crit3)
+                if type(iterTemp[3])==type('error'):
+                    if n>1:
+                        return ['>100']
+                    else:
+                        continue
+                else:
+                    break
+            
+        klst=self.kk(iterTemp[0:3], typ)
+        k1=klst[0]
+        if k1==0:
+            return 'error 1'
+        if k1<1:
+            nTemp1,mxTemp1,myTemp1=nTemp,mxTemp,myTemp
+#            print 'nTemp1,mxTemp1,myTemp1', nTemp1,mxTemp1,myTemp1
+        #пытаемся определисть iter2
+            kn2=3.
+            knlast=1.
+            n=0
+            nm=0
+#            print 'n0', nTemp
+            flagNM=False
+            while True:
+                nTemp,mxTemp,myTemp=nTemp1*kn2,mxTemp1*kn2,myTemp1*kn2
+#                print 'nTemp', nTemp
+                iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn3, crit3)
+                if type(iterTemp[3])==type('error'):
+#                    print 'nm',nm
+                    kn2=(kn2+knlast)/2.
+                    flagNM=True
+                    if nm>10:
+                        return 'error 11'
+                    else:
+                        nm+=1
+                        continue
+                n+=1
+#                print 'n2', n
+
+                nm=0
+#                print 'iterTemp[0:3]', iterTemp[0:3]
+                klst=self.kk(iterTemp[0:3], typ)
+                k1=klst[0]
+#                print 'k1', klst
+#                print 'kn2', kn2, knlast
+                if k1==0:
+                    return 'error 12'
+                if k1<1:
+                    if flagNM==False:
+                        knlast=kn2
+                        kn2=kn2*3.
+                    else:
+                        knTemp=knlast
+                        knlast=kn2
+                        kn2=kn2*kn2/knTemp                       
+                    if kn2>100:
+                        return ['<0.01']
+                    elif n>10:
+                        return 'error 13'
+                    else:
+                        continue
+                else:
+                    nTemp2,mxTemp2,myTemp2=nTemp,mxTemp,myTemp
+                    break
+#определяем iter 1
+        else:
+            nTemp2,mxTemp2,myTemp2=nTemp,mxTemp,myTemp
+            kn2=10.
+            knlast=0.
+            n=0.
+            while True:
+#                print 'n3', n
+                n+=1
+                nTemp,mxTemp,myTemp=nTemp2/10.,mxTemp2/10.,myTemp2/10.
+                iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn3, crit3)
+                if type(iterTemp[3])==type('error'):
+                    return 'error 21'
+                klst=self.kk(iterTemp[0:3], typ)
+                k1=klst[0]
+                if k1>1:
+                    if n>3:
+                        return 'error22'
+                    else:
+                        continue
+                else:
+                    nTemp1,mxTemp1,myTemp1=nTemp,mxTemp,myTemp
+                    break
+
+        n=0
+        while True:
+#            print 'n1, n2', nTemp1, nTemp2
+#            print 'n4', n
+            n+=1
+            if n>nn:
+                return 'error 3'
+            nTemp,mxTemp,myTemp=(nTemp1+nTemp2)/2.,(mxTemp1+mxTemp2)/2.,(myTemp1+myTemp2)/2.
+            iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn, crit)
+            if type(iterTemp[3])==type('error'):
+                return 'error 31'
+            klst=self.kk(iterTemp[0:3], typ)
+            k1=klst[0]
+#            print 'klst', klst
+            if k1>1:
+                nTemp2,mxTemp2,myTemp2=nTemp,mxTemp,myTemp
+            else:
+                nTemp1,mxTemp1,myTemp1=nTemp,mxTemp,myTemp
+
+            if nFact==0:
+                kN=abs(nTemp2-nTemp1)
+            else:
+                kN=abs(nTemp2-nTemp1)/abs(nTemp2)
+
+            if kN<crit:
+                '''возвращаем
+                1 - усилия
+                2- коэффициент
+                3 - сколько итераций было
+                4 - e0rxry для предельного состочняи
+                5 - предельные усилия
+                6 - d
+                7 - d/de
+                8 - klst - список макс e/emax'''
+                nTemp,mxTemp,myTemp=(nTemp1+nTemp2)/2.,(mxTemp1+mxTemp2)/2.,(myTemp1+myTemp2)/2.
+                kLen=nTemp/nFact
+                e0rxryTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn, crit)
+#                print 'e0rxry', e0rxryTemp
+                ee=self.e0rxry2e(e0rxryTemp[0],e0rxryTemp[1],e0rxryTemp[2]) #     
+                dd=self.e2d(ee)[0]
+                
+                e0,rx,ry=0,0,0#устанавливаем начальные деофрмации
+                ee=self.e0rxry2e(e0,rx,ry) #расчитываем матрицу деформаций
+        
+                ddel=self.e2d(ee) #определяем начальные dd
+  
+
+                dddel=[dd[0]/ddel[0][0],dd[3]/ddel[0][3],dd[5]/ddel[0][5]]
+                return nmxmy, kLen,n, e0rxryTemp[0:3],  [nTemp,mxTemp,myTemp], dd,dddel, klst[1]
+                
+            else:
+                continue
+                    
+              
+    def findKult2(self, nmxmy, nn, crit, typ='crit'):
+        e0rxryTemp=[-2.6104085654547216e-114, 3.3690970320930102e-05, 0.00010630902967906989]        
+        print self.e0rxry2nmxmy(e0rxryTemp)
+        nFact,mxFact,myFact=nmxmy #фиксируем усилия
+        e0,rx,ry=0,0,0#устанавливаем начальные деофрмации
+        ee=self.e0rxry2e(e0,rx,ry) #расчитываем матрицу деформаций
+
+        ddel=self.e2d(ee) #определяем начальные dd
+
+        e0rxry=self.matrSolve(nmxmy,ddel[0]) #определяем упругие деформации
+
+        klst=self.kk(e0rxry[0:3], typ)
+        k1=klst[0]#получаем коэффициент k - насколько надо разделить деформации, чтобы получить предельные 
+#        print 'k111', k1
+        print 'klst', klst
+
+        if k1==0:
+            return 'error 1'
+            
+        e0rxryTemp=[e0rxry[0]/(k1/1.), e0rxry[1]/(k1/1.), e0rxry[2]/(k1/1.)] #получаем предельные дформации
+        n=0#счетчик
+        nmxmyTemp=self.e0rxry2nmxmy(e0rxryTemp) #получаем усилия временные
+        nTemp,mxTemp,myTemp, sigmaT, eT=nmxmyTemp     
+
+        nCrit, mxCrit, myCrit=nTemp,mxTemp,myTemp
+        e0rxryCrit=e0rxryTemp#фиксируем значения для проверки схожимости
+        while True:
+            n+=1
+            if n>nn:
+                print 'n', n
+                return 'error 2' #ошибка превышения количества итераций
+
+            if nFact!=0:
+                kn=[nTemp/nFact,nTemp/nFact]
+            else:
+                kn=[0,1]
+
+            if mxFact!=0:
+                kmx=[mxTemp/mxFact,mxTemp/mxFact]
+            else:
+                kmx=[0,1]
+
+            if myFact!=0:
+                kmy=[myTemp/myFact,myTemp/myFact]
+            else:
+                kmy=[0,1]
+
+            kGen=(kn[0]+kmy[0]+kmx[0])/3.
+            print 'kn', kn, kmx, kmy
+            eNormal, rxNormal, ryNormal=e0rxryTemp[0]/kn[1],e0rxryTemp[1]/kmx[1],e0rxryTemp[2]/kmy[1]
+            print 'enormal', eNormal, rxNormal, ryNormal
+            klst=self.kk([eNormal, rxNormal, ryNormal], typ)
+            k1=klst[0]
+            if k1==0:
+                return 'error 1'
+                
+            e0rxryTemp=[eNormal/(k1/1.),rxNormal/(k1/1.),ryNormal/(k1/1.)] #получаем предельные дформации
+            
+            print 'e0rxryTemp', e0rxryTemp
+            nmxmyTemp=self.e0rxry2nmxmy(e0rxryTemp) #получаем усилия временные
+            nTemp,mxTemp,myTemp, sigmaT, eT=nmxmyTemp     
+            print 'nTemp', nTemp,mxTemp,myTemp
+            
+            if nCrit==0:
+                kN=abs(nTemp-nCrit)
+            else:
+                kN=abs(nTemp-nCrit)/abs(nTemp)
+
+            if mxTemp==0:
+                kMx=abs(mxTemp-mxCrit)
+            else:
+                kMx=abs(mxTemp-mxCrit)/abs(mxTemp)
+
+            if myTemp==0:
+                kMy=abs(myTemp-myCrit)
+            else:
+                kMy=abs(myTemp-myCrit)/abs(myTemp)
+
+            kMax=max(kN, kMx, kMy)
+#            if kMax<crit and abs(k1-1)<0.1:
+            print 'kmax', kMax
+            print k1
+            
+            if kMax<crit and abs(k1-1)<0.01:
+                '''возвращаем
+                1 - усилия
+                2- коэффициент
+                3 - сколько итераций было
+                4 - e0rxry для предельного состочняи
+                5 - предельные усилия
+                6 - d
+                7 - d/de
+                8 - klst - список макс e/emax'''
+                dd=self.e2d(eT)[0]
+                dddel=[dd[0]/ddel[0][0],dd[3]/ddel[0][3],dd[5]/ddel[0][5]]
+                return nmxmy, kGen,n, e0rxryTemp,  [nTemp,mxTemp,myTemp], dd,dddel, klst[1]
+            else:
+                nCrit, mxCrit, myCrit=nTemp,mxTemp,myTemp
+            
+        
     def findKult(self, nmxmy, nn, crit, typ='crit'):
         '''Находим коэффициент к'''
         
@@ -476,7 +890,7 @@ class Solves(object):
         if nFact==0 and mxFact==0 and myFact==0:
             return nmxmy, 0, 0, [0,0,0],  [0,0,0], [], [], []
             
-        lenN=(nFact**2+(mxFact*0.100)**2+(myFact*0.100)**2)**.5    #определяем длину    
+        lenN=(nFact**2+(mxFact)**2+(myFact)**2)**.5    #определяем длину    
 
         e0,rx,ry=0,0,0#устанавливаем начальные деофрмации
         ee=self.e0rxry2e(e0,rx,ry) #расчитываем матрицу деформаций
@@ -505,19 +919,43 @@ class Solves(object):
                 print 'n', n
                 return 'error 2' #ошибка превышения количества итераций
 
-            cosa=(nFact*nTemp+mxFact*mxTemp*0.100*0.100+myFact*myTemp*0.100*0.100)/((nFact**2+(mxFact*0.100)**2+(myFact*0.100)**2)**0.5*(nTemp**2+(mxTemp*0.100)**2+(myTemp*0.100)**2)**0.5)
-            lenNTemp=(nTemp**2+(mxTemp*0.100)**2+(myTemp*0.100)**2)**.5   
-            lenNNormal=lenNTemp*cosa #нормализованная длина
-            print 'cosa', cosa, 'nmxmyTemp', nmxmyTemp[0:3]
+#            cosa=(nFact*nTemp+mxFact*mxTemp*0.100*0.100+myFact*myTemp*0.100*0.100)/((nFact**2+(mxFact*0.100)**2+(myFact*0.100)**2)**0.5*(nTemp**2+(mxTemp*0.100)**2+(myTemp*0.100)**2)**0.5)
+#            lenNTemp=(nTemp**2+(mxTemp*0.100)**2+(myTemp*0.100)**2)**.5   
+#            lenNNormal=lenNTemp*cosa #нормализованная длина
+#            print 'cosa', cosa, 'nmxmyTemp', nmxmyTemp[0:3]
+#            kLen=lenNNormal/lenN #коэффициент- отношение длины предельной к фактической
+#            print 'kLen', kLen
+            if nFact!=0 and (mxFact==0 and myFact==0) :
+                nNormal=nTemp
+                mxNormal=0
+                myNormal=0
+            elif nFact!=0 and mxFact!=0 and myFact!=0 :
+                kt=(nTemp/nFact+ mxTemp/mxFact+myTemp/myFact)/3.
+                nNormal=nFact*kt
+                mxNormal=mxFact*kt
+                myNormal=myFact*kt
+            elif nFact!=0 :
+                kt=min(nTemp/nFact, 1/(mxFact**2+myFact**2)**0.5*(mxTemp**2+myTemp**2)**0.5) 
+                nNormal=nFact*kt
+                mxNormal=mxFact*kt
+                myNormal=myFact*kt
+                
+            else:
+                nNormal=0
+                mxNormal=mxFact/(mxFact**2+myFact**2)**0.5*(mxTemp**2+myTemp**2)**0.5
+                myNormal=myFact/(mxFact**2+myFact**2)**0.5*(mxTemp**2+myTemp**2)**0.5
+            
+            lenNNormal=(nNormal**2+(mxNormal)**2+(myNormal)**2)**.5 
             kLen=lenNNormal/lenN #коэффициент- отношение длины предельной к фактической
-            print 'kLen', kLen
-            nmxmyNormal=[nFact*kLen, mxFact*kLen, myFact*kLen] #получем нормализованные усилия
+            
+            nmxmyNormal=[nNormal, mxNormal, myNormal] #получем нормализованные усилия
             print 'nmxmyNormal', nmxmyNormal
 #            print 'nmxmyNormal', nmxmyNormal
             e0rxryTemp=self.nmxmy2e0rxry(nmxmyNormal,nn, crit)#получем нормализованные перемещения
-#            print 'e0rxryTemp', e0rxryTemp
+#            print 'e010rxryTemp', e0rxryTemp
             klst=self.kk(e0rxryTemp[0:3], typ)
             k1=klst[0] #получаем коэффициент k - насколько надо разделить деформации, чтобы получить предельные 
+            print 'klst', klst
             if k1==0:
                 return 'error 1'
             
@@ -547,7 +985,7 @@ class Solves(object):
             kMax=max(kN, kMx, kMy)
 #            if kMax<crit and abs(k1-1)<0.1:
                 
-            if kMax<crit:
+            if kMax<crit and abs(k1-1)<0.01:
                 '''возвращаем
                 1 - усилия
                 2- коэффициент
@@ -599,7 +1037,7 @@ class Solves(object):
                 if nlst[mat][1]<e:
                     nlst[mat][1]=e
                     
-        print 'nlst', nlst
+#        print 'nlst', nlst
                     
 #        print 'nlst2', nlst
         '''вычисляем k для каждого материала'''
@@ -885,14 +1323,14 @@ if __name__ == "__main__":
     conc.b=25
     conc.initProperties()
     conc.functDia(typDia=3, typPS=1,typTime='short', typR=3, typRT=1)
-    
+    print conc.x,conc.y 
     rein=rcMaterial.Reinforced()
     rein.norme=52
     rein.typ='A'
     rein.a=400
     rein.initProperties()
     rein.functDia(typPS=1)
-    
+    print rein.x, rein.y
     lstMat=[conc, rein]
 
     sol.loadMat(lstMat)
@@ -911,77 +1349,82 @@ if __name__ == "__main__":
     yEvmatr=sol.yEvmatr
     kyEvmatr=sol.kyEvmatr
 
-#    nmxmy=[-200000,500000,1000000]
+    nmxmy=[-200000,600000,1000000]
 #    nmxmy=[-200000,500000,1000000] - [-200000,600000,1000000] - граничное ошибка 
-    
-    nmxmy=[-100000,500000,1000000]
+#    
+#    nmxmy=[-223050,1115000,2230000]
+#    nmxmy=[-100000,500000,2500000]
 #    nmxmy=[-200000,1000000,4000000]
-
-    out=sol.nmxmy2e0rxry(nmxmy, 100, 0.00001)
-#    print 'out', out
-
-    e0rxry=[out[0],out[1],out[2]]
-#    print 'e0rxry11', e0rxry
-    out=sol.e0rxry2nmxmy(e0rxry)
-    
-    e=np.reshape(out[4][0:100], (10, 10))
-    sigma=np.reshape(out[3][0:100], (10, 10))
+#
+#    out=sol.nmxmy2e0rxry(nmxmy, 100, 0.00001)
+##    print 'out', out
+#
+#    e0rxry=[out[0],out[1],out[2]]
+##    print 'e0rxry11', e0rxry
+#    out=sol.e0rxry2nmxmy(e0rxry)
+#    
+#    e=np.reshape(out[4][0:100], (10, 10))
+#    sigma=np.reshape(out[3][0:100], (10, 10))
 #    print out[0:3]
-
-    kk=sol.findKult(nmxmy, 1000,0.0001)
+#    e0rxry=sol.nmxmy2e0rxry(nmxmy,1000,0.0001)
+#    print 'e0rxry', e0rxry[0:3]
+#    print 'kk' , sol.kk(e0rxry[0:3])
+    for i in range(100):
+        kk=sol.findKult3(nmxmy, 100,0.01)
     
-    print 'kk', kk
-
-    e0rxry=kk[3]
-    out=sol.e0rxry2nmxmy(e0rxry)
-    print out[0], out[1] , out[2]   
-
-    '''проверка скорости ключевой функции'''
-    
-    from mpl_toolkits.mplot3d import Axes3D
-    from matplotlib import cm
-    from matplotlib.ticker import LinearLocator, FormatStrFormatter
-    import matplotlib.pyplot as plt
-    from matplotlib.mlab import griddata    
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-    X = sol.elemMatr[0][0:900]
-    Y = sol.elemMatr[1][0:900]
-    Z=out[3][0:900]
-#    surf = ax.plot_surface(X, Y, Z)
-    surf=ax.plot_trisurf(X, Y, Z, cmap=cm.terrain, linewidth=0.1)
-#    Xtr=np.reshape(X, (30, 30))
-#    Ytr=np.reshape(Y, (30, 30))
-#    Ztr=np.reshape(Z, (30, 30))
-#
-#    surf = ax.plot_surface(Xtr, Ytr, Ztr, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
-#    ax.set_zlim(-200, 200)
-    
-    ax.zaxis.set_major_locator(LinearLocator(20))
-    ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
-    
-    fig.colorbar(surf)
-#    CS = plt.contour(X, Y, Z, 15, linewidths=0.5, colors='k')
 #    
-    plt.show()    
-#    
+    print 'kult', kk
+
+#    e0rxry=kk[3]
+#    out=sol.e0rxry2nmxmy(e0rxry)
+#    print out[0], out[1] , out[2]   
 #
-#    import matplotlib.tri as tri
-#    triang = tri.Triangulation(X, Y)
-#    plt.figure()
-#    plt.gca().set_aspect('equal')
-#    plt.tripcolor(triang, Z, shading='flat', cmap=plt.cm.rainbow)
-#    plt.colorbar()
-#    plt.title('tripcolor of Delaunay triangulation, flat shading')    
-#    plt.show()
-##    for i in range(10000):
+#    '''проверка скорости ключевой функции'''
+#    
+#    from mpl_toolkits.mplot3d import Axes3D
+#    from matplotlib import cm
+#    from matplotlib.ticker import LinearLocator, FormatStrFormatter
+#    import matplotlib.pyplot as plt
+#    from matplotlib.mlab import griddata    
+#    fig = plt.figure()
+#    ax = fig.gca(projection='3d')
+#    X = sol.elemMatr[0][0:900]
+#    Y = sol.elemMatr[1][0:900]
+#    Z=out[3][0:900]
+##    surf = ax.plot_surface(X, Y, Z)
+#    surf=ax.plot_trisurf(X, Y, Z, cmap=cm.terrain, linewidth=0.1)
+##    Xtr=np.reshape(X, (30, 30))
+##    Ytr=np.reshape(Y, (30, 30))
+##    Ztr=np.reshape(Z, (30, 30))
+##
+##    surf = ax.plot_surface(Xtr, Ytr, Ztr, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+##    ax.set_zlim(-200, 200)
+#    
+#    ax.zaxis.set_major_locator(LinearLocator(20))
+#    ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
+#    
+#    fig.colorbar(surf)
+##    CS = plt.contour(X, Y, Z, 15, linewidths=0.5, colors='k')
 ##    
-##        
-##        nmxmy=[-1,0,0]
-##        
-##        sol.nmxmy2e0rxry(nmxmy,100,0.001)
-##       
-##    nmxmy=[-2,0,0]
+#    plt.show()    
 ##    
-##    print sol.nmxmy2e0rxry(nmxmy,100,0.001)
-#print 'ok'
+##
+##    import matplotlib.tri as tri
+##    triang = tri.Triangulation(X, Y)
+##    plt.figure()
+##    plt.gca().set_aspect('equal')
+##    plt.tripcolor(triang, Z, shading='flat', cmap=plt.cm.rainbow)
+##    plt.colorbar()
+##    plt.title('tripcolor of Delaunay triangulation, flat shading')    
+##    plt.show()
+###    for i in range(10000):
+###    
+###        
+###        nmxmy=[-1,0,0]
+###        
+###        sol.nmxmy2e0rxry(nmxmy,100,0.001)
+###       
+###    nmxmy=[-2,0,0]
+###    
+###    print sol.nmxmy2e0rxry(nmxmy,100,0.001)
+##print 'ok'

@@ -158,11 +158,7 @@ class Reinforced(object):
         self.ky=np.array(self.ky)
         self.kyEv=np.array(self.kyEv)
 
-        for i in range(len(x)):
-            if x[i]==0:
-                self.dx=x[i+1]/1000000.
-                break    
-        
+        self.dx=self.e()        
 
         
     def listSP52(self):
@@ -446,10 +442,7 @@ class Concrete(object):
         self.ky=np.array(self.ky)
         self.kyEv=np.array(self.kyEv)
         
-        for i in range(len(x)):
-            if x[i]==0:
-                self.dx=x[i+1]/1000000.
-                break
+        self.dx=self.e()        
             
     def propertiesApproxSP(self):
         '''аппроксимирующие функции определния характеристик бетона с В10'''
