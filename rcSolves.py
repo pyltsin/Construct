@@ -227,7 +227,30 @@ class Solves(object):
         dev=self.dxmatr*ebool
         
         eTotal=e+ebool
-        sigma=self.e2sigma4(e)
+
+#сигма
+        xmatr=self.xmatr.copy()
+        ymatr=self.ymatr.copy()
+        kymatr=self.kymatr.copy()
+        
+        boolmatr=(e>xmatr)
+        one=np.zeros(boolmatr.shape[1])
+        
+        boolmatrInvert=np.vstack((boolmatr[1:],one))
+        boolmatrInvert=(boolmatrInvert==False)
+        boolmatr=(boolmatr==boolmatrInvert)
+
+        
+        ymatr*=boolmatr
+        ymatr=np.sum(ymatr, axis=0)
+        
+        kymatr*=boolmatr[:-1]
+        kymatr=np.sum(kymatr, axis=0)
+        
+        xmatr*=boolmatr
+        xmatr=np.sum(xmatr, axis=0)
+        sigma=kymatr*(e-xmatr)+ymatr
+#сигма
         ev=sigma/eTotal+dev
         return ev
         
@@ -285,9 +308,9 @@ class Solves(object):
         n=0
         while True:
             ee=self.e0rxry2e(e0,rx,ry)
-#            print 'ee',ee[0:10]
+            print 'ee',ee
             dd=self.e2d(ee)
-#            print 'dd0',dd[0]
+            print 'dd0',dd[0]
             if type0==True:
                 d11,d12,d13,d22,d23,d33= dd[1]           
                 dnTemp=d33*elemMatr[-3]+d13*elemMatr[-2]+d23*elemMatr[-1]
@@ -306,23 +329,23 @@ class Solves(object):
                 nmxmyTemp=nmxmy
             e0f,rxf,ryf,error=self.matrSolve(nmxmyTemp,dd[0])
 #            print '1f',e0, rx, ry
-#            print 'f',e0f, rxf, ryf, error
-#            print 'n',nmxmyTemp
-#            print 'dd',dd[0]
+            print 'f',e0f, rxf, ryf, error
+            print 'n',nmxmyTemp
+            print 'dd',dd[0]
             if error==1:
                 return [False, False, False, 'Matr',n, []]
             else:
-                if e0f<10**(-20):
+                if abs(e0f)<10**(-20):
                     tolE=abs(e0f-e0)
                 else:
                     tolE=abs((e0f-e0)/e0f)
 
-                if rxf<10**(-20):
+                if abs(rxf)<10**(-20):
                     tolRx=abs(rxf-rx)
                 else:
                     tolRx=abs((rxf-rx)/rxf)
 
-                if ryf<10**(-20):
+                if abs(ryf)<10**(-20):
                     tolRy=abs(ryf-ry)
                 else:
                     tolRy=abs((ryf-ry)/ryf)
@@ -467,147 +490,48 @@ class Solves(object):
             i[1]-=y
 #        print 'lstCritPoint', lstCritPoint
         return lstCritPoint
-    def findKult3(self, nmxmy, nn, crit, typ='crit'):
+            
+    def findKult6(self, nmxmy, nn, crit, typ='crit'):
         '''расчет в лоб.
-        ограничение - <100 и >100'''
+        ограничение - <1000 и >1000'''
+        
         nFact,mxFact,myFact=nmxmy
         nTemp,mxTemp,myTemp=nmxmy     
-        
-        nn3=10 #количество итераци на предвариловке
-        crit3=crit*10
+        nn3=20 #количество итераци на предвариловке
+        crit3=crit*5
         n=0 #счетчик
-        iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn3, crit3)
-        #попытка поймать где есть возможность расчета
-        if type(iterTemp[3])==type('error'):
-            while True:
-#                print 'n1', n
-                n+=1
-                nTemp,mxTemp,myTemp=nTemp/10.,mxTemp/10.,myTemp/10.
-                iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn3, crit3)
-                if type(iterTemp[3])==type('error'):
-                    if n>1:
-                        return ['>100']
-                    else:
-                        continue
-                else:
-                    break
-            
-        klst=self.kk(iterTemp[0:3], typ)
-        k1=klst[0]
-        if k1==0:
-            return 'error 1'
-        if k1<1:
-            nTemp1,mxTemp1,myTemp1=nTemp,mxTemp,myTemp
-#            print 'nTemp1,mxTemp1,myTemp1', nTemp1,mxTemp1,myTemp1
-        #пытаемся определисть iter2
-            kn2=3.
-            knlast=1.
-            n=0
-            nm=0
-#            print 'n0', nTemp
-            flagNM=False
-            while True:
-                nTemp,mxTemp,myTemp=nTemp1*kn2,mxTemp1*kn2,myTemp1*kn2
-#                print 'nTemp', nTemp
-                iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn3, crit3)
-                if type(iterTemp[3])==type('error'):
-#                    print 'nm',nm
-                    kn2=(kn2+knlast)/2.
-                    flagNM=True
-                    if nm>10:
-                        return 'error 11'
-                    else:
-                        nm+=1
-                        continue
-                n+=1
-#                print 'n2', n
-
-                nm=0
-#                print 'iterTemp[0:3]', iterTemp[0:3]
+        kDel=10.
+#нашли работающую точку        
+        while True:
+            n+=1
+            iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn3, crit3)
+            if type(iterTemp[3])!=type('error'):
                 klst=self.kk(iterTemp[0:3], typ)
                 k1=klst[0]
-#                print 'k1', klst
-#                print 'kn2', kn2, knlast
-                if k1==0:
-                    return 'error 12'
-                if k1<1:
-                    if flagNM==False:
-                        knlast=kn2
-                        kn2=kn2*3.
-                    else:
-                        knTemp=knlast
-                        knlast=kn2
-                        kn2=kn2*kn2/knTemp                       
-                    if kn2>100:
-                        return ['<0.01']
-                    elif n>10:
-                        return 'error 13'
-                    else:
-                        continue
+            if type(iterTemp[3])==type('error') or k1>1:
+                nTemp,mxTemp,myTemp=nTemp/kDel,mxTemp/kDel,myTemp/kDel
+                if n>3:
+                    return 'error >1000'
                 else:
-                    nTemp2,mxTemp2,myTemp2=nTemp,mxTemp,myTemp
-                    break
-#определяем iter 1
-        else:
-            nTemp2,mxTemp2,myTemp2=nTemp,mxTemp,myTemp
-            kn2=10.
-            knlast=0.
-            n=0.
-            while True:
-#                print 'n3', n
-                n+=1
-                nTemp,mxTemp,myTemp=nTemp2/10.,mxTemp2/10.,myTemp2/10.
-                iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn3, crit3)
-                if type(iterTemp[3])==type('error'):
-                    return 'error 21'
-                klst=self.kk(iterTemp[0:3], typ)
-                k1=klst[0]
-                if k1>1:
-                    if n>3:
-                        return 'error22'
-                    else:
-                        continue
-                else:
-                    nTemp1,mxTemp1,myTemp1=nTemp,mxTemp,myTemp
-                    break
+                    continue
+            else:
+                break
+#потом двоичный поиск
 
         n=0
+        kDelCur=nTemp/nFact*10.
+        kDel1=nTemp/nFact
+        kDel2=kDelCur
+        flagSearch=False
         while True:
-#            print 'n1, n2', nTemp1, nTemp2
-#            print 'n4', n
             n+=1
-            if n>nn:
-                return 'error 3'
-            nTemp,mxTemp,myTemp=(nTemp1+nTemp2)/2.,(mxTemp1+mxTemp2)/2.,(myTemp1+myTemp2)/2.
-            iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn, crit)
-            if type(iterTemp[3])==type('error'):
-                return 'error 31'
-            klst=self.kk(iterTemp[0:3], typ)
-            k1=klst[0]
-#            print 'klst', klst
-            if k1>1:
-                nTemp2,mxTemp2,myTemp2=nTemp,mxTemp,myTemp
-            else:
-                nTemp1,mxTemp1,myTemp1=nTemp,mxTemp,myTemp
+            print'tt', kDelCur, kDel1, kDel2, nTemp
 
-            if nFact==0:
-                kN=abs(nTemp2-nTemp1)
-            else:
-                kN=abs(nTemp2-nTemp1)/abs(nTemp2)
+            if abs((kDelCur-kDel1)/kDelCur)<crit:
+                nTemp,mxTemp,myTemp=nFact*kDel1,mxFact*kDel1,myTemp*kDel1
 
-            if kN<crit:
-                '''возвращаем
-                1 - усилия
-                2- коэффициент
-                3 - сколько итераций было
-                4 - e0rxry для предельного состочняи
-                5 - предельные усилия
-                6 - d
-                7 - d/de
-                8 - klst - список макс e/emax'''
-                nTemp,mxTemp,myTemp=(nTemp1+nTemp2)/2.,(mxTemp1+mxTemp2)/2.,(myTemp1+myTemp2)/2.
                 kLen=nTemp/nFact
-                e0rxryTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn, crit)
+                e0rxryTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn3, crit3)
 #                print 'e0rxry', e0rxryTemp
                 ee=self.e0rxry2e(e0rxryTemp[0],e0rxryTemp[1],e0rxryTemp[2]) #     
                 dd=self.e2d(ee)[0]
@@ -620,172 +544,50 @@ class Solves(object):
 
                 dddel=[dd[0]/ddel[0][0],dd[3]/ddel[0][3],dd[5]/ddel[0][5]]
                 return nmxmy, kLen,n, e0rxryTemp[0:3],  [nTemp,mxTemp,myTemp], dd,dddel, klst[1]
-                
-            else:
-                continue
-            
-    def findKult4(self, nmxmy, nn, crit, typ='crit'):
-        '''расчет в лоб.
-        ограничение - <100 и >100'''
-        nFact,mxFact,myFact=nmxmy
-        nTemp,mxTemp,myTemp=nmxmy     
-        
-        nn3=10 #количество итераци на предвариловке
-        crit3=crit*10
-        n=0 #счетчик
-        iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn3, crit3)
-        #попытка поймать где есть возможность расчета
-        if type(iterTemp[3])==type('error'):
-            while True:
-#                print 'n1', n
-                n+=1
-                nTemp,mxTemp,myTemp=nTemp/10.,mxTemp/10.,myTemp/10.
-                iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn3, crit3)
-                if type(iterTemp[3])==type('error'):
-                    if n>1:
-                        return ['>100']
-                    else:
-                        continue
-                else:
-                    break
-            
-        klst=self.kk(iterTemp[0:3], typ)
-        k1=klst[0]
-        if k1==0:
-            return 'error 1'
-        if k1<1:
-            nTemp1,mxTemp1,myTemp1=nTemp,mxTemp,myTemp
-#            print 'nTemp1,mxTemp1,myTemp1', nTemp1,mxTemp1,myTemp1
-        #пытаемся определисть iter2
-            kn2=3.
-            knlast=1.
-            n=0
-            nm=0
-#            print 'n0', nTemp
-            flagNM=False
-            while True:
-                nTemp,mxTemp,myTemp=nTemp1*kn2,mxTemp1*kn2,myTemp1*kn2
-#                print 'nTemp', nTemp
-                iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn3, crit3)
-                if type(iterTemp[3])==type('error'):
-#                    print 'nm',nm
-                    kn2=(kn2+knlast)/2.
-                    flagNM=True
-                    if nm>10:
-                        return 'error 11'
-                    else:
-                        nm+=1
-                        continue
-                n+=1
-#                print 'n2', n
 
-                nm=0
-#                print 'iterTemp[0:3]', iterTemp[0:3]
-                klst=self.kk(iterTemp[0:3], typ)
-                k1=klst[0]
-#                print 'k1', klst
-#                print 'kn2', kn2, knlast
-                if k1==0:
-                    return 'error 12'
-                if k1<1:
-                    if flagNM==False:
-                        knlast=kn2
-                        kn2=kn2*3.
-                    else:
-                        knTemp=knlast
-                        knlast=kn2
-                        kn2=kn2*kn2/knTemp                       
-                    if kn2>100:
-                        return ['<0.01']
-                    elif n>10:
-                        return 'error 13'
-                    else:
-                        continue
-                else:
-                    nTemp2,mxTemp2,myTemp2=nTemp,mxTemp,myTemp
-                    break
-#определяем iter 1
-        else:
-            nTemp2,mxTemp2,myTemp2=nTemp,mxTemp,myTemp
-            kn2=10.
-            knlast=0.
-            n=0.
-            while True:
-#                print 'n3', n
-                n+=1
-                nTemp,mxTemp,myTemp=nTemp2/10.,mxTemp2/10.,myTemp2/10.
-                iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn3, crit3)
-                if type(iterTemp[3])==type('error'):
-                    return 'error 21'
-                klst=self.kk(iterTemp[0:3], typ)
-                k1=klst[0]
-                if k1>1:
-                    if n>3:
-                        return 'error22'
-                    else:
-                        continue
-                else:
-                    nTemp1,mxTemp1,myTemp1=nTemp,mxTemp,myTemp
-                    break
-
-        n=0
-        while True:
-#            print 'n1, n2', nTemp1, nTemp2
-#            print 'n4', n
-            n+=1
             if n>nn:
-                return 'error 3'
-            nTemp,mxTemp,myTemp=(nTemp1+nTemp2)/2.,(mxTemp1+mxTemp2)/2.,(myTemp1+myTemp2)/2.
-            iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn, crit)
+                return 'error n'
+                
+            nTemp,mxTemp,myTemp=nFact*kDelCur,mxFact*kDelCur,myTemp*kDelCur
+            iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn3, crit3)
+            
+            
+            if type(iterTemp[3])!=type('error'):
+                klst=self.kk(iterTemp[0:3], typ)
+                k1=klst[0]
+                
+                
             if type(iterTemp[3])==type('error'):
-                return 'error 31'
-            klst=self.kk(iterTemp[0:3], typ)
-            k1=klst[0]
-#            print 'klst', klst
-            if k1>1:
-                nTemp2,mxTemp2,myTemp2=nTemp,mxTemp,myTemp
-            else:
-                nTemp1,mxTemp1,myTemp1=nTemp,mxTemp,myTemp
+                kDelCur=(kDelCur+kDel1)/2.
+                kDel2=kDelCur
+                flagSearch=True
 
-            if nFact==0:
-                kN=abs(nTemp2-nTemp1)
-            else:
-                kN=abs(nTemp2-nTemp1)/abs(nTemp2)
-
-            if kN<crit:
-                '''возвращаем
-                1 - усилия
-                2- коэффициент
-                3 - сколько итераций было
-                4 - e0rxry для предельного состочняи
-                5 - предельные усилия
-                6 - d
-                7 - d/de
-                8 - klst - список макс e/emax'''
-                nTemp,mxTemp,myTemp=(nTemp1+nTemp2)/2.,(mxTemp1+mxTemp2)/2.,(myTemp1+myTemp2)/2.
-                kLen=nTemp/nFact
-                e0rxryTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn, crit)
-#                print 'e0rxry', e0rxryTemp
-                ee=self.e0rxry2e(e0rxryTemp[0],e0rxryTemp[1],e0rxryTemp[2]) #     
-                dd=self.e2d(ee)[0]
-                
-                e0,rx,ry=0,0,0#устанавливаем начальные деофрмации
-                ee=self.e0rxry2e(e0,rx,ry) #расчитываем матрицу деформаций
-        
-                ddel=self.e2d(ee) #определяем начальные dd
-  
-
-                dddel=[dd[0]/ddel[0][0],dd[3]/ddel[0][3],dd[5]/ddel[0][5]]
-                return nmxmy, kLen,n, e0rxryTemp[0:3],  [nTemp,mxTemp,myTemp], dd,dddel, klst[1]
-                
-            else:
                 continue
-                    
-              
-    def findKult2(self, nmxmy, nn, crit, typ='crit'):
-        e0rxryTemp=[-2.6104085654547216e-114, 3.3690970320930102e-05, 0.00010630902967906989]        
-        print self.e0rxry2nmxmy(e0rxryTemp)
+            
+            elif type(iterTemp[3])!=type('error') and k1>1:
+                kDel2=kDelCur
+                kDelCur=(kDel2+kDel1)/2.
+                flagSearch=True
+                continue                
+            else:
+                if flagSearch==True:
+                    kDel1=kDelCur    
+                    kDelCur=(kDel2+kDel1)/2. 
+                else:
+                    kDel1=kDelCur
+                    kDelCur=kDel1*10.
+                    kDel2=kDelCur
+                continue
+                            
+        
+    def findKult8(self, nmxmy, nn, crit, typ='crit'):
+        '''поиск через e0 rx ry
+        пока только для N!=0'''
         nFact,mxFact,myFact=nmxmy #фиксируем усилия
+        if nFact==0 and mxFact==0 and myFact==0:
+            return nmxmy, 0, 0, [0,0,0],  [0,0,0], [], [], []
+            
+
         e0,rx,ry=0,0,0#устанавливаем начальные деофрмации
         ee=self.e0rxry2e(e0,rx,ry) #расчитываем матрицу деформаций
 
@@ -796,7 +598,7 @@ class Solves(object):
         klst=self.kk(e0rxry[0:3], typ)
         k1=klst[0]#получаем коэффициент k - насколько надо разделить деформации, чтобы получить предельные 
 #        print 'k111', k1
-        print 'klst', klst
+#        print 'klst', klst
 
         if k1==0:
             return 'error 1'
@@ -804,68 +606,219 @@ class Solves(object):
         e0rxryTemp=[e0rxry[0]/(k1/1.), e0rxry[1]/(k1/1.), e0rxry[2]/(k1/1.)] #получаем предельные дформации
         n=0#счетчик
         nmxmyTemp=self.e0rxry2nmxmy(e0rxryTemp) #получаем усилия временные
-        nTemp,mxTemp,myTemp, sigmaT, eT=nmxmyTemp     
-
-        nCrit, mxCrit, myCrit=nTemp,mxTemp,myTemp
-        e0rxryCrit=e0rxryTemp#фиксируем значения для проверки схожимости
+        nTemp,mxTemp,myTemp, tt1, tt2=nmxmyTemp     
+        e0Temp, rxTemp, ryTemp=e0rxryTemp
+        
+        kN=nTemp/nFact
+        kMx=mxTemp/mxFact
+        kMy=myTemp/myFact
+        
+        flagMx=False
+        flagMy=False
+        
+        if kN>kMx:
+            kmxCur=10.
+            kmx1=1.
+            signMx1='+'
+        else:
+            kmxCur=0.1
+            kmx1=1
+            signMx1='-'
+    
+        if kN>kMy:
+            kmyCur=10.
+            kmy1=1.
+            signMy1='+'
+        else:
+            kmyCur=0.1
+            kmy1=1
+            signMy1='-'
+            
         while True:
             n+=1
-            if n>nn:
-                print 'n', n
-                return 'error 2' #ошибка превышения количества итераций
+            rxTemp*=kmxCur
+            ryTemp*=kmyCur
 
-            if nFact!=0:
-                kn=[nTemp/nFact,nTemp/nFact]
-            else:
-                kn=[0,1]
-
-            if mxFact!=0:
-                kmx=[mxTemp/mxFact,mxTemp/mxFact]
-            else:
-                kmx=[0,1]
-
-            if myFact!=0:
-                kmy=[myTemp/myFact,myTemp/myFact]
-            else:
-                kmy=[0,1]
-
-            kGen=(kn[0]+kmy[0]+kmx[0])/3.
-            print 'kn', kn, kmx, kmy
-            eNormal, rxNormal, ryNormal=e0rxryTemp[0]/kn[1],e0rxryTemp[1]/kmx[1],e0rxryTemp[2]/kmy[1]
-            print 'enormal', eNormal, rxNormal, ryNormal
-            klst=self.kk([eNormal, rxNormal, ryNormal], typ)
-            k1=klst[0]
+            ee=self.e0rxry2e(e0Temp,rxTemp,ryTemp) #расчитываем матрицу деформаций
+    
+            dd=self.e2d(ee) #определяем начальные dd
+    
+            e0rxry=self.matrSolve(nmxmy,dd[0]) #определяем упругие деформации
+    
+            klst=self.kk(e0rxry[0:3], typ)
+            k1=klst[0]#получаем коэффициент k - насколько надо разделить деформации, чтобы получить предельные 
+    #        print 'k111', k1
+#            print 'klst', klst
+    
             if k1==0:
                 return 'error 1'
                 
-            e0rxryTemp=[eNormal/(k1/1.),rxNormal/(k1/1.),ryNormal/(k1/1.)] #получаем предельные дформации
+            e0rxryTemp=[e0rxry[0]/(k1/1.), e0rxry[1]/(k1/1.), e0rxry[2]/(k1/1.)] #получаем предельные дформации
+
             
-            print 'e0rxryTemp', e0rxryTemp
             nmxmyTemp=self.e0rxry2nmxmy(e0rxryTemp) #получаем усилия временные
-            nTemp,mxTemp,myTemp, sigmaT, eT=nmxmyTemp     
-            print 'nTemp', nTemp,mxTemp,myTemp
+            nTemp,mxTemp,myTemp, tt1, tt2=nmxmyTemp     
+            e0Temp, rxTemp, ryTemp=e0rxryTemp
+            print 'e0Temp, rxTemp, ryTemp', e0Temp, rxTemp, ryTemp
+            print 'nTemp,mxTemp,myTemp',nTemp,mxTemp,myTemp
+
+            kN=nTemp/nFact
+            kMx=mxTemp/mxFact
+            kMy=myTemp/myFact
             
-            if nCrit==0:
-                kN=abs(nTemp-nCrit)
-            else:
-                kN=abs(nTemp-nCrit)/abs(nTemp)
-
-            if mxTemp==0:
-                kMx=abs(mxTemp-mxCrit)
-            else:
-                kMx=abs(mxTemp-mxCrit)/abs(mxTemp)
-
-            if myTemp==0:
-                kMy=abs(myTemp-myCrit)
-            else:
-                kMy=abs(myTemp-myCrit)/abs(myTemp)
-
-            kMax=max(kN, kMx, kMy)
-#            if kMax<crit and abs(k1-1)<0.1:
-            print 'kmax', kMax
-            print k1
+            if ((kN>kMx and signMx1=='+') or (kN<kMx and signMx1=='-')) and flagMx==False:
+                kmxTemp=kmxCur
+                kmxCur=kmxCur**2/kmx1
+                kmx1=kmxTemp
+            elif flagMx==False:
+                flagMx=True
+                kmx2=kmxCur                
+                if kN>kMx:
+                    signMx2='+'
+                else:
+                    signMx2='-'
+                    
+            if ((kN>kMy and signMy1=='+') or (kN<kMy and signMy1=='-')) and flagMy==False:
+                kmyTemp=kmyCur
+                kmyCur=kmyCur**2/kmy1
+                kmy1=kmyTemp
+            elif flagMy==False:
+                flagMy=True
+                kmy2=kmyCur                
+                if kN>kMy:
+                    signMy2='+'
+                else:
+                    signMy2='-'
+                    
+            if flagMy==True and flagMx==True:
+                break
+            if n>nn:
+                return 'error 2'
             
-            if kMax<crit and abs(k1-1)<0.01:
+        while True:
+            n+=1
+            if n>nn:
+                return 'error 3'
+
+            kmxCur=(kmx1+kmx2)/2.
+            kmyCur=(kmy1+kmy2)/2.
+
+            rxTemp*=kmxCur
+            ryTemp*=kmyCur
+            
+            ee=self.e0rxry2e(e0Temp,rxTemp,ryTemp) #расчитываем матрицу деформаций
+    
+            dd=self.e2d(ee) #определяем начальные dd
+    
+            e0rxry=self.matrSolve(nmxmy,dd[0]) #определяем упругие деформации
+    
+            klst=self.kk(e0rxry[0:3], typ)
+            k1=klst[0]#получаем коэффициент k - насколько надо разделить деформации, чтобы получить предельные 
+    #        print 'k111', k1
+#            print 'klst', klst
+    
+            if k1==0:
+                return 'error 4'
+                
+            e0rxryTemp=[e0rxry[0]/(k1/1.), e0rxry[1]/(k1/1.), e0rxry[2]/(k1/1.)] #получаем предельные дформации
+
+            
+            nmxmyTemp=self.e0rxry2nmxmy(e0rxryTemp) #получаем усилия временные
+            nTemp,mxTemp,myTemp, tt1, tt2=nmxmyTemp     
+            e0Temp, rxTemp, ryTemp=e0rxryTemp
+            print 'e0Temp, rxTemp, ryTemp', e0Temp, rxTemp, ryTemp
+            print 'nTemp,mxTemp,myTemp',nTemp,mxTemp,myTemp
+            kN=nTemp/nFact
+            kMx=mxTemp/mxFact
+            kMy=myTemp/myFact
+
+            if kN>kMx:
+                signMxCur='+'
+            else:
+                signMxCur='-'
+        
+            if kN>kMy:
+                signMyCur='+'
+            else:
+                signMyCur='-'
+                
+            if signMxCur==signMx1:
+                kmx1=kmxCur
+            else:
+                kmx2=kmxCur
+                
+            if signMyCur==signMy1:
+                kmy1=kmyCur
+            else:
+                kmy2=kmyCur
+            
+            if abs((kmy1-kmy2)/kmy1)<crit and abs((kmx1-kmx2)/kmx1)<crit:
+                return nTemp,mxTemp,myTemp
+
+    def findKult7(self, nmxmy, nn, crit, typ='crit'):
+        
+        nFact,mxFact,myFact=nmxmy
+        nTemp,mxTemp,myTemp=nmxmy     
+        nn3=20 #количество итераци на предвариловке
+        crit3=crit*5
+        n=0 #счетчик
+        kDel=10.
+#нашли работающую точку        
+        while True:
+            n+=1
+            iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn3, crit3)
+            if type(iterTemp[3])!=type('error'):
+                klst=self.kk(iterTemp[0:3], typ)
+                k1=klst[0]
+            if type(iterTemp[3])==type('error') or k1>1:
+                nTemp,mxTemp,myTemp=nTemp/kDel,mxTemp/kDel,myTemp/kDel
+                if n>3:
+                    return 'error >1000'
+                else:
+                    continue
+            else:
+                break
+
+
+        nTemp1,mxTemp1,myTemp1=nTemp,mxTemp,myTemp
+        
+#        print 'nTemp1,mxTemp1,myTemp1', nTemp1,mxTemp1,myTemp1, k1
+    #пытаемся определисть iter2
+        kn2=3.
+        knlast=1.
+        n=0
+        nm=0
+#            print 'n0', nTemp
+        flagNM=False
+        
+        while True:
+            nTemp,mxTemp,myTemp=nTemp1*kn2,mxTemp1*kn2,myTemp1*kn2
+            print 'nTemp', nTemp
+            iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn, crit)
+            print 'iterTemp', iterTemp[0:3]
+            if type(iterTemp[3])!=type('error'):
+                klst=self.kk(iterTemp[0:3], typ)
+                k2=klst[0]
+            
+            if type(iterTemp[3])==type('error') or k2>1:
+#                print 'nm',nm
+                kn2=(kn2+knlast)/2.
+                flagNM=True
+                if nm>10:
+                    return 'error 11'
+                else:
+                    nm+=1
+                    continue
+            n+=1
+#            print 'n2', n
+
+            nm=0
+#                print 'iterTemp[0:3]', iterTemp[0:3]
+            print 'k2', klst
+            print 'kn2', kn2, knlast
+            if k2==0:
+                return 'error 12'
+            if abs((kn2-knlast)/kn2)<crit:
                 '''возвращаем
                 1 - усилия
                 2- коэффициент
@@ -875,11 +828,42 @@ class Solves(object):
                 6 - d
                 7 - d/de
                 8 - klst - список макс e/emax'''
-                dd=self.e2d(eT)[0]
+                if nFact!=0:
+                    kLen=nTemp/nFact
+                elif mxFact!=0:
+                    kLen=mxTemp/mxFact
+                elif myFact!=0:
+                    kLen=myTemp/myFact
+
+                e0rxryTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn, crit)
+#                print 'e0rxry', e0rxryTemp
+                ee=self.e0rxry2e(e0rxryTemp[0],e0rxryTemp[1],e0rxryTemp[2]) #     
+                dd=self.e2d(ee)[0]
+                
+                e0,rx,ry=0,0,0#устанавливаем начальные деофрмации
+                ee=self.e0rxry2e(e0,rx,ry) #расчитываем матрицу деформаций
+        
+                ddel=self.e2d(ee) #определяем начальные dd
+  
+
                 dddel=[dd[0]/ddel[0][0],dd[3]/ddel[0][3],dd[5]/ddel[0][5]]
-                return nmxmy, kGen,n, e0rxryTemp,  [nTemp,mxTemp,myTemp], dd,dddel, klst[1]
+                return nmxmy, kLen,n, e0rxryTemp[0:3],  [nTemp,mxTemp,myTemp], dd,dddel, klst[1]
+                
+            if flagNM==False:
+                knlast=kn2
+                kn2=kn2*3.
             else:
-                nCrit, mxCrit, myCrit=nTemp,mxTemp,myTemp
+                knTemp=knlast
+                knlast=kn2
+                kn2=kn2*kn2/knTemp                       
+            if n>nn:
+                return 'error 13'
+            else:
+                continue
+
+                    
+
+
             
         
     def findKult(self, nmxmy, nn, crit, typ='crit'):
@@ -959,7 +943,7 @@ class Solves(object):
             if k1==0:
                 return 'error 1'
             
-            print 'k1', k1
+            print 'k1', klst
             e0rxryTemp=[e0rxryTemp[0]/k1, e0rxryTemp[1]/k1, e0rxryTemp[2]/k1] #получаем предельные дформации
 #            print 'k1',k1
 
@@ -1307,7 +1291,7 @@ class Solves(object):
                     
 if __name__ == "__main__":
     lstForm=[
-    ['Rectangle',[[0.,0.],[50.,50.]],[30.,30.],0,1,[0,0,0]],
+    ['Rectangle',[[0.,0.],[50.,50.]],[2.,2.],0,1,[0,0,0]],
     ['Circle',[5,5,2],[],1,1,[0,0,0]],
     ['Circle',[45,45,2],[],1,1,[0,0,0]],
     ['Circle',[45,5,2],[],1,1,[0,0,0]],
@@ -1349,13 +1333,13 @@ if __name__ == "__main__":
     yEvmatr=sol.yEvmatr
     kyEvmatr=sol.kyEvmatr
 
-    nmxmy=[-200000,600000,1000000]
-#    nmxmy=[-200000,500000,1000000] - [-200000,600000,1000000] - граничное ошибка 
+#    nmxmy=[-100000,0.0,0.0]
+    nmxmy=[-200000,600000,1000000] #- [-200000,600000,1000000] - граничное ошибка 
 #    
-#    nmxmy=[-223050,1115000,2230000]
-#    nmxmy=[-100000,500000,2500000]
-#    nmxmy=[-200000,1000000,4000000]
-#
+#    nmxmy=[-22305*2,1110*2,223000*2]
+#    nmxmy=[-100,500,2500]
+#    nmxmy=[-200000,1000000,40000400]
+
 #    out=sol.nmxmy2e0rxry(nmxmy, 100, 0.00001)
 ##    print 'out', out
 #
@@ -1369,9 +1353,9 @@ if __name__ == "__main__":
 #    e0rxry=sol.nmxmy2e0rxry(nmxmy,1000,0.0001)
 #    print 'e0rxry', e0rxry[0:3]
 #    print 'kk' , sol.kk(e0rxry[0:3])
-    for i in range(100):
-        kk=sol.findKult3(nmxmy, 100,0.01)
-    
+#    for i in range(100):
+    kk=sol.findKult7(nmxmy, 15,0.01)
+# пока рабочее - 7 вариант    
 #    
     print 'kult', kk
 
