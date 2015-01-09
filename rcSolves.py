@@ -607,154 +607,189 @@ class Solves(object):
         n=0#счетчик
         nmxmyTemp=self.e0rxry2nmxmy(e0rxryTemp) #получаем усилия временные
         nTemp,mxTemp,myTemp, tt1, tt2=nmxmyTemp     
-        e0Temp, rxTemp, ryTemp=e0rxryTemp
-        
-        kN=nTemp/nFact
-        kMx=mxTemp/mxFact
-        kMy=myTemp/myFact
-        
-        flagMx=False
-        flagMy=False
-        
-        if kN>kMx:
-            kmxCur=10.
-            kmx1=1.
-            signMx1='+'
-        else:
-            kmxCur=0.1
-            kmx1=1
-            signMx1='-'
-    
-        if kN>kMy:
-            kmyCur=10.
-            kmy1=1.
-            signMy1='+'
-        else:
-            kmyCur=0.1
-            kmy1=1
-            signMy1='-'
+        e0Temp1, rxTemp1, ryTemp1=e0rxryTemp
+
+        if nFact!=0:
+            if abs(mxFact/nFact)>abs(mxTemp/nTemp):
+                dmx=rxTemp1/2.
+            else:
+                dmx=-rxTemp1/2.
+                
+            if abs(myFact/nFact)>abs(myTemp/nTemp):
+                dmy=ryTemp1/2.
+            else:
+                dmy=-ryTemp1/2.
             
+            if dmx==rxTemp1/2. and dmy==ryTemp1/2.:
+                dn=-e0Temp1/10.
+            elif dmx==-rxTemp1/2. and dmy==-ryTemp1/2:
+                dn=e0Temp1/10.
+            else:
+                dn=0
+            
+        else:
+            if nTemp>0:
+                dn=e0Temp1/2.
+            else:
+                dn=-e0Temp1/2.
+                
+            if mxFact!=0:
+                if abs(myFact/mxFact)>abs(myTemp/mxTemp):
+                    dmy=ryTemp1/2.
+                else:
+                    dmy=-ryTemp1/2.
+                dmx=0
+            else:
+                if abs(mxFact/myFact)>abs(mxTemp/myTemp):
+                    dmx=rxTemp1/2.
+                else:
+                    dmx=-rxTemp1/2.
+                dmy=0
+        dmx1=0
+        dmy1=0
+        dn1=0
         while True:
             n+=1
-            rxTemp*=kmxCur
-            ryTemp*=kmyCur
+            
+            if n>nn:
+                return 'error n'
+            e0Temp, rxTemp, ryTemp=e0Temp1+dn, rxTemp1+dmx, ryTemp1+dmy
+            print 'e0Temp, rxTemp, ryTemp', e0Temp, rxTemp, ryTemp
+            ee=self.e0rxry2e(e0Temp, rxTemp, ryTemp) #расчитываем матрицу деформаций
 
-            ee=self.e0rxry2e(e0Temp,rxTemp,ryTemp) #расчитываем матрицу деформаций
     
-            dd=self.e2d(ee) #определяем начальные dd
-    
-            e0rxry=self.matrSolve(nmxmy,dd[0]) #определяем упругие деформации
-    
-            klst=self.kk(e0rxry[0:3], typ)
+            e0rxry=e0Temp, rxTemp, ryTemp #определяем упругие деформации
+            print 'e0rxry',e0rxry
+            klst=self.kk(e0rxry, typ)
             k1=klst[0]#получаем коэффициент k - насколько надо разделить деформации, чтобы получить предельные 
     #        print 'k111', k1
-#            print 'klst', klst
+    #        print 'klst', klst
     
             if k1==0:
-                return 'error 1'
-                
-            e0rxryTemp=[e0rxry[0]/(k1/1.), e0rxry[1]/(k1/1.), e0rxry[2]/(k1/1.)] #получаем предельные дформации
-
-            
-            nmxmyTemp=self.e0rxry2nmxmy(e0rxryTemp) #получаем усилия временные
-            nTemp,mxTemp,myTemp, tt1, tt2=nmxmyTemp     
-            e0Temp, rxTemp, ryTemp=e0rxryTemp
-            print 'e0Temp, rxTemp, ryTemp', e0Temp, rxTemp, ryTemp
-            print 'nTemp,mxTemp,myTemp',nTemp,mxTemp,myTemp
-
-            kN=nTemp/nFact
-            kMx=mxTemp/mxFact
-            kMy=myTemp/myFact
-            
-            if ((kN>kMx and signMx1=='+') or (kN<kMx and signMx1=='-')) and flagMx==False:
-                kmxTemp=kmxCur
-                kmxCur=kmxCur**2/kmx1
-                kmx1=kmxTemp
-            elif flagMx==False:
-                flagMx=True
-                kmx2=kmxCur                
-                if kN>kMx:
-                    signMx2='+'
-                else:
-                    signMx2='-'
-                    
-            if ((kN>kMy and signMy1=='+') or (kN<kMy and signMy1=='-')) and flagMy==False:
-                kmyTemp=kmyCur
-                kmyCur=kmyCur**2/kmy1
-                kmy1=kmyTemp
-            elif flagMy==False:
-                flagMy=True
-                kmy2=kmyCur                
-                if kN>kMy:
-                    signMy2='+'
-                else:
-                    signMy2='-'
-                    
-            if flagMy==True and flagMx==True:
-                break
-            if n>nn:
                 return 'error 2'
-            
-        while True:
-            n+=1
-            if n>nn:
-                return 'error 3'
-
-            kmxCur=(kmx1+kmx2)/2.
-            kmyCur=(kmy1+kmy2)/2.
-
-            rxTemp*=kmxCur
-            ryTemp*=kmyCur
-            
-            ee=self.e0rxry2e(e0Temp,rxTemp,ryTemp) #расчитываем матрицу деформаций
-    
-            dd=self.e2d(ee) #определяем начальные dd
-    
-            e0rxry=self.matrSolve(nmxmy,dd[0]) #определяем упругие деформации
-    
-            klst=self.kk(e0rxry[0:3], typ)
-            k1=klst[0]#получаем коэффициент k - насколько надо разделить деформации, чтобы получить предельные 
-    #        print 'k111', k1
-#            print 'klst', klst
-    
-            if k1==0:
-                return 'error 4'
-                
-            e0rxryTemp=[e0rxry[0]/(k1/1.), e0rxry[1]/(k1/1.), e0rxry[2]/(k1/1.)] #получаем предельные дформации
-
-            
-            nmxmyTemp=self.e0rxry2nmxmy(e0rxryTemp) #получаем усилия временные
+            print 'k1', k1    
+            e0rxryCurT=e0rxry[0]/(k1/1.), e0rxry[1]/(k1/1.), e0rxry[2]/(k1/1.) #получаем предельные дформации
+            print 'e0rxryCurT', e0rxryCurT
+            nmxmyTemp=self.e0rxry2nmxmy(e0rxryCurT) #получаем усилия временные
             nTemp,mxTemp,myTemp, tt1, tt2=nmxmyTemp     
-            e0Temp, rxTemp, ryTemp=e0rxryTemp
-            print 'e0Temp, rxTemp, ryTemp', e0Temp, rxTemp, ryTemp
-            print 'nTemp,mxTemp,myTemp',nTemp,mxTemp,myTemp
-            kN=nTemp/nFact
-            kMx=mxTemp/mxFact
-            kMy=myTemp/myFact
+            print 'nTemp,mxTemp,myTemp', nTemp,mxTemp,myTemp
+            if nFact!=0:
+                print 'mxFact/nFact>mxTemp/nTemp', mxFact/nFact, mxTemp/nTemp
+                if abs(mxFact/nFact)>abs(mxTemp/nTemp):
+                    if (dmx>0 and mxTemp>0) or (dmx<0 and mxTemp<0):
+                        dmxt=dmx
+                        dmx=dmx*2-dmx1
+                        dmx1=dmxt
+                        flag1=True
+                    else:
+                        dmx=dmx1+(dmx-dmx1)/2.
+                        flag1=False
+                else:
+                    if (dmx<0 and mxTemp>0) or (dmx>0 and mxTemp<0):
+                        dmxt=dmx
+                        dmx=dmx*2-dmx1
+                        dmx1=dmxt
+                        flag1=True
+                    else:
+                        dmx=dmx1+(dmx-dmx1)/2.
+                        flag1=False
 
-            if kN>kMx:
-                signMxCur='+'
-            else:
-                signMxCur='-'
-        
-            if kN>kMy:
-                signMyCur='+'
-            else:
-                signMyCur='-'
+
+                if abs(myFact/nFact)>abs(myTemp/nTemp):
+                    if (dmy>0 and myTemp>0) or (dmy<0 and myTemp<0):
+                        dmyt=dmy
+                        dmy=dmy*2-dmy1
+                        dmy1=dmyt
+                        flag2=True
+                    else:
+                        dmy=dmy1+(dmy-dmy1)/2.
+                        flag2=False
+                else:
+                    if (dmy<0 and myTemp>0) or (dmy>0 and myTemp<0):
+                        dmyt=dmy
+                        dmy=dmy*2-dmy1
+                        dmy1=dmyt
+                        flag2=True
+                    else:
+                        dmy=dmy1+(dmy-dmy1)/2.
+                        flag2=False
                 
-            if signMxCur==signMx1:
-                kmx1=kmxCur
+                if flag1==True and flag2==True:
+                    dnt=dn
+                    dn=dn*2-dn1
+                    dn1=dnt
+                else:
+                    dn=dn1+(dn-dn1)/2.
+
+                    
             else:
-                kmx2=kmxCur
-                
-            if signMyCur==signMy1:
-                kmy1=kmyCur
+                if nTemp>0:
+                    if dn<0:
+                        dnt=dn
+                        dn=dn*2-dn1
+                        dn1=dnt
+                    else:
+                        dn=dn+(dn-dn1)/2.
+                else:
+                    if dn>0:
+                        dnt=dn
+                        dn=dn*2-dn1
+                        dn1=dnt
+                    else:
+                        dn=dn+(dn-dn1)/2.
+                    
+                if mxFact!=0:
+                    if abs(myFact/mxFact)>abs(myTemp/mxTemp):
+                        if (dmy>0 and myTemp>0) or (dmy<0 and myTemp<0):
+                            dmyt=dmy
+                            dmy=dmy*2-dmy1
+                            dmy1=dmyt
+                        else:
+                            dmy=dmy1+(dmy-dmy1)/2.
+                    else:
+                        if (dmy<0 and myTemp>0) or (dmy>0 and myTemp<0):
+                            dmyt=dmy
+                            dmy=dmy*2-dmy1
+                            dmy1=dmyt
+                        else:
+                            dmy=dmy1+(dmy-dmy1)/2.
+                    
+                else:
+                    if abs(mxFact/myFact)>abs(mxTemp/myTemp):
+                        if (dmx>0 and mxTemp>0) or (dmx<0 and mxTemp<0):
+                            dmxt=dmx
+                            dmx=dmx*2-dmx1
+                            dmx1=dmxt
+                        else:
+                            dmx=dmx1+(dmx-dmx1)/2.
+                    else:
+                        if (dmx<0 and mxTemp>0) or (dmx>0 and mxTemp<0):
+                            dmxt=dmx
+                            dmx=dmx*2-dmx1
+                            dmx1=dmxt
+                        else:
+                            dmx=dmx1+(dmx-dmx1)/2.
+            print dn, dmx, dmy
+            print nTemp/nFact,mxTemp/mxFact,myTemp/myFact
+            if e0Temp!=0:
+                kn=abs((e0Temp1+dn-e0Temp)/e0Temp)
             else:
-                kmy2=kmyCur
+                kn=0
             
-            if abs((kmy1-kmy2)/kmy1)<crit and abs((kmx1-kmx2)/kmx1)<crit:
-                return nTemp,mxTemp,myTemp
+            if rxTemp!=0:
+                kmx=abs((rxTemp1+dmx-rxTemp)/rxTemp)
+            else:
+                kmx=0
 
+            if ryTemp!=0:
+                kmy=abs((ryTemp1+dmy-ryTemp)/ryTemp)
+            else:
+                kmy=0
+
+            k=max(kn, kmx, kmy)
+            if k<crit:
+                return nTemp/nFact,mxTemp/mxFact,myTemp/myFact
+            
     def findKult7(self, nmxmy, nn, crit, typ='crit'):
         
         nFact,mxFact,myFact=nmxmy
@@ -1307,14 +1342,14 @@ if __name__ == "__main__":
     conc.b=25
     conc.initProperties()
     conc.functDia(typDia=3, typPS=1,typTime='short', typR=3, typRT=1)
-    print conc.x,conc.y 
+#    print conc.x,conc.y 
     rein=rcMaterial.Reinforced()
     rein.norme=52
     rein.typ='A'
     rein.a=400
     rein.initProperties()
     rein.functDia(typPS=1)
-    print rein.x, rein.y
+#    print rein.x, rein.y
     lstMat=[conc, rein]
 
     sol.loadMat(lstMat)
@@ -1332,12 +1367,14 @@ if __name__ == "__main__":
     kymatr=sol.kymatr
     yEvmatr=sol.yEvmatr
     kyEvmatr=sol.kyEvmatr
+    print 'tt1', sol.e0rxry2nmxmy([-0.00034524213289891469, 2.1031719114007239e-05, 0.00010515859557003618])
+    print 'tt2', sol.e0rxry2nmxmy([-1.525417962731393e-05, 2.3231638802484486e-05, 0.00011615819401242296])
 
 #    nmxmy=[-100000,0.0,0.0]
-    nmxmy=[-200000,600000,1000000] #- [-200000,600000,1000000] - граничное ошибка 
+#    nmxmy=[-200000.,600000.,1000000.] #- [-200000,600000,1000000] - граничное ошибка 
 #    
 #    nmxmy=[-22305*2,1110*2,223000*2]
-#    nmxmy=[-100,500,2500]
+    nmxmy=[-100,500,2500]
 #    nmxmy=[-200000,1000000,40000400]
 
 #    out=sol.nmxmy2e0rxry(nmxmy, 100, 0.00001)
@@ -1354,7 +1391,7 @@ if __name__ == "__main__":
 #    print 'e0rxry', e0rxry[0:3]
 #    print 'kk' , sol.kk(e0rxry[0:3])
 #    for i in range(100):
-    kk=sol.findKult7(nmxmy, 15,0.01)
+    kk=sol.findKult(nmxmy, 100000,0.0001)
 # пока рабочее - 7 вариант    
 #    
     print 'kult', kk
