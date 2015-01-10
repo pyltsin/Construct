@@ -631,229 +631,44 @@ class Solves(object):
 #            print kCrit
             if kCrit<crit:
                 nmxmyTemp=self.e0rxry2nmxmy(e0rxryTemp[0:3])[0:3]
-                kun=nmxmyTemp[0]/nFact
-                kumx=nmxmyTemp[1]/mxFact
-                kumy=nmxmyTemp[2]/myFact
+                nTemp,mxTemp,myTemp=nmxmyTemp     
+                
+                '''возвращаем
+                1 - усилия
+                2- коэффициент
+                3 - сколько итераций было
+                4 - e0rxry для предельного состочняи
+                5 - предельные усилия
+                6 - d
+                7 - d/de
+                8 - klst - список макс e/emax'''
+                kLenN='-'
+                kLenMx='-'
+                kLenMy='-'
+                if nFact!=0:
+                    kLenN=nTemp/nFact
+                if mxFact!=0:
+                    kLenMx=mxTemp/mxFact
+                if myFact!=0:
+                    kLenMy=myTemp/myFact
 
-#                print ku,nmxmyTemp[0],nFact
+#                print 'e0rxry', e0rxryTemp
+                klst=self.kk(e0rxryTemp[0:3], typ)
 
-                return nmxmyTemp, kun,kumx, kumy, n
+                ee=self.e0rxry2e(e0rxryTemp[0],e0rxryTemp[1],e0rxryTemp[2]) #     
+                dd=self.e2d(ee)[0]
+                
+                e0,rx,ry=0,0,0#устанавливаем начальные деофрмации
+                ee=self.e0rxry2e(e0,rx,ry) #расчитываем матрицу деформаций
+        
+                ddel=self.e2d(ee) #определяем начальные dd
+  
+
+                dddel=[dd[0]/ddel[0][0],dd[3]/ddel[0][3],dd[5]/ddel[0][5]]
+                return nmxmy, [kLenN, kLenMx, kLenMy],n, e0rxryTemp[0:3],  [nTemp,mxTemp,myTemp], dd,dddel, klst[1]
+
             e0rxryTemp1=e0rxryTemp
                 
-                
-    def findKult8(self, nmxmy, nn, crit, typ='crit'):
-        '''поиск через e0 rx ry
-        пока только для N!=0'''
-        nFact,mxFact,myFact=nmxmy #фиксируем усилия
-        if nFact==0 and mxFact==0 and myFact==0:
-            return nmxmy, 0, 0, [0,0,0],  [0,0,0], [], [], []
-            
-
-        e0,rx,ry=0,0,0#устанавливаем начальные деофрмации
-        ee=self.e0rxry2e(e0,rx,ry) #расчитываем матрицу деформаций
-
-        ddel=self.e2d(ee) #определяем начальные dd
-
-        e0rxry=self.matrSolve(nmxmy,ddel[0]) #определяем упругие деформации
-
-        klst=self.kk(e0rxry[0:3], typ)
-        k1=klst[0]#получаем коэффициент k - насколько надо разделить деформации, чтобы получить предельные 
-#        print 'k111', k1
-#        print 'klst', klst
-
-        if k1==0:
-            return 'error 1'
-            
-        e0rxryTemp=[e0rxry[0]/(k1/1.), e0rxry[1]/(k1/1.), e0rxry[2]/(k1/1.)] #получаем предельные дформации
-        n=0#счетчик
-        nmxmyTemp=self.e0rxry2nmxmy(e0rxryTemp) #получаем усилия временные
-        nTemp,mxTemp,myTemp, tt1, tt2=nmxmyTemp     
-        e0Temp1, rxTemp1, ryTemp1=e0rxryTemp
-        e0Temp, rxTemp, ryTemp=e0rxryTemp
-        
-        print 'e0Temp1, rxTemp1, ryTemp1', e0Temp1, rxTemp1, ryTemp1
-
-        kn=nTemp/nFact
-        kmx=mxTemp/mxFact
-        kmy=myTemp/myFact
-        
-        dnSign='0'
-        dmxSign='0'
-        dmySign='0'
-
-        dn=0
-        if kn>kmx and kn>kmy:
-            dn=-e0Temp1/2.
-            dmax='n'
-            dnSign='-'
-        if kn<kmx and kn<kmy:
-            dnSign='+'
-            dn=e0Temp1/2.
-            dmin='n'
-            
-        dmx=0    
-        if kmx>kn and kmx>kmy:
-            dmx=-rxTemp1/2.
-            dmax='mx'
-            dmxSign='-'
-        if kmx<kn and kmx<kmy:
-            dmx=rxTemp1/2.
-            dmin='mx'
-            dmxSign='+'
-
-        dmy=0
-        if kmy>kn and kmy>kmx:
-            dmy=-ryTemp1/2.
-            dmax='my'
-            dmySign='-'
-
-        if kmy<kn and kmy<kmx:
-            dmy=ryTemp1/2.
-            dmin='my'
-            dmySign='+'
-            
-            
-        dmx1=0
-        dmy1=0
-        dn1=0
-        while True:
-            n+=1
-            
-            if n>nn:
-                return 'error n'
-                
-            e0Temp, rxTemp, ryTemp=e0Temp+dn, rxTemp+dmx, ryTemp+dmy
-            ee=self.e0rxry2e(e0Temp, rxTemp, ryTemp) #расчитываем матрицу деформаций
-
-    
-            e0rxry=e0Temp, rxTemp, ryTemp #определяем упругие деформации
-            klst=self.kk(e0rxry, typ)
-            k1=klst[0]#получаем коэффициент k - насколько надо разделить деформации, чтобы получить предельные 
-    #        print 'k111', k1
-    #        print 'klst', klst
-    
-            if k1==0:
-                return 'error 2'
-            e0rxryCurT=e0rxry[0]/(k1/1.), e0rxry[1]/(k1/1.), e0rxry[2]/(k1/1.) #получаем предельные дформации
-            nmxmyTemp=self.e0rxry2nmxmy(e0rxryCurT) #получаем усилия временные
-            nTemp,mxTemp,myTemp, tt1, tt2=nmxmyTemp     
-
-            kn=nTemp/nFact
-            kmx=mxTemp/mxFact
-            kmy=myTemp/myFact
-            
-            if e0Temp>0:
-                e0s=1
-            else:
-                e0s=-1
-                
-            if rxTemp>0:
-                rxs=1
-            else:
-                rxs=-1
-
-            if ryTemp>0:
-                rys=1
-            else:
-                rys=-1
-
-                
-            if kn>kmx and kn>kmy:
-                if dmax=='n':
-                    dn=abs(dn)*(-e0s)
-                else:
-                    if dn==0:
-                        dn=-e0Temp/10.
-                    else:
-                        dn=abs(dn/2.)*(-e0s)
-                            
-                dmax='n'
-                dnSign='-'
-
-            if kn<kmx and kn<kmy:
-
-                if dmin=='n':
-                    dn=abs(dn)*e0s
-                else:
-                    if dn==0:
-                        dn=e0Temp/10.
-                    else:
-                        dn=abs(dn/2.)*(e0s)
-                        
-                dmin='n'
-                dnSign='+'
-                    
-
-            if kmx>kn and kmx>kmy:
-                if dmax=='mx':
-                    dmx=abs(dmx)*(-rxs)
-                else:
-                    if dmx==0:
-                        dmx=-rxTemp/10.
-                    else:
-                        dmx=abs(dmx/2.)*(-rxs)
-                            
-                dmax='mx'
-                dmxSign='-'
-
-            if kmx<kn and kmx<kmy:
-                if dmin=='mx':
-                    dmx=abs(dmx)*(rxs)
-                else:
-                    if dmx==0:
-                        dmx=rxTemp/10.
-                    else:
-                        dmx=abs(dmx/2.)*(rxs)
-                            
-                dmin='mx'
-                dmxSign='+'
-
-            if kmy>kn and kmy>kmx:
-                if dmax=='my':
-                    dmy=abs(dmy)*(-rys)
-                else:
-                    if dmy==0:
-                        dmy=-ryTemp/10.
-                    else:
-                        dmy=abs(dmy)*(-rys/2.)
-                dmax='my'
-                dmySign='-'
-
-
-            if kmy<kn and kmy<kmx:
-                if dmin=='my':
-                    dmy=abs(dmy)*(rys)
-                else:
-                    if dmy==0:
-                        dmy=ryTemp1/10.
-                    else:
-                        dmy=abs(dmy)*(rys/2.)
-                dmin=='my'
-                dmySign='+'
-        
-
-            if (dmin=='n' or dmax=='n') and  (dmin=='mx' or dmax=='mx'):
-                dmy=0
-
-            if (dmin=='n' or dmax=='n') and  (dmin=='my' or dmax=='my'):
-                dmx=0
-
-            if (dmin=='mx' or dmax=='mx') and  (dmin=='my' or dmax=='my'):
-                dn=0
-            print 'n'
-            print 'dn, dmx, dmy', dn, dmx, dmy
-            print 'dnSign, dmxSign, dmySign',dnSign, dmxSign, dmySign
-            print 'e0Temp, rxTemp, ryTemp', e0Temp, rxTemp, ryTemp
-            print 'e0rxryCurT', e0rxryCurT
-            print 'nTemp,mxTemp,myTemp', nTemp,mxTemp,myTemp
-            print 'kn, kmx, kmy', kn, kmx, kmy 
-
-
-            kmin=min(kn, kmx, kmy)
-            kmax=max(kn, kmx, kmy)
-
-            if abs((kmax-kmin)/kmax)<crit :
-                return nTemp/nFact,mxTemp/mxFact,myTemp/myFact
             
     def findKult7(self, nmxmy, nn, crit, typ='crit'):
         
@@ -961,131 +776,7 @@ class Solves(object):
             else:
                 continue
 
-                    
 
-
-            
-        
-    def findKult(self, nmxmy, nn, crit, typ='crit'):
-        '''Находим коэффициент к'''
-        
-#        определим начальный nmxmy
-        nFact,mxFact,myFact=nmxmy #фиксируем усилия
-        if nFact==0 and mxFact==0 and myFact==0:
-            return nmxmy, 0, 0, [0,0,0],  [0,0,0], [], [], []
-            
-        lenN=(nFact**2+(mxFact)**2+(myFact)**2)**.5    #определяем длину    
-
-        e0,rx,ry=0,0,0#устанавливаем начальные деофрмации
-        ee=self.e0rxry2e(e0,rx,ry) #расчитываем матрицу деформаций
-
-        ddel=self.e2d(ee) #определяем начальные dd
-
-        e0rxry=self.matrSolve(nmxmy,ddel[0]) #определяем упругие деформации
-
-        klst=self.kk(e0rxry[0:3], typ)
-        k1=klst[0]#получаем коэффициент k - насколько надо разделить деформации, чтобы получить предельные 
-#        print 'k111', k1
-        print 'klst', klst
-
-        if k1==0:
-            return 'error 1'
-            
-        e0rxryTemp=[e0rxry[0]/(k1/1.), e0rxry[1]/(k1/1.), e0rxry[2]/(k1/1.)] #получаем предельные дформации
-        n=0#счетчик
-        nmxmyTemp=self.e0rxry2nmxmy(e0rxryTemp) #получаем усилия временные
-        nTemp,mxTemp,myTemp, tt1, tt2=nmxmyTemp     
-
-        nCrit, mxCrit, myCrit=nTemp,mxTemp,myTemp #фиксируем значения для проверки схожимости
-        while True:
-            n+=1
-            if n>nn:
-                print 'n', n
-                return 'error 2' #ошибка превышения количества итераций
-
-#            cosa=(nFact*nTemp+mxFact*mxTemp*0.100*0.100+myFact*myTemp*0.100*0.100)/((nFact**2+(mxFact*0.100)**2+(myFact*0.100)**2)**0.5*(nTemp**2+(mxTemp*0.100)**2+(myTemp*0.100)**2)**0.5)
-#            lenNTemp=(nTemp**2+(mxTemp*0.100)**2+(myTemp*0.100)**2)**.5   
-#            lenNNormal=lenNTemp*cosa #нормализованная длина
-#            print 'cosa', cosa, 'nmxmyTemp', nmxmyTemp[0:3]
-#            kLen=lenNNormal/lenN #коэффициент- отношение длины предельной к фактической
-#            print 'kLen', kLen
-            if nFact!=0 and (mxFact==0 and myFact==0) :
-                nNormal=nTemp
-                mxNormal=0
-                myNormal=0
-            elif nFact!=0 and mxFact!=0 and myFact!=0 :
-                kt=(nTemp/nFact+ mxTemp/mxFact+myTemp/myFact)/3.
-                nNormal=nFact*kt
-                mxNormal=mxFact*kt
-                myNormal=myFact*kt
-            elif nFact!=0 :
-                kt=min(nTemp/nFact, 1/(mxFact**2+myFact**2)**0.5*(mxTemp**2+myTemp**2)**0.5) 
-                nNormal=nFact*kt
-                mxNormal=mxFact*kt
-                myNormal=myFact*kt
-                
-            else:
-                nNormal=0
-                mxNormal=mxFact/(mxFact**2+myFact**2)**0.5*(mxTemp**2+myTemp**2)**0.5
-                myNormal=myFact/(mxFact**2+myFact**2)**0.5*(mxTemp**2+myTemp**2)**0.5
-            
-            lenNNormal=(nNormal**2+(mxNormal)**2+(myNormal)**2)**.5 
-            kLen=lenNNormal/lenN #коэффициент- отношение длины предельной к фактической
-            
-            nmxmyNormal=[nNormal, mxNormal, myNormal] #получем нормализованные усилия
-            print 'nmxmyNormal', nmxmyNormal
-#            print 'nmxmyNormal', nmxmyNormal
-            e0rxryTemp=self.nmxmy2e0rxry(nmxmyNormal,nn, crit)#получем нормализованные перемещения
-#            print 'e010rxryTemp', e0rxryTemp
-            klst=self.kk(e0rxryTemp[0:3], typ)
-            k1=klst[0] #получаем коэффициент k - насколько надо разделить деформации, чтобы получить предельные 
-            print 'klst', klst
-            if k1==0:
-                return 'error 1'
-            
-            print 'k1', klst
-            e0rxryTemp=[e0rxryTemp[0]/k1, e0rxryTemp[1]/k1, e0rxryTemp[2]/k1] #получаем предельные дформации
-#            print 'k1',k1
-
-            nmxmyTemp=self.e0rxry2nmxmy(e0rxryTemp)  #получаем усилия временные
-            nTemp,mxTemp,myTemp, sigmaT, eT=nmxmyTemp     
-            print 'nmxmyTemp', nmxmyTemp[0:3]
-
-            if nCrit==0:
-                kN=abs(nTemp-nCrit)
-            else:
-                kN=abs(nTemp-nCrit)/abs(nTemp)
-
-            if mxTemp==0:
-                kMx=abs(mxTemp-mxCrit)
-            else:
-                kMx=abs(mxTemp-mxCrit)/abs(mxTemp)
-
-            if myTemp==0:
-                kMy=abs(myTemp-myCrit)
-            else:
-                kMy=abs(myTemp-myCrit)/abs(myTemp)
-
-            kMax=max(kN, kMx, kMy)
-#            if kMax<crit and abs(k1-1)<0.1:
-                
-            if kMax<crit and abs(k1-1)<0.01:
-                '''возвращаем
-                1 - усилия
-                2- коэффициент
-                3 - сколько итераций было
-                4 - e0rxry для предельного состочняи
-                5 - предельные усилия
-                6 - d
-                7 - d/de
-                8 - klst - список макс e/emax'''
-                dd=self.e2d(eT)[0]
-                dddel=[dd[0]/ddel[0][0],dd[3]/ddel[0][3],dd[5]/ddel[0][5]]
-                return nmxmy, kLen,n, e0rxryTemp,  [nTemp,mxTemp,myTemp], dd,dddel, klst[1]
-            else:
-                nCrit, mxCrit, myCrit=nTemp,mxTemp,myTemp
-                
-            
 
 
     def kk(self,e0rxry, typ='crit'):
@@ -1435,8 +1126,9 @@ if __name__ == "__main__":
     print 'tt1', sol.e0rxry2nmxmy([-0.00034524213289891469, 2.1031719114007239e-05, 0.00010515859557003618])
     print 'tt2', sol.e0rxry2nmxmy([-1.525417962731393e-05, 2.3231638802484486e-05, 0.00011615819401242296])
 
-    nmxmy=[-100000,0.0,0.0]
+#    nmxmy=[-100000,0.0,0.0]
 #    nmxmy=[-200000.,600000.,1000000.] #- [-200000,600000,1000000] - граничное ошибка 
+    nmxmy=[-0.,1,0.0]
     
 #    nmxmy=[-22305*2,1110*2,223000*2]
 #    nmxmy=[-100,500,2500]
