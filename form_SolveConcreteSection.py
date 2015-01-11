@@ -212,6 +212,9 @@ class MyWindow(QtGui.QWidget):
             
             bol=slv.solvePS1()
             
+            if bol==False:
+                return False
+            
         if self.checkBoxPS2.isChecked()==True:
             bol=slv.solvePS2()
             
@@ -669,8 +672,34 @@ class SolveWindow(object):
     def solvePS1(self):
         '''расчет 1 п.с.'''
 #        загружаем усилия в lstN
-        lstN=self.getTableLoadlstItem(self.wnd.tableLoadPS1DShort, [0,1,2])
+        lstNShort=self.getTableLoadlstItem(self.wnd.tableLoadPS1DShort, [0,1,2])
+        lstNLong=self.getTableLoadlstItem(self.wnd.tableLoadPS1DShort, [0,1,2])
         
+        crit=self.doubleBoxTol.value()
+        nn=self.boxNum.value()
+        
+        outShort=[]
+        outLong=[]
+
+#считаем        
+        for i in lstNShort:
+            outShort.append(self.solve.findKult9(i,nn, crit))
+
+        for i in lstNLong:
+            outLong.append(self.solve.findKult9(i,nn, crit))
+ #проверяем на ошибки
+        
+        for i in outShort:
+            if type(i)==type('error'):
+                self.error(i)
+                return False
+                
+        for i in outLong:
+            if type(i)==type('error'):
+                self.error(i)
+                return False
+#пишем все это
+                
     def solvePS2(self):
         '''расчет 2 п.с.'''
     def loadFormMatSimple(self):

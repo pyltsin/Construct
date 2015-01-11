@@ -308,9 +308,9 @@ class Solves(object):
         n=0
         while True:
             ee=self.e0rxry2e(e0,rx,ry)
-            print 'ee',ee
+#            print 'ee',ee
             dd=self.e2d(ee)
-            print 'dd0',dd[0]
+#            print 'dd0',dd[0]
             if type0==True:
                 d11,d12,d13,d22,d23,d33= dd[1]           
                 dnTemp=d33*elemMatr[-3]+d13*elemMatr[-2]+d23*elemMatr[-1]
@@ -329,9 +329,6 @@ class Solves(object):
                 nmxmyTemp=nmxmy
             e0f,rxf,ryf,error=self.matrSolve(nmxmyTemp,dd[0])
 #            print '1f',e0, rx, ry
-            print 'f',e0f, rxf, ryf, error
-            print 'n',nmxmyTemp
-            print 'dd',dd[0]
             if error==1:
                 return [False, False, False, 'Matr',n, []]
             else:
@@ -630,8 +627,6 @@ class Solves(object):
             kCrit=max(kk)
 #            print kCrit
             if kCrit<crit:
-                nmxmyTemp=self.e0rxry2nmxmy(e0rxryTemp[0:3])[0:3]
-                nTemp,mxTemp,myTemp=nmxmyTemp     
                 
                 '''возвращаем
                 1 - усилия
@@ -642,20 +637,16 @@ class Solves(object):
                 6 - d
                 7 - d/de
                 8 - klst - список макс e/emax'''
-                kLenN='-'
-                kLenMx='-'
-                kLenMy='-'
-                if nFact!=0:
-                    kLenN=nTemp/nFact
-                if mxFact!=0:
-                    kLenMx=mxTemp/mxFact
-                if myFact!=0:
-                    kLenMy=myTemp/myFact
-
-#                print 'e0rxry', e0rxryTemp
+                nmxmyTemp=self.e0rxry2nmxmy(e0rxryTemp[0:3])
+                nTemp, mxTemp, myTemp=nmxmyTemp[0:3]
+#                e0rxry=self.nmxmy2e0rxry(nmxmyTemp[0:3],nn, crit)
+#                print 'e0rxry', e0rxry
                 klst=self.kk(e0rxryTemp[0:3], typ)
-
-                ee=self.e0rxry2e(e0rxryTemp[0],e0rxryTemp[1],e0rxryTemp[2]) #     
+                k1=klst[0]#получаем коэффициент k - насколько надо разделить деформации, чтобы получить предельные 
+                if k1==0:
+                    return 'error 3'
+                    
+                ee=nmxmyTemp[4]
                 dd=self.e2d(ee)[0]
                 
                 e0,rx,ry=0,0,0#устанавливаем начальные деофрмации
@@ -665,7 +656,34 @@ class Solves(object):
   
 
                 dddel=[dd[0]/ddel[0][0],dd[3]/ddel[0][3],dd[5]/ddel[0][5]]
-                return nmxmy, [kLenN, kLenMx, kLenMy],n, e0rxryTemp[0:3],  [nTemp,mxTemp,myTemp], dd,dddel, klst[1]
+                
+                kLenN='-'
+                kLenMx='-'
+                kLenMy='-'
+                
+                kList=[]
+                if nFact!=0:
+                    kLenN=nTemp/nFact
+                    kList.append(kLenN)
+                if mxFact!=0:
+                    kLenMx=mxTemp/mxFact
+                    kList.append(kLenMx)
+
+                if myFact!=0:
+                    kLenMy=myTemp/myFact
+                    kList.append(kLenMy)
+                
+                kS=sum(kList)/(len(kList)*1.)
+#                print kS, kList
+                for i in range(len(kList)):
+                    if abs((kS-kList[i])/kS)>0.01:
+#                        print abs((kS-kList[i])/kS),crit
+                        return 'error 4'
+                if abs(k1-1)>crit:
+                    return 'error 5'
+                if k1<0.8:
+                    return 'error 6'
+                return nmxmy, kS,n, e0rxryTemp[0:3],  [nTemp,mxTemp,myTemp], dd,dddel, klst[1]
 
             e0rxryTemp1=e0rxryTemp
                 
@@ -708,9 +726,9 @@ class Solves(object):
         
         while True:
             nTemp,mxTemp,myTemp=nTemp1*kn2,mxTemp1*kn2,myTemp1*kn2
-            print 'nTemp', nTemp
+#            print 'nTemp', nTemp
             iterTemp=self.nmxmy2e0rxry([nTemp,mxTemp,myTemp], nn, crit)
-            print 'iterTemp', iterTemp[0:3]
+#            print 'iterTemp', iterTemp[0:3]
             if type(iterTemp[3])!=type('error'):
                 klst=self.kk(iterTemp[0:3], typ)
                 k2=klst[0]
@@ -729,8 +747,8 @@ class Solves(object):
 
             nm=0
 #                print 'iterTemp[0:3]', iterTemp[0:3]
-            print 'k2', klst
-            print 'kn2', kn2, knlast
+#            print 'k2', klst
+#            print 'kn2', kn2, knlast
             if k2==0:
                 return 'error 12'
             if abs((kn2-knlast)/kn2)<crit:
@@ -1123,12 +1141,12 @@ if __name__ == "__main__":
     kymatr=sol.kymatr
     yEvmatr=sol.yEvmatr
     kyEvmatr=sol.kyEvmatr
-    print 'tt1', sol.e0rxry2nmxmy([-0.00034524213289891469, 2.1031719114007239e-05, 0.00010515859557003618])
-    print 'tt2', sol.e0rxry2nmxmy([-1.525417962731393e-05, 2.3231638802484486e-05, 0.00011615819401242296])
+#    print 'tt1', sol.e0rxry2nmxmy([-0.00034524213289891469, 2.1031719114007239e-05, 0.00010515859557003618])
+#    print 'tt2', sol.e0rxry2nmxmy([-1.525417962731393e-05, 2.3231638802484486e-05, 0.00011615819401242296])
 
 #    nmxmy=[-100000,0.0,0.0]
 #    nmxmy=[-200000.,600000.,1000000.] #- [-200000,600000,1000000] - граничное ошибка 
-    nmxmy=[-0.,1,0.0]
+    nmxmy=[21.,211,211.0]
     
 #    nmxmy=[-22305*2,1110*2,223000*2]
 #    nmxmy=[-100,500,2500]
@@ -1147,12 +1165,14 @@ if __name__ == "__main__":
 #    e0rxry=sol.nmxmy2e0rxry(nmxmy,1000,0.0001)
 #    print 'e0rxry', e0rxry[0:3]
 #    print 'kk' , sol.kk(e0rxry[0:3])
-#    for i in range(10000):
-    kk=sol.findKult9(nmxmy, 100,0.001)
+#    for i in range(100):
+    kk1=sol.findKult9(nmxmy, 100,0.001)
+#        kk2=sol.findKult7(nmxmy, 100,0.001)
+
 # пока рабочее - 7 вариант    
 #    
-    print 'kult', kk
-
+    print 'kult', kk1
+#    print 'kult', kk2
 #    e0rxry=kk[3]
 #    out=sol.e0rxry2nmxmy(e0rxry)
 #    print out[0], out[1] , out[2]   
