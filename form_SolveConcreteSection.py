@@ -675,16 +675,32 @@ class SolveWindow(object):
         lstNShort=self.getTableLoadlstItem(self.wnd.tableLoadPS1DShort, [0,1,2])
         lstNLong=self.getTableLoadlstItem(self.wnd.tableLoadPS1DShort, [0,1,2])
         
+        lstNS=[]
+        for i in lstNShort:
+            lstNS.append([i[0]*1000.,i[1]*1000.*100,i[2]*1000.*100])
+            
+        lstNL=[]
+        for i in lstNLong:
+            lstNL.append([i[0]*1000.,i[1]*1000.*100,i[2]*1000.*100])
+            
+        lstNShort=lstNS
+        lstNS=None
+        
+        lstNLong=lstNLong
+        lstNLong=None
+        
         crit=self.doubleBoxTol.value()
         nn=self.boxNum.value()
         
         outShort=[]
         outLong=[]
 
-#считаем        
+#считае
+        self.loadFormMatSimple()
         for i in lstNShort:
             outShort.append(self.solve.findKult9(i,nn, crit))
 
+        self.loadFormMatSimple(typ='long')
         for i in lstNLong:
             outLong.append(self.solve.findKult9(i,nn, crit))
  #проверяем на ошибки
@@ -699,13 +715,70 @@ class SolveWindow(object):
                 self.error(i)
                 return False
 #пишем все это
+        self.loadTableRes(self.wnd.tableResPS1Short, lstNShort)
+        self.loadTableRes(self.wnd.tableResPS1Long, lstNLong)
+    
+    def loadTableRes(self, table, lst):
+        title=[u'N, т', u'Mx, т*м', u'My, т*м', u'k', u'n', u'e0', u'1/rx', u'1/ry', u'Nu, т', u'Mxu, т*м', u'Myu'
+               ,u'D11',u'D12',u'D13',u'D22',u'D23',u'D33', u'muMx', u'muMy', u'muN']
+        title2=[u'ke',u'eult', u'e(+)', u'e(-)']
+        
+        #определяем максимум
+        mx=0
+        for i in lst:
+            if 20+len(i[-1])*4>mx:
+                mx=20+len(i[-1])*4
+        n=(mx-20)/4
+        
+        titleSum=title+title2*n
+        
+        lny=len(lst)
+        table.setRowCount(lny)
+        
+        lnx=mx
+        table.setColumnCount(lnx)
+        
+        table.setHorizontalHeaderLabels(titleSum)
+
+        lstNorm=[]
+        for j in range(lny):
+            item=[j[0][0]/1000.,j[0][1]/1000.,j[0][2]/1000.
+            ,j[1], j[2]
+            ,j[3][0],j[3][1],j[3][2]
+            ,j[4][0]/1000.,j[4][1]/1000.,j[4][2]/1000.
+            ,j[5][0],j[5][1],j[5][2],j[5][3],j[5][4],j[5][6]
+            ,j[6][0],j[6][1],j[6][2]]
+            
+            
+            for i in j[-1]:
+                item+=i
                 
+        for i in range(lnx):
+            for j in range(lny):
+                table.setItem(j, i, QtGui.QTableWidgetItem(""))
+                txt=lstNorm[j][i]
+                if abs(txt)>100:
+                    txt="%.0f"%txt
+                elif abs(txt)>10:
+                    txt="%.2f"%txt
+                else:
+                    txt="%.4f"%txt
+                table.item(j,i).setText(txt)
+                table.item(j,i).setFlags(QtCore.Qt.ItemFlags(1+2+4+8+6+12+64))
+                    
+            
+            
     def solvePS2(self):
         '''расчет 2 п.с.'''
-    def loadFormMatSimple(self):
+    def loadFormMatSimple(self, typ='short'):
         '''загрузка формы и материалов'''
         lstForm=self.wnd.getLstFormSimple()
-        lstMat=self.wnd.getLstMatSimple()
+
+        if typ=='short':
+            lstMat=self.wnd.initMatSimple()[0]
+        else:
+            lstMat=self.wnd.initMatSimple()[1]
+
         if type(lstForm)!=type('Error') and type(lstMat)!=type('Error'): 
             solve=rcSolves.Solves()
             solve.loadForm(lstForm)
