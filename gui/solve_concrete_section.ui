@@ -45,7 +45,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>10</number>
+       <number>9</number>
       </property>
       <widget class="QWidget" name="tabInputData">
        <attribute name="title">
@@ -1899,11 +1899,11 @@
         </column>
        </widget>
       </widget>
-      <widget class="QWidget" name="tab">
+      <widget class="QWidget" name="tabResPS1Short">
        <attribute name="title">
         <string>Рез. кратк. усилия</string>
        </attribute>
-       <widget class="QTableWidget" name="tableLoadPS1DShort_2">
+       <widget class="QTableWidget" name="tableResPS1Short">
         <property name="geometry">
          <rect>
           <x>1</x>
@@ -2038,7 +2038,7 @@
          </property>
         </column>
        </widget>
-       <widget class="MatplotlibWidget" name="mplCrDShort_2">
+       <widget class="MatplotlibWidget" name="mplResPS1Short">
         <property name="geometry">
          <rect>
           <x>660</x>
@@ -2049,11 +2049,11 @@
         </property>
        </widget>
       </widget>
-      <widget class="QWidget" name="tab_2">
+      <widget class="QWidget" name="tabResPS1Long">
        <attribute name="title">
         <string>Рез. длит. усилия</string>
        </attribute>
-       <widget class="MatplotlibWidget" name="mplCrDShort_3">
+       <widget class="MatplotlibWidget" name="mplResPS1Long">
         <property name="geometry">
          <rect>
           <x>660</x>
@@ -2063,7 +2063,7 @@
          </rect>
         </property>
        </widget>
-       <widget class="QTableWidget" name="tableLoadPS1DShort_3">
+       <widget class="QTableWidget" name="tableResPS1Long">
         <property name="geometry">
          <rect>
           <x>1</x>
