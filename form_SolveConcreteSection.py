@@ -66,11 +66,13 @@ class MyWindow(QtGui.QWidget):
         self.boxTypeSolve.currentIndexChanged.connect(self.changeTypeSolve)
         self.changeTypeSolve()
         
-#       связываем прочность и трещиностойкость
+#       связываем галочки прочность и трещиностойкость
         self.checkBoxPS1.clicked.connect(self.changeCheckBoxSolve)
         self.checkBoxPS2.clicked.connect(self.changeCheckBoxSolve)
         self.checkBoxD.clicked.connect(self.changeCheckBoxSolve)
         self.changeCheckBoxSolve()
+        
+        
 #загружаем формы
         
         self.boxFormConc.currentIndexChanged.connect(self.changeForm)
@@ -78,6 +80,7 @@ class MyWindow(QtGui.QWidget):
     
         self.boxFormRein.currentIndexChanged.connect(self.changeRein)
         self.changeRein()
+        
 #рисуем формы если могем
         self.buttonDraw.clicked.connect(self.drawForm)
 #связываем кнопку по умолчанию 1 пс
@@ -121,67 +124,36 @@ class MyWindow(QtGui.QWidget):
     
     def grafConcreteShort(self):
         '''график бетона'''
-        item=self.initMatSimple()[0][0]
+        slv=SolveWindow(self)
+        item=slv.initMatSimple()[0][0]
         self.plotMatSimpleWindow(item)
         
     def grafConcreteLong(self):
-        '''график бетона'''        
-        item=self.initMatSimple()[1][0]
+        '''график бетона'''
+        slv=SolveWindow(self)
+        
+        item=slv.initMatSimple()[1][0]
         self.plotMatSimpleWindow(item)
         
     def grafReinShort(self):
         '''график арматуры'''        
+        slv=SolveWindow(self)
 
-        item=self.initMatSimple()[0][1]
+        item=slv.initMatSimple()[0][1]
         self.plotMatSimpleWindow(item)
 
     def grafReinLong(self):
         '''график арматуры'''        
-        item=self.initMatSimple()[1][1]
+        slv=SolveWindow(self)
+
+        item=slv.initMatSimple()[1][1]
         self.plotMatSimpleWindow(item)
         
-    def initMatSimple(self):
-        '''инициализация материалов и их загрузка'''
-#        загружаем материалы
-        lstMatShort=self.getLstMatSimple()
-        lstMatLong=self.getLstMatSimple()
-#       берем данные для кратковр.
-        '''Отдача функции расчета sigma по e или v по e
-        typDia - тип диаграммы для бетонна, 
-        typPS - тип предельного состояния, 
-        typTime - long или short для бетона, 
-        typR - для бетона, если 1 - просто режется все -, если 2 - после последнего значения - до 0, другое - продлеваем до max, 
-        typRT - для бетона, если 1 - просто режется все +, если 2 - после последнего значения - до 0, другое - продлеваем до max'''
-        typPSShort=self.boxPS1ShortChar.currentIndex()+1
-        typTimeShort=self.boxPS1Short.currentIndex()
-        if typTimeShort==0:
-            typTimeShort='short'
-        else:
-            typTimeShort='long'
-        typDiaShort=3-self.boxPS1ShortDia.currentIndex() 
-        typRTShort=self.boxPS1ShortRt.currentIndex()+1
-        lstMatShort[0].functDia(typDia=typDiaShort, typPS=typPSShort, typTime=typTimeShort, typR=2, typRT=typRTShort)
-        lstMatShort[1].functDia(typPS=typPSShort)
-
-#       берем данные для длит нагрузки.
-        typPSLong=self.boxPS1LongChar.currentIndex()+1
-        typTimeLong=self.boxPS1Long.currentIndex()
-        if typTimeLong==0:
-            typTimeLong='short'
-        else:
-            typTimeLong='long'
-        typDiaLong=3-self.boxPS1LongDia.currentIndex() 
-        typRTLong=self.boxPS1LongRt.currentIndex()+1
-
-        lstMatLong[0].functDia(typDia=typDiaLong, typPS=typPSLong, typTime=typTimeLong, typR=2, typRT=typRTLong)
-        lstMatLong[1].functDia(typPS=typPSLong)
-        
-        return [lstMatShort, lstMatLong]
     def plotMatSimpleWindow(self, mat):
         '''пишем материал в новом окне'''
         lst=[]
-        print mat.x
-        print mat.y
+#        print mat.x
+#        print mat.y
         for i in range(len(mat.x)):
             if 1>abs(mat.x[i]):
                 lst.append([mat.x[i],mat.y[i]])
@@ -254,8 +226,9 @@ class MyWindow(QtGui.QWidget):
      
 
     def drawForm(self):
-        '''получаем список и рисуем картинку'''
-        lst=self.getLstFormSimple()
+        '''v1 получаем список и рисуем картинку'''
+        slv=SolveWindow(self)
+        lst=slv.getLstFormSimple()
 
         if lst!='Error':
             fig = self.mplForm.figure
@@ -314,18 +287,154 @@ class MyWindow(QtGui.QWidget):
         self.tabCrNorm.setEnabled(False)
 
 #        print 'Error:', sign
+        
+    def changeForm(self):
+        '''v1 загружаем данные для ввода 
+        и заодно способ ввода арматуры'''
+        self.changed()
+        index=self.boxFormConc.currentIndex()
+        self.loadComboBox(self.boxFormRein, self.listSectionRein[index])
+        
+        self.loadTable(self.tableFormConc, self.listSectionProp[index], [''])
+
+
+        
+    def changeRein(self):
+        '''v1 загружаем форму для ввода'''
+        indFormConc=self.boxFormConc.currentIndex()
+        indFormRein=self.boxFormRein.currentIndex()
+        lstFreeRein=[u'x, см',u'y, см',u'd, мм']
+        lstD=[]
+        for i in range(30):
+            lstD.append(str(i+1))
+            
+        if self.boxTypeSolve.currentIndex()==0:#только проверка
+            if indFormRein==len(self.listSectionRein[indFormConc])-1:
+                self.loadTable(self.tableFormRein, lstD, lstFreeRein)#грузим свободну арматуру
+            else:
+                self.loadTable(self.tableFormRein, self.listSectionReinPropCheck[indFormConc][indFormRein], [''])#грузим список
+                
+    def changeCheckBoxSolve(self):
+        '''v1 работает при изменении что и как считаем'''
+#        первый случай - нет галок вообще
+        if self.checkBoxPS1.isChecked()==False and self.checkBoxPS2.isChecked()==False:
+        
+            self.checkBoxPS1.setChecked(True)
+            self.checkBoxD.setChecked(False)
+            self.changeCheckBoxSolve()
+#   если расчет прочности галка стоит:
+        if self.checkBoxPS1.isChecked()==True:
+            self.checkBoxD.setEnabled(True)
+        else:
+            self.checkBoxD.setEnabled(False)
+            self.checkBoxD.setChecked(False)
+
+
+        self.changeSolvePS1(self.checkBoxPS1.isChecked())
+        self.changeSolvePS2(self.checkBoxPS2.isChecked())
+        self.changeSolveD(self.checkBoxD.isChecked())
+        
+    def changeSolvePS1(self, bol):
+        '''v1 переключаем при расчете по 1 ps:
+        1. сбрасываем решения
+        2. Замораживаем и скрываем усилия
+        3. Замораживаем блок настроек'''
+
+        self.changed()
+
+        self.tabLoad.setEnabled(bol)
+#        self.tabLoad.setVisible(bol)
+        self.boxPS1.setEnabled(bol)
+        
+    def changeSolvePS2(self, bol):
+        '''v1 переключаем при расчете по 2 ps
+                1. сбрасываем решения
+        2. Замораживаем и скрываем усилия
+        3. Замораживаем блок настроек'''
+
+        self.changed()
+
+        self.tabNLoad.setEnabled(bol)
+#        self.tabNLoad.setVisible(bol)
+
+        self.boxPS2.setEnabled(bol)
+        
+    def changeSolveD(self,bol):
+        '''v1 переключаем при расчете по D
+        1. сбрасываем решения
+        2. Замораживаем блок настроек'''
+        
+        self.changed()
+
+        self.boxPSD.setEnabled(bol)
+        
+    def changeTypeSolve(self):
+        '''v1 работает при изменении типа расчета'''
+        self.changed()
+
+        pass
+
+    def changeTypeSection(self):
+        '''v1 работает при изменении типа сечения'''
+        self.changed()
+
+        pass
+    
+    def changeCode(self):
+        self.changed()
+        '''v1 работает при изменении и загрузки норм.
+        1. загружаем типы материалов'''
+        if self.boxCode.currentIndex()==0:
+            self.code=52
+        elif self.boxCode.currentIndex()==1:
+            self.code=63
+        tempRein=rcMaterial.Reinforced()
+        tempConc=rcMaterial.Concrete()
+        
+        if self.code==52:            
+            lstRein=tempRein.listSP52()
+            lstConc=tempConc.listSP52()
+        elif self.code==63:
+            lstRein=tempRein.listSP63()
+            lstConc=tempConc.listSP63()
+
+        self.loadComboBox(self.boxCodeConc, lstConc)
+        self.loadComboBox(self.boxCodeRein, lstRein)
+        
+    def loadComboBox(self, widget, lst):
+        '''v1 load ComboBox'''
+        widget.clear()
+        widget.addItems(lst)
+
+    def loadTable(self, widget, lstVertical, lstGorisont):
+        widget.clear()
+        indexV=len(lstVertical)
+        indexG=len(lstGorisont)
+        widget.setRowCount(indexV)
+        widget.setColumnCount(indexG)
+        widget.setHorizontalHeaderLabels(lstGorisont)
+        widget.setVerticalHeaderLabels(lstVertical)
+        for i in range(indexV):
+            for j in range(indexG):
+                widget.setItem(i, j, QtGui.QTableWidgetItem('0'))
+
+class SolveWindow(object):
+    def __init__(self, window):
+        self.wnd=window
+
+
     def getLstMatSimple(self):
         '''возвращаем готовый для rcSolve список материалов, благо их всего 2 штуки'''
 #        определяем нориы
-        code=self.code        
+        code=self.wnd.code        
         con=rcMaterial.Concrete()
         con.norme=code 
         con.approxSP=False
         
         
-        con.phi=float(self.spinBoxPhi.value())
-        con.b=self.boxCodeConc.currentText()
-        con.yb=self.doubleBoxYbi.value()
+        con.phi=float(self.wnd.spinBoxPhi.value())
+        con.b=self.wnd.boxCodeConc.currentText()
+        con.yb=self.wnd.doubleBoxYbi.value()
         con.initProperties()
 #        print con.eb2
         rein=rcMaterial.Reinforced()
@@ -333,8 +442,8 @@ class MyWindow(QtGui.QWidget):
         rein.norme=code 
         rein.approxSP=False
         rein.typ='A'
-        rein.setA(self.boxCodeRein.currentText())
-        rein.ysi=self.doubleBoxYsi.value()
+        rein.setA(self.wnd.boxCodeRein.currentText())
+        rein.ysi=self.wnd.doubleBoxYsi.value()
         rein.initProperties()
 
         lst=[con,rein]
@@ -351,20 +460,47 @@ class MyWindow(QtGui.QWidget):
                 e0rxry - добавка для e0rxr
                 '''
         lst=[]
-        indFormConc=self.boxFormConc.currentIndex()
-        indFormRein=self.boxFormRein.currentIndex()
+        indFormConc=self.wnd.boxFormConc.currentIndex()
+        indFormRein=self.wnd.boxFormRein.currentIndex()
 
-        tC=self.tableFormConc
-        tR=self.tableFormRein
+        tC=self.wnd.tableFormConc
+        tR=self.wnd.tableFormRein
         
+        def getItemTable(widget, sign):
+            row=widget.rowCount()
+            column=widget.columnCount()
+            try:
+                lst=[]
+                for i in range(row):
+                    lstRow=[]
+                    for j in range(column):
+                        text=widget.item(i,j).text()
+                        if "," in text:
+                            text=text.replace(',','.')
+                        text=int(text)
+                        if sign=='+':
+                            if text>=0:
+                                widget.item(i,j).setText(str(text))
+                            else:
+                                return 'Error'
+                        else:
+                            widget.item(i,j).setText(str(text))
+                            
+                            
+                        lstRow.append(text)
+                    lst.append(lstRow)
+                return lst
+            except:
+                return 'Error'
 
-        lstConc=self.getItemTable(tC, '+')
-        lstRein=self.getItemTable(tR, '+')
+
+        lstConc=getItemTable(tC, '+')
+        lstRein=getItemTable(tR, '+')
         if lstRein=="Error" or lstConc=="Error":
             return 'Error'
 #        print lstRein, 'lstRein'
-        nx=int(self.boxNx.value())
-        ny=int(self.boxNy.value())        
+        nx=int(self.wnd.boxNx.value())
+        ny=int(self.wnd.boxNy.value())        
         if indFormConc==0:
             y1=lstConc[0][0]
             x1=lstConc[1][0]
@@ -516,164 +652,57 @@ class MyWindow(QtGui.QWidget):
             lst.append(['Circle',i,[1,1],1,1,[0,0,0]])
         
         return lst
-        
-    def changeForm(self):
-        '''загружаем данные для ввода 
-        и заодно способ ввода арматуры'''
-        self.changed()
-        index=self.boxFormConc.currentIndex()
-        self.loadComboBox(self.boxFormRein, self.listSectionRein[index])
-        
-        self.loadTable(self.tableFormConc, self.listSectionProp[index], [''])
 
-    def getItemTable(self, widget, sign):
-        row=widget.rowCount()
-        column=widget.columnCount()
-        try:
-            lst=[]
-            for i in range(row):
-                lstRow=[]
-                for j in range(column):
-                    text=widget.item(i,j).text()
-                    if "," in text:
-                        text=text.replace(',','.')
-                    text=int(text)
-                    if sign=='+':
-                        if text>=0:
-                            widget.item(i,j).setText(str(text))
-                        else:
-                            return 'Error'
-                    else:
-                        widget.item(i,j).setText(str(text))
-                        
-                        
-                    lstRow.append(text)
-                lst.append(lstRow)
-            return lst
-        except:
-            return 'Error'
 
-        
-    def changeRein(self):
-        '''загружаем форму для ввода'''
-        indFormConc=self.boxFormConc.currentIndex()
-        indFormRein=self.boxFormRein.currentIndex()
-        lstFreeRein=[u'x, см',u'y, см',u'd, мм']
-        lstD=[]
-        for i in range(30):
-            lstD.append(str(i+1))
-            
-        if self.boxTypeSolve.currentIndex()==0:
-            if indFormRein==len(self.listSectionRein[indFormConc])-1:
-                self.loadTable(self.tableFormRein, lstD, lstFreeRein)
-            else:
-                self.loadTable(self.tableFormRein, self.listSectionReinPropCheck[indFormConc][indFormRein], [''])
-                
-    def changeCheckBoxSolve(self):
-        '''работает при изменении что и как считаем'''
-#        первый случай - нет галок вообще
-        if self.checkBoxPS1.isChecked()==False and self.checkBoxPS2.isChecked()==False:
-        
-            self.checkBoxPS1.setChecked(True)
-            self.checkBoxD.setChecked(False)
-            self.changeCheckBoxSolve()
-#   если расчет прочности галка стоит:
-        if self.checkBoxPS1.isChecked()==True:
-            self.checkBoxD.setEnabled(True)
-#            self.tabLoad.setEnabled(True)
+
+    def initMatSimple(self):
+        '''инициализация материалов и их загрузка'''
+#        загружаем материалы
+        lstMatShort=self.getLstMatSimple()
+        lstMatLong=self.getLstMatSimple()
+#       берем данные для кратковр.
+        '''Отдача функции расчета sigma по e или v по e
+        typDia - тип диаграммы для бетонна, 
+        typPS - тип предельного состояния, 
+        typTime - long или short для бетона, 
+        typR - для бетона, если 1 - просто режется все -, если 2 - после последнего значения - до 0, другое - продлеваем до max, 
+        typRT - для бетона, если 1 - просто режется все +, если 2 - после последнего значения - до 0, другое - продлеваем до max'''
+        typPSShort=self.wnd.boxPS1ShortChar.currentIndex()+1
+        typTimeShort=self.wnd.boxPS1Short.currentIndex()
+        if typTimeShort==0:
+            typTimeShort='short'
         else:
-            self.checkBoxD.setEnabled(False)
-            self.checkBoxD.setChecked(False)
-#            self.tabLoad.setEnabled(False)
+            typTimeShort='long'
+        typDiaShort=3-self.wnd.boxPS1ShortDia.currentIndex() 
+        typRTShort=self.wnd.boxPS1ShortRt.currentIndex()+1
+        lstMatShort[0].functDia(typDia=typDiaShort, typPS=typPSShort, typTime=typTimeShort, typR=2, typRT=typRTShort)
+        lstMatShort[1].functDia(typPS=typPSShort)
 
+       
+#       берем данные для длит нагрузки.
+        typPSLong=self.wnd.boxPS1LongChar.currentIndex()+1
+        typTimeLong=self.wnd.boxPS1Long.currentIndex()
+        if typTimeLong==0:
+            typTimeLong='short'
+        else:
+            typTimeLong='long'
+        typDiaLong=3-self.wnd.boxPS1LongDia.currentIndex() 
+        typRTLong=self.wnd.boxPS1LongRt.currentIndex()+1
 
-#        if self.checkBoxPS2.isChecked()==True:
-#            self.tabNLoad.setEnabled(True)
-#        else:
-#            self.tabNLoad.setEnabled(False)
+        lstMatLong[0].functDia(typDia=typDiaLong, typPS=typPSLong, typTime=typTimeLong, typR=2, typRT=typRTLong)
+        lstMatLong[1].functDia(typPS=typPSLong)
 
-        self.changeSolvePS1(self.checkBoxPS1.isChecked())
-        self.changeSolvePS2(self.checkBoxPS2.isChecked())
-        self.changeSolveD(self.checkBoxD.isChecked())
         
-    def changeSolvePS1(self, bol):
-        self.changed()
+        return [lstMatShort, lstMatLong]
 
-        self.tabLoad.setEnabled(bol)  
-        self.boxPS1.setEnabled(bol)
-        '''переключаем при расчете по 1 ps'''
-    def changeSolvePS2(self, bol):
-        '''переключаем при расчете по 1 ps'''
-        self.changed()
-
-        self.tabNLoad.setEnabled(bol)
-        self.boxPS2.setEnabled(bol)
-        
-    def changeSolveD(self,bol):
-        '''переключаем при расчете по D'''
-        self.changed()
-
-        self.boxPSD.setEnabled(bol)
-        
-    def changeTypeSolve(self):
-        '''работает при изменении типа расчета'''
-        self.changed()
-
-        pass
-
-    def changeTypeSection(self):
-        '''работает при изменении типа сечения'''
-        self.changed()
-
-        pass
-    
-    def changeCode(self):
-        self.changed()
-        '''работает при изменении и загрузки норм.
-        1. загружаем типы материалов'''
-        if self.boxCode.currentIndex()==0:
-            self.code=52
-        elif self.boxCode.currentIndex()==1:
-            self.code=63
-        tempRein=rcMaterial.Reinforced()
-        tempConc=rcMaterial.Concrete()
-        
-        if self.code==52:            
-            lstRein=tempRein.listSP52()
-            lstConc=tempConc.listSP52()
-        elif self.code==63:
-            lstRein=tempRein.listSP63()
-            lstConc=tempConc.listSP63()
-
-        self.loadComboBox(self.boxCodeConc, lstConc)
-        self.loadComboBox(self.boxCodeRein, lstRein)
-        
-    def loadComboBox(self, widget, lst):
-        '''load ComboBox'''
-        widget.clear()
-        widget.addItems(lst)
-
-    def loadTable(self, widget, lstVertical, lstGorisont):
-        widget.clear()
-        indexV=len(lstVertical)
-        indexG=len(lstGorisont)
-        widget.setRowCount(indexV)
-        widget.setColumnCount(indexG)
-        widget.setHorizontalHeaderLabels(lstGorisont)
-        widget.setVerticalHeaderLabels(lstVertical)
-        for i in range(indexV):
-            for j in range(indexG):
-                widget.setItem(i, j, QtGui.QTableWidgetItem('0'))
-
-class SolveWindow(object):
-    def __init__(self, window):
-        self.wnd=window
     
     def solvePS1(self):
         '''расчет 1 п.с.'''
 #        загружаем усилия в lstN
         lstNShort=self.getTableLoadlstItem(self.wnd.tableLoadPS1DShort, [0,1,2])
-        lstNLong=self.getTableLoadlstItem(self.wnd.tableLoadPS1DShort, [0,1,2])
+        lstNLong=self.getTableLoadlstItem(self.wnd.tableLoadPS1DLong, [0,1,2])
+        
+        print lstNShort
         
         lstNS=[]
         for i in lstNShort:
@@ -685,9 +714,12 @@ class SolveWindow(object):
             
         lstNShort=lstNS
         lstNS=None
-        
-        lstNLong=lstNLong
-        lstNLong=None
+ 
+        print lstNShort
+
+       
+        lstNLong=lstNL
+        lstNL=None
         
         crit=self.wnd.doubleBoxTol.value()
         nn=self.wnd.boxNum.value()
@@ -695,11 +727,18 @@ class SolveWindow(object):
         outShort=[]
         outLong=[]
 
+        if lstNShort==None:
+            lstNShort=[]
+
+        
+        if lstNLong==None:
+            lstNLong=[]
 #считае
         self.loadFormMatSimple()
         for i in lstNShort:
+            print 'i, nn, crit', i,nn, crit
             outShort.append(self.solve.findKult9(i,nn, crit))
-
+        
         self.loadFormMatSimple(typ='long')
         for i in lstNLong:
             outLong.append(self.solve.findKult9(i,nn, crit))
@@ -715,8 +754,11 @@ class SolveWindow(object):
                 self.error(i)
                 return False
 #пишем все это
-        self.loadTableRes(self.wnd.tableResPS1Short, lstNShort)
-        self.loadTableRes(self.wnd.tableResPS1Long, lstNLong)
+        print 'outS',outShort
+        print 'outL',outLong
+        
+        self.loadTableRes(self.wnd.tableResPS1Short, outShort)
+        self.loadTableRes(self.wnd.tableResPS1Long, outLong)
     
     def loadTableRes(self, table, lst):
         title=[u'N, т', u'Mx, т*м', u'My, т*м', u'k', u'n', u'e0', u'1/rx', u'1/ry', u'Nu, т', u'Mxu, т*м', u'Myu'
@@ -741,22 +783,26 @@ class SolveWindow(object):
         table.setHorizontalHeaderLabels(titleSum)
 
         lstNorm=[]
-        for j in range(lny):
-            item=[j[0][0]/1000.,j[0][1]/1000.,j[0][2]/1000.
+        for j in lst:
+            item=[j[0][0]/1000.,j[0][1]/1000./100.,j[0][2]/1000./100.
             ,j[1], j[2]
             ,j[3][0],j[3][1],j[3][2]
-            ,j[4][0]/1000.,j[4][1]/1000.,j[4][2]/1000.
-            ,j[5][0],j[5][1],j[5][2],j[5][3],j[5][4],j[5][6]
+            ,j[4][0]/1000.,j[4][1]/1000./100.,j[4][2]/1000./100.
+            ,j[5][0],j[5][1],j[5][2],j[5][3],j[5][4],j[5][5]
             ,j[6][0],j[6][1],j[6][2]]
             
             
             for i in j[-1]:
                 item+=i
+            lstNorm.append(item)
+            
+        print lstNorm
                 
         for i in range(lnx):
             for j in range(lny):
                 table.setItem(j, i, QtGui.QTableWidgetItem(""))
                 txt=lstNorm[j][i]
+                print txt
                 if abs(txt)>100:
                     txt="%.0f"%txt
                 elif abs(txt)>10:
@@ -770,20 +816,44 @@ class SolveWindow(object):
             
     def solvePS2(self):
         '''расчет 2 п.с.'''
+        
     def loadFormMatSimple(self, typ='short'):
         '''загрузка формы и материалов'''
-        lstForm=self.wnd.getLstFormSimple()
+        
+#    sol.loadForm(lstForm)
+#
+#    conc=rcMaterial.Concrete()
+#    conc.norme=52
+#    conc.b=25
+#    conc.initProperties()
+#    conc.functDia(typDia=3, typPS=1,typTime='short', typR=3, typRT=1)
+#    rein=rcMaterial.Reinforced()
+#    rein.norme=52
+#    rein.typ='A'
+#    rein.a=400
+#    rein.initProperties()
+#    rein.functDia(typPS=1)
+#    lstMat=[conc, rein]
+#
+#    sol.loadMat(lstMat)
+#
+#    sol.formGen()
+
+
+        lstForm=self.getLstFormSimple()
 
         if typ=='short':
-            lstMat=self.wnd.initMatSimple()[0]
+            lstMat=self.initMatSimple()[0]
         else:
-            lstMat=self.wnd.initMatSimple()[1]
+            lstMat=self.initMatSimple()[1]
 
         if type(lstForm)!=type('Error') and type(lstMat)!=type('Error'): 
             print u'load'
             solve=rcSolves.Solves()
             solve.loadForm(lstForm)
-            solve.loadLstMat(lstMat)
+            print lstForm
+            solve.loadMat(lstMat)
+            print lstMat
             solve.formGen()
             self.solve=solve
             return True

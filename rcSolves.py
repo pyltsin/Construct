@@ -580,7 +580,7 @@ class Solves(object):
         '''поиск через DD'''
         nFact,mxFact,myFact=nmxmy #фиксируем усилия
         if nFact==0 and mxFact==0 and myFact==0:
-            return nmxmy, 0, 0, [0,0,0],  [0,0,0], [], [], []
+            return nmxmy, 0, 0, [0,0,0],  [0,0,0], [0,0,0,0,0,0], [0,0,0], [[0,0,0,0],[0,0,0,0]]
             
 
         e0,rx,ry=0,0,0#устанавливаем начальные деофрмации
@@ -605,7 +605,7 @@ class Solves(object):
             n+=1
 #            print n
             if n>nn:
-                return 'error n'
+                return self.findKult7(nmxmy, nn, crit, typ='crit')
             ee=self.e0rxry2e(e0rxryTemp[0],e0rxryTemp[1],e0rxryTemp[2])
             dd=self.e2d(ee)
             e0rxry=self.matrSolve(nmxmy,dd[0])
@@ -645,16 +645,26 @@ class Solves(object):
                 k1=klst[0]#получаем коэффициент k - насколько надо разделить деформации, чтобы получить предельные 
                 if k1==0:
                     return 'error 3'
-                    
-                ee=nmxmyTemp[4]
-                dd=self.e2d(ee)[0]
                 
+#                ee=self.e0rxry2e(e0rxryTemp[0]*0.8,e0rxryTemp[1]*0.8,e0rxryTemp[2]*0.8)
+#                dd=self.e2d(ee)[0]
+#                print 'dd1', dd
+#                print e0rxryTemp[0:3]
+#                print nmxmyTemp[0:3]
+                
+                dd=self.nmxmy2e0rxry([nmxmyTemp[0],nmxmyTemp[1],nmxmyTemp[2]], nn*20, crit)[5]
+#                print dd2
+#                print 'dd2', dd2[5]
+#                print dd2[0:3]
+#                print self.e0rxry2nmxmy(dd2[0:3])[0:3]   
+#                
+#                print 'del', ddel[0]
                 e0,rx,ry=0,0,0#устанавливаем начальные деофрмации
                 ee=self.e0rxry2e(e0,rx,ry) #расчитываем матрицу деформаций
         
                 ddel=self.e2d(ee) #определяем начальные dd
   
-
+                print ddel[0]
                 dddel=[dd[0]/ddel[0][0],dd[3]/ddel[0][3],dd[5]/ddel[0][5]]
                 
                 kLenN='-'
@@ -1146,7 +1156,7 @@ if __name__ == "__main__":
 
 #    nmxmy=[-100000,0.0,0.0]
 #    nmxmy=[-200000.,600000.,1000000.] #- [-200000,600000,1000000] - граничное ошибка 
-    nmxmy=[21.,211,211.0]
+    nmxmy=[0.,0,211.0]
     
 #    nmxmy=[-22305*2,1110*2,223000*2]
 #    nmxmy=[-100,500,2500]
