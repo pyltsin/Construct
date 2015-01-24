@@ -689,8 +689,8 @@ class SolveWindow(object):
         lstNLong=lstNLong
         lstNLong=None
         
-        crit=self.doubleBoxTol.value()
-        nn=self.boxNum.value()
+        crit=self.wnd.doubleBoxTol.value()
+        nn=self.wnd.boxNum.value()
         
         outShort=[]
         outLong=[]
@@ -780,6 +780,7 @@ class SolveWindow(object):
             lstMat=self.wnd.initMatSimple()[1]
 
         if type(lstForm)!=type('Error') and type(lstMat)!=type('Error'): 
+            print u'load'
             solve=rcSolves.Solves()
             solve.loadForm(lstForm)
             solve.loadLstMat(lstMat)
