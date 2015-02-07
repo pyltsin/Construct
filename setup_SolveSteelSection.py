@@ -18,8 +18,8 @@ if sys.platform == "win32":
     base = "Win32GUI"
 
 setup(
-        name = "SortamentSolve",
+        name = "SolveSteelSection",
         version = "0.3",
         options = {"build_exe" : {"includes" : "atexit" }},
-        executables = [Executable("D:\\python_my\\Construct\\form_solve_sort.py", base = base)])
+        executables = [Executable("D:\\python_my\\Construct\\form_SolveSteelSection.py", base = base)])
 

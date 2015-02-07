@@ -19,7 +19,7 @@ if sys.platform == "win32":
 
 setup(
         name = "Sortament",
-        version = "0.2",
+        version = "0.3",
         options = {"build_exe" : {"includes" : "atexit" }},
         executables = [Executable("D:\\python_my\\Construct\\form_sortament_list.py", base = base)])
 
