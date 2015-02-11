@@ -286,6 +286,10 @@ class MyWindow(QtGui.QWidget):
         self.tabCrLong.setEnabled(False)
         self.tabCrNorm.setEnabled(False)
 
+        self.tabResPS1.setEnabled(False)
+
+
+
 #        print 'Error:', sign
         
     def changeForm(self):

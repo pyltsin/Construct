@@ -686,8 +686,8 @@ class Solves(object):
                 kS=sum(kList)/(len(kList)*1.)
 #                print kS, kList
                 for i in range(len(kList)):
-                    if abs((kS-kList[i])/kS)>0.01:
-#                        print abs((kS-kList[i])/kS),crit
+                    if abs((kS-kList[i])/kS)>0.06:
+                        print abs((kS-kList[i])/kS),crit
                         return 'error 4'
                 if abs(k1-1)>crit:
                     return 'error 5'

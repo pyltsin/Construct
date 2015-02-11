@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1232</width>
-    <height>675</height>
+    <height>672</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -45,7 +45,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>9</number>
+       <number>5</number>
       </property>
       <widget class="QWidget" name="tabInputData">
        <attribute name="title">
@@ -1437,9 +1437,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>10</y>
+          <y>120</y>
           <width>431</width>
-          <height>511</height>
+          <height>401</height>
          </rect>
         </property>
         <row>
@@ -1507,11 +1507,31 @@
         <property name="geometry">
          <rect>
           <x>439</x>
-          <y>10</y>
+          <y>120</y>
           <width>591</width>
-          <height>501</height>
+          <height>391</height>
          </rect>
         </property>
+       </widget>
+       <widget class="QTabWidget" name="tabWidget_3">
+        <property name="geometry">
+         <rect>
+          <x>60</x>
+          <y>20</y>
+          <width>691</width>
+          <height>80</height>
+         </rect>
+        </property>
+        <widget class="QWidget" name="tab_6">
+         <attribute name="title">
+          <string>Tab 1</string>
+         </attribute>
+        </widget>
+        <widget class="QWidget" name="tab_7">
+         <attribute name="title">
+          <string>Tab 2</string>
+         </attribute>
+        </widget>
        </widget>
       </widget>
       <widget class="QWidget" name="tabCrLong">
@@ -1899,357 +1919,360 @@
         </column>
        </widget>
       </widget>
-      <widget class="QWidget" name="tabResPS1Short">
+      <widget class="QWidget" name="tabResPS1">
        <attribute name="title">
-        <string>Рез. кратк. усилия</string>
+        <string>Рез. 1 п.с.</string>
        </attribute>
-       <widget class="QTableWidget" name="tableResPS1Short">
+       <widget class="QTabWidget" name="tabWidget_2">
         <property name="geometry">
          <rect>
-          <x>1</x>
+          <x>0</x>
           <y>0</y>
-          <width>651</width>
-          <height>511</height>
+          <width>1031</width>
+          <height>521</height>
          </rect>
         </property>
-        <row>
-         <property name="text">
-          <string>1</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>2</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>3</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>4</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>5</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>6</string>
-         </property>
-        </row>
-        <column>
-         <property name="text">
-          <string>N, т</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Mx, т*м</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>My, т*м</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>N/Ncrx</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>N/Ncry</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>nux</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>nuy</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Mx, т*м</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>My, т*м</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>ex, м</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>ey, м</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>phiLx</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>phiLy</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>deltaEx</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>deltaEy</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Dx, т*м*м</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Dy, т*м*м</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Ncrx, т</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Ncry, т</string>
-         </property>
-        </column>
-       </widget>
-       <widget class="MatplotlibWidget" name="mplResPS1Short">
-        <property name="geometry">
-         <rect>
-          <x>660</x>
-          <y>0</y>
-          <width>371</width>
-          <height>311</height>
-         </rect>
+        <property name="currentIndex">
+         <number>2</number>
         </property>
-       </widget>
-       <widget class="QComboBox" name="comboBox">
-        <property name="geometry">
-         <rect>
-          <x>700</x>
-          <y>340</y>
-          <width>151</width>
-          <height>22</height>
-         </rect>
-        </property>
-        <item>
-         <property name="text">
-          <string>Деформации</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Напряжения</string>
-         </property>
-        </item>
-       </widget>
-       <widget class="QComboBox" name="comboBox_2">
-        <property name="geometry">
-         <rect>
-          <x>700</x>
-          <y>370</y>
-          <width>151</width>
-          <height>22</height>
-         </rect>
-        </property>
-        <item>
-         <property name="text">
-          <string>Предельные</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Текущие</string>
-         </property>
-        </item>
-       </widget>
-       <widget class="QPushButton" name="pushButton">
-        <property name="geometry">
-         <rect>
-          <x>700</x>
-          <y>400</y>
-          <width>75</width>
-          <height>23</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Нарисовать</string>
-        </property>
-       </widget>
-      </widget>
-      <widget class="QWidget" name="tabResPS1Long">
-       <attribute name="title">
-        <string>Рез. длит. усилия</string>
-       </attribute>
-       <widget class="MatplotlibWidget" name="mplResPS1Long">
-        <property name="geometry">
-         <rect>
-          <x>660</x>
-          <y>10</y>
-          <width>371</width>
-          <height>311</height>
-         </rect>
-        </property>
-       </widget>
-       <widget class="QTableWidget" name="tableResPS1Long">
-        <property name="geometry">
-         <rect>
-          <x>1</x>
-          <y>10</y>
-          <width>651</width>
-          <height>511</height>
-         </rect>
-        </property>
-        <row>
-         <property name="text">
-          <string>1</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>2</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>3</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>4</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>5</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>6</string>
-         </property>
-        </row>
-        <column>
-         <property name="text">
-          <string>N, т</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Mx, т*м</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>My, т*м</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>N/Ncrx</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>N/Ncry</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>nux</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>nuy</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Mx, т*м</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>My, т*м</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>ex, м</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>ey, м</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>phiLx</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>phiLy</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>deltaEx</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>deltaEy</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Dx, т*м*м</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Dy, т*м*м</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Ncrx, т</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Ncry, т</string>
-         </property>
-        </column>
+        <widget class="QWidget" name="tab_3">
+         <attribute name="title">
+          <string>Предельные кратк.</string>
+         </attribute>
+         <widget class="QTableWidget" name="tableResPS1Short">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>10</y>
+            <width>641</width>
+            <height>461</height>
+           </rect>
+          </property>
+          <row>
+           <property name="text">
+            <string>1</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>2</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>3</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>4</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>5</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>6</string>
+           </property>
+          </row>
+          <column>
+           <property name="text">
+            <string>N, т</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Mx, т*м</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>My, т*м</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>N/Ncrx</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>N/Ncry</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>nux</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>nuy</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Mx, т*м</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>My, т*м</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>ex, м</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>ey, м</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>phiLx</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>phiLy</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>deltaEx</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>deltaEy</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Dx, т*м*м</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Dy, т*м*м</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Ncrx, т</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Ncry, т</string>
+           </property>
+          </column>
+         </widget>
+         <widget class="MatplotlibWidget" name="mplResPS1Short">
+          <property name="geometry">
+           <rect>
+            <x>650</x>
+            <y>0</y>
+            <width>371</width>
+            <height>311</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="comboBox">
+          <property name="geometry">
+           <rect>
+            <x>670</x>
+            <y>320</y>
+            <width>151</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>Деформации</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Напряжения</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QPushButton" name="pushButton">
+          <property name="geometry">
+           <rect>
+            <x>670</x>
+            <y>360</y>
+            <width>75</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Нарисовать</string>
+          </property>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="tab_4">
+         <attribute name="title">
+          <string>Текущие кратк.</string>
+         </attribute>
+        </widget>
+        <widget class="QWidget" name="tab_5">
+         <attribute name="title">
+          <string>Пред. длит.</string>
+         </attribute>
+         <widget class="MatplotlibWidget" name="mplResPS1Long">
+          <property name="geometry">
+           <rect>
+            <x>660</x>
+            <y>0</y>
+            <width>371</width>
+            <height>311</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QTableWidget" name="tableResPS1Long">
+          <property name="geometry">
+           <rect>
+            <x>1</x>
+            <y>0</y>
+            <width>651</width>
+            <height>511</height>
+           </rect>
+          </property>
+          <row>
+           <property name="text">
+            <string>1</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>2</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>3</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>4</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>5</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>6</string>
+           </property>
+          </row>
+          <column>
+           <property name="text">
+            <string>N, т</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Mx, т*м</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>My, т*м</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>N/Ncrx</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>N/Ncry</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>nux</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>nuy</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Mx, т*м</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>My, т*м</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>ex, м</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>ey, м</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>phiLx</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>phiLy</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>deltaEx</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>deltaEy</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Dx, т*м*м</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Dy, т*м*м</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Ncrx, т</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Ncry, т</string>
+           </property>
+          </column>
+         </widget>
+        </widget>
        </widget>
       </widget>
       <widget class="QWidget" name="tabCrNorm">
