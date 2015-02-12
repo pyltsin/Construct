@@ -103,6 +103,8 @@ class MyWindow(QtGui.QWidget):
         self.boxCodeConc.currentIndexChanged.connect(self.changed)
         self.boxCodeRein.currentIndexChanged.connect(self.changed)
 
+        self.spinBoxPhi.valueChanged.connect(self.changed)
+
 
         self.doubleBoxYbi.valueChanged.connect(self.changed)
         self.doubleBoxYsi.valueChanged.connect(self.changed)
@@ -112,7 +114,27 @@ class MyWindow(QtGui.QWidget):
         self.tableLoadPS1.itemChanged.connect(self.changed)
         self.tableLoadPS2.itemChanged.connect(self.changed)
 
+#связываем изменение в пункте расчета
+        self.boxPS1ShortChar.currentIndexChanged.connect(self.changed)
+        self.boxPS1Short.currentIndexChanged.connect(self.changed)
+        self.boxPS1ShortDia.currentIndexChanged.connect(self.changed)
+        self.boxPS1ShortRt.currentIndexChanged.connect(self.changed)
+        
+        self.boxPS1LongChar.currentIndexChanged.connect(self.changed)
+        self.boxPS1Long.currentIndexChanged.connect(self.changed)
+        self.boxPS1LongDia.currentIndexChanged.connect(self.changed)
+        self.boxPS1LongRt.currentIndexChanged.connect(self.changed)
 
+
+        self.doubleBoxTol.valueChanged.connect(self.changed)
+        self.boxNum.valueChanged.connect(self.changed)
+        self.boxStatOpr.currentIndexChanged.connect(self.changed)
+
+        self.doubleBoxLx.valueChanged.connect(self.changed)
+        self.doubleBoxLy.valueChanged.connect(self.changed)
+        self.doubleBoxL.valueChanged.connect(self.changed)
+
+        
 #кнопка расчета
         self.buttonSolve.clicked.connect(self.solve)
         
@@ -122,6 +144,12 @@ class MyWindow(QtGui.QWidget):
         self.buttonGrafReinShort.clicked.connect(self.grafReinShort)
         self.buttonGrafReinLong.clicked.connect(self.grafReinLong)
     
+#временная
+        self.pushButton_2.clicked.connect(self.reset)
+    def reset(self):
+        self.labelComment.setText(u'Данные cброшены')
+        self.labelComment.setStyleSheet("background: green")
+
     def grafConcreteShort(self):
         '''график бетона'''
         slv=SolveWindow(self)
@@ -186,6 +214,8 @@ class MyWindow(QtGui.QWidget):
             
             if bol==False:
                 return False
+            
+            self.tabResPS1.setEnabled(True)
             
         if self.checkBoxPS2.isChecked()==True:
             bol=slv.solvePS2()
@@ -278,12 +308,14 @@ class MyWindow(QtGui.QWidget):
         self.labelComment.setText(u'Данные изменились')
         self.labelComment.setStyleSheet("background: yellow")
 
-        self.tabDShort.setEnabled(False)
-        self.tabDLong.setEnabled(False)
-
-
-        self.tabCrShort.setEnabled(False)
-        self.tabCrLong.setEnabled(False)
+#        self.tabDShort.setEnabled(False)
+#        self.tabDLong.setEnabled(False)
+#
+#
+#        self.tabCrShort.setEnabled(False)
+        self.tabCr1PS.setEnabled(False)
+        
+        
         self.tabCrNorm.setEnabled(False)
 
         self.tabResPS1.setEnabled(False)
@@ -679,7 +711,7 @@ class SolveWindow(object):
             typTimeShort='long'
         typDiaShort=3-self.wnd.boxPS1ShortDia.currentIndex() 
         typRTShort=self.wnd.boxPS1ShortRt.currentIndex()+1
-        lstMatShort[0].functDia(typDia=typDiaShort, typPS=typPSShort, typTime=typTimeShort, typR=2, typRT=typRTShort)
+        lstMatShort[0].functDia(typDia=typDiaShort, typPS=typPSShort, typTime=typTimeShort, typR=3, typRT=typRTShort)
         lstMatShort[1].functDia(typPS=typPSShort)
 
        
@@ -693,7 +725,7 @@ class SolveWindow(object):
         typDiaLong=3-self.wnd.boxPS1LongDia.currentIndex() 
         typRTLong=self.wnd.boxPS1LongRt.currentIndex()+1
 
-        lstMatLong[0].functDia(typDia=typDiaLong, typPS=typPSLong, typTime=typTimeLong, typR=2, typRT=typRTLong)
+        lstMatLong[0].functDia(typDia=typDiaLong, typPS=typPSLong, typTime=typTimeLong, typR=3, typRT=typRTLong)
         lstMatLong[1].functDia(typPS=typPSLong)
 
         
@@ -891,8 +923,8 @@ class SolveWindow(object):
 #        решаем задачу D
         lstDShort=self.solve.nuD(lstShort, typStat, lx, ly, l, typD)
         lstDLong=self.solve.nuD(lstLong, typStat, lx, ly, l, typD)
-        self.wnd.tabDShort.setEnabled(True)
-        self.wnd.tabDLong.setEnabled(True)
+#        self.wnd.tabDShort.setEnabled(True)
+#        self.wnd.tabDLong.setEnabled(True)
         if lstDShort[-1]==False or  lstDLong[-1]==False:
             self.error(u'Увеличить сечение: N>Ncr')
             self.loadTableMatPlot(self.wnd.tableLoadPS1DShort, self.wnd.mplCrDShort, lstDShort[0], range(len(lstDShort[0])),[] , lstShort, range(len(lstDShort[0][0])), False)
@@ -926,8 +958,8 @@ class SolveWindow(object):
         hull=self.hull(matrix[0])
 #        print hull
         mtr=np.array(matrix[0])
-        self.wnd.tabCrShort.setEnabled(True)
-        self.wnd.tabCrLong.setEnabled(True)
+        self.wnd.tabCr1PS.setEnabled(True)
+#        self.wnd.tabCrLong.setEnabled(True)
 
         self.loadTableMatPlot(self.wnd.tableLoadPS1Short, self.wnd.mplCrShort, hull[0], hull[1], hull[2], mtr, [0,1,2,3,4,5])        
         self.loadTableMatPlot(self.wnd.tableLoadPS1Long, self.wnd.mplCrLong, hull[0], hull[1], hull[2], mtr, [3,4,5,3,4,5])        
