@@ -738,7 +738,7 @@ class SolveWindow(object):
         lstNShort=self.getTableLoadlstItem(self.wnd.tableLoadPS1DShort, [0,1,2])
         lstNLong=self.getTableLoadlstItem(self.wnd.tableLoadPS1DLong, [0,1,2])
         
-        print lstNShort
+#        print lstNShort
         
         lstNS=[]
         for i in lstNShort:
@@ -751,7 +751,7 @@ class SolveWindow(object):
         lstNShort=lstNS
         lstNS=None
  
-        print lstNShort
+#        print lstNShort
 
        
         lstNLong=lstNL
@@ -772,7 +772,7 @@ class SolveWindow(object):
 #считае
         self.loadFormMatSimple()
         for i in lstNShort:
-            print 'i, nn, crit', i,nn, crit
+#            print 'i, nn, crit', i,nn, crit
             outShort.append(self.solve.findKult9(i,nn, crit))
         
         self.loadFormMatSimple(typ='long')
@@ -790,8 +790,8 @@ class SolveWindow(object):
                 self.error(i)
                 return False
 #пишем все это
-        print 'outS',outShort
-        print 'outL',outLong
+#        print 'outS',outShort
+#        print 'outL',outLong
         
         self.loadTableRes(self.wnd.tableResPS1Short, outShort)
         self.loadTableRes(self.wnd.tableResPS1Long, outLong)
@@ -832,13 +832,13 @@ class SolveWindow(object):
                 item+=i
             lstNorm.append(item)
             
-        print lstNorm
+#        print lstNorm
                 
         for i in range(lnx):
             for j in range(lny):
                 table.setItem(j, i, QtGui.QTableWidgetItem(""))
                 txt=lstNorm[j][i]
-                print txt
+#                print txt
                 if abs(txt)>100:
                     txt="%.0f"%txt
                 elif abs(txt)>10:
@@ -884,12 +884,12 @@ class SolveWindow(object):
             lstMat=self.initMatSimple()[1]
 
         if type(lstForm)!=type('Error') and type(lstMat)!=type('Error'): 
-            print u'load'
+#            print u'load'
             solve=rcSolves.Solves()
             solve.loadForm(lstForm)
-            print lstForm
+#            print lstForm
             solve.loadMat(lstMat)
-            print lstMat
+#            print lstMat
             solve.formGen()
             self.solve=solve
             return True
