@@ -2102,7 +2102,7 @@
            </property>
           </item>
          </widget>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="buttonPlotPS1Short">
           <property name="geometry">
            <rect>
             <x>670</x>

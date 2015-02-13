@@ -1110,7 +1110,7 @@ class Solves(object):
                     
 if __name__ == "__main__":
     lstForm=[
-    ['Rectangle',[[0.,0.],[50.,50.]],[2.,2.],0,1,[0,0,0]],
+    ['Rectangle',[[0.,0.],[50.,50.]],[30.,30.],0,1,[0,0,0]],
     ['Circle',[5,5,2],[],1,1,[0,0,0]],
     ['Circle',[45,45,2],[],1,1,[0,0,0]],
     ['Circle',[45,5,2],[],1,1,[0,0,0]],
@@ -1156,7 +1156,7 @@ if __name__ == "__main__":
 
 #    nmxmy=[-100000,0.0,0.0]
 #    nmxmy=[-200000.,600000.,1000000.] #- [-200000,600000,1000000] - граничное ошибка 
-    nmxmy=[0.,0,211.0]
+    nmxmy=[-0.1,2,2]
     
 #    nmxmy=[-22305*2,1110*2,223000*2]
 #    nmxmy=[-100,500,2500]
@@ -1183,29 +1183,29 @@ if __name__ == "__main__":
 #    
     print 'kult', kk1
 #    print 'kult', kk2
-#    e0rxry=kk[3]
-#    out=sol.e0rxry2nmxmy(e0rxry)
+    e0rxry=kk1[3]
+    out=sol.e0rxry2nmxmy(e0rxry)
 #    print out[0], out[1] , out[2]   
 #
 #    '''проверка скорости ключевой функции'''
 #    
-#    from mpl_toolkits.mplot3d import Axes3D
-#    from matplotlib import cm
-#    from matplotlib.ticker import LinearLocator, FormatStrFormatter
-#    import matplotlib.pyplot as plt
-#    from matplotlib.mlab import griddata    
-#    fig = plt.figure()
-#    ax = fig.gca(projection='3d')
-#    X = sol.elemMatr[0][0:900]
-#    Y = sol.elemMatr[1][0:900]
-#    Z=out[3][0:900]
-##    surf = ax.plot_surface(X, Y, Z)
-#    surf=ax.plot_trisurf(X, Y, Z, cmap=cm.terrain, linewidth=0.1)
-##    Xtr=np.reshape(X, (30, 30))
-##    Ytr=np.reshape(Y, (30, 30))
-##    Ztr=np.reshape(Z, (30, 30))
-##
-##    surf = ax.plot_surface(Xtr, Ytr, Ztr, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+    from mpl_toolkits.mplot3d import Axes3D
+    from matplotlib import cm
+    from matplotlib.ticker import LinearLocator, FormatStrFormatter
+    import matplotlib.pyplot as plt
+    from matplotlib.mlab import griddata    
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    X = sol.elemMatr[0][0:900]
+    Y = sol.elemMatr[1][0:900]
+    Z=out[3][0:900]
+#    surf = ax.plot_surface(X, Y, Z)
+    surf=ax.plot_trisurf(X, Y, Z, cmap=cm.terrain, linewidth=0.1)
+#    Xtr=np.reshape(X, (30, 30))
+#    Ytr=np.reshape(Y, (30, 30))
+#    Ztr=np.reshape(Z, (30, 30))
+#
+#    surf = ax.plot_surface(Xtr, Ytr, Ztr, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
 ##    ax.set_zlim(-200, 200)
 #    
 #    ax.zaxis.set_major_locator(LinearLocator(20))
@@ -1214,7 +1214,7 @@ if __name__ == "__main__":
 #    fig.colorbar(surf)
 ##    CS = plt.contour(X, Y, Z, 15, linewidths=0.5, colors='k')
 ##    
-#    plt.show()    
+    plt.show()    
 ##    
 ##
 ##    import matplotlib.tri as tri
