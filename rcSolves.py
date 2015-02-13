@@ -1125,7 +1125,7 @@ if __name__ == "__main__":
     conc.norme=52
     conc.b=25
     conc.initProperties()
-    conc.functDia(typDia=3, typPS=1,typTime='short', typR=3, typRT=1)
+    conc.functDia(typDia=3, typPS=1,typTime='short', typR=3, typRT=2)
 #    print conc.x,conc.y 
     rein=rcMaterial.Reinforced()
     rein.norme=52
@@ -1156,7 +1156,7 @@ if __name__ == "__main__":
 
 #    nmxmy=[-100000,0.0,0.0]
 #    nmxmy=[-200000.,600000.,1000000.] #- [-200000,600000,1000000] - граничное ошибка 
-    nmxmy=[-0.1,2,2]
+    nmxmy=[0,0,2]
     
 #    nmxmy=[-22305*2,1110*2,223000*2]
 #    nmxmy=[-100,500,2500]
