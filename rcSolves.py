@@ -79,12 +79,16 @@ class Solves(object):
         
         x,y=self.centerMass()
         
+#        print self.elemMatrS[0]
+        
         self.elemMatrS[0]-=x
+    
         self.elemMatrS[1]-=y
 
         self.elemMatrC[0]-=x
         self.elemMatrC[1]-=y
 
+        print len(matrC), len(matrS)
         self.elemMatr=np.concatenate((matrC,matrS) ,axis=1)
 
         
@@ -653,7 +657,7 @@ class Solves(object):
 #                print nmxmyTemp[0:3]
                 
                 dd=self.nmxmy2e0rxry([nmxmyTemp[0],nmxmyTemp[1],nmxmyTemp[2]], nn*20, crit)[5]
-#                print dd2
+                print self.nmxmy2e0rxry([nmxmyTemp[0],nmxmyTemp[1],nmxmyTemp[2]], nn*20, crit)
 #                print 'dd2', dd2[5]
 #                print dd2[0:3]
 #                print self.e0rxry2nmxmy(dd2[0:3])[0:3]   
@@ -664,7 +668,7 @@ class Solves(object):
         
                 ddel=self.e2d(ee) #определяем начальные dd
   
-                print ddel[0]
+                print ddel[0], dd
                 dddel=[dd[0]/ddel[0][0],dd[3]/ddel[0][3],dd[5]/ddel[0][5]]
                 
                 kLenN='-'

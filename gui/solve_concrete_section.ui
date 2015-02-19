@@ -1931,7 +1931,7 @@
          </rect>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="tab_3">
          <attribute name="title">
@@ -1942,7 +1942,7 @@
            <rect>
             <x>0</x>
             <y>10</y>
-            <width>641</width>
+            <width>301</width>
             <height>471</height>
            </rect>
           </property>
@@ -2075,18 +2075,18 @@
          <widget class="MatplotlibWidget" name="mplResPS1Short">
           <property name="geometry">
            <rect>
-            <x>650</x>
+            <x>330</x>
             <y>0</y>
-            <width>371</width>
-            <height>311</height>
+            <width>691</width>
+            <height>461</height>
            </rect>
           </property>
          </widget>
-         <widget class="QComboBox" name="comboBox">
+         <widget class="QComboBox" name="comboBoxShort">
           <property name="geometry">
            <rect>
-            <x>670</x>
-            <y>320</y>
+            <x>650</x>
+            <y>460</y>
             <width>151</width>
             <height>22</height>
            </rect>
@@ -2105,8 +2105,8 @@
          <widget class="QPushButton" name="buttonPlotPS1Short">
           <property name="geometry">
            <rect>
-            <x>670</x>
-            <y>360</y>
+            <x>530</x>
+            <y>460</y>
             <width>75</width>
             <height>23</height>
            </rect>
@@ -2128,10 +2128,10 @@
          <widget class="MatplotlibWidget" name="mplResPS1Long">
           <property name="geometry">
            <rect>
-            <x>660</x>
+            <x>350</x>
             <y>0</y>
-            <width>371</width>
-            <height>311</height>
+            <width>681</width>
+            <height>451</height>
            </rect>
           </property>
          </widget>
@@ -2140,8 +2140,8 @@
            <rect>
             <x>1</x>
             <y>0</y>
-            <width>651</width>
-            <height>491</height>
+            <width>341</width>
+            <height>481</height>
            </rect>
           </property>
           <row>
@@ -2269,6 +2269,39 @@
             <string>Ncry, т</string>
            </property>
           </column>
+         </widget>
+         <widget class="QComboBox" name="comboBoxLong">
+          <property name="geometry">
+           <rect>
+            <x>610</x>
+            <y>460</y>
+            <width>151</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>Деформации</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Напряжения</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QPushButton" name="buttonPlotPS1Long">
+          <property name="geometry">
+           <rect>
+            <x>490</x>
+            <y>460</y>
+            <width>75</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Нарисовать</string>
+          </property>
          </widget>
         </widget>
         <widget class="QWidget" name="tab_8">

@@ -11,13 +11,20 @@ import win32com.client
 import os
 import sys
 import rcMaterial
+from key_press_event import copy_past
+
+
 import matplotlib
 import matplotlib.path as mpath
 import matplotlib.patches as mpatches
-from key_press_event import copy_past
-
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+
+from matplotlib import cm
+from matplotlib.ticker import LinearLocator, FormatStrFormatter
+from matplotlib.mlab import griddata    
+
+
 
 import rcSolves
 
@@ -146,6 +153,97 @@ class MyWindow(QtGui.QWidget):
     
 #временная
         self.pushButton_2.clicked.connect(self.reset)
+#графики
+        self.buttonPlotPS1Short.clicked.connect(self.diaShortPlot)
+        self.buttonPlotPS1Long.clicked.connect(self.diaLongPlot)
+
+    def diaShortPlot(self):
+        #определяем что печатать - то что выделено
+        table=self.tableResPS1Short
+        flagBox=self.comboBoxShort
+        canPlot=self.mplResPS1Short
+        
+        self.diaPlot(table, flagBox, canPlot)
+
+    def diaLongPlot(self):
+        #определяем что печатать - то что выделено
+        table=self.tableResPS1Long
+        flagBox=self.comboBoxLong
+        canPlot=self.mplResPS1Long
+        
+        self.diaPlot(table, flagBox, canPlot)
+    
+
+    
+    def diaPlot(self, table, flagBox, canPlot):
+        flag=flagBox.currentIndex()
+        curRow=table.currentRow() 
+        if curRow==-1:
+            curRow=0
+            
+        e0=float(table.item(curRow, 5).text())
+        rx=float(table.item(curRow, 6).text())
+        ry=float(table.item(curRow, 7).text())
+
+        slv=SolveWindow(self)
+        
+        bol=slv.loadFormMatSimple()
+        if bol==False:
+            return False
+        
+        if flag==0:
+            z=slv.solve.e0rxry2e(e0, rx, ry)
+        if flag==1:
+            e=slv.solve.e0rxry2e(e0, rx, ry)
+            z=slv.solve.e2sigma4(e)
+            
+        matrX=[]
+        matrY=[]
+        matrZ=[]
+        for i in range(len(slv.solve.elemMatrC[0])):
+            if i==0:
+                b=abs(slv.solve.elemMatrC[0][i+1]-slv.solve.elemMatrC[0][i])
+                h=slv.solve.elemMatrC[3][i]/b
+            elif i==len(slv.solve.elemMatrC[0])-1:
+                b=abs(slv.solve.elemMatrC[0][i]-slv.solve.elemMatrC[0][i-1])
+                h=slv.solve.elemMatrC[3][i]/b
+            else:
+                b1=abs(slv.solve.elemMatrC[0][i+1]-slv.solve.elemMatrC[0][i])
+                b2=abs(slv.solve.elemMatrC[0][i]-slv.solve.elemMatrC[0][i-1])
+                b=min([b1, b2])
+                h=slv.solve.elemMatrC[3][i]/b
+            x=slv.solve.elemMatrC[0][i]
+            y=slv.solve.elemMatrC[1][i]
+            
+            matrX.append(x-b/2.*0.8)
+            matrX.append(x-b/2.*0.8)
+            matrX.append(x+b/2.*0.8)
+            matrX.append(x+b/2.*0.8)
+
+            matrY.append(y-h/2.*0.8)
+            matrY.append(y+h/2.*0.8)
+            matrY.append(y-h/2.*0.8)
+            matrY.append(y+h/2.*0.8)
+
+
+            matrZ.append(z[i])  
+            matrZ.append(z[i])            
+            matrZ.append(z[i])            
+            matrZ.append(z[i])            
+            
+        matrX=np.asarray(matrX, order='F')
+        matrY=np.asarray(matrY, order='F')
+        
+
+        matrZ=np.array(matrZ)
+
+        #мешим секцию
+        fig = canPlot.figure
+        ax=fig.gca(projection='3d')
+        ax.clear()        
+        surf=ax.plot_trisurf(matrX, matrY, matrZ, cmap=cm.terrain, linewidth=0.1)
+        canPlot.draw()
+        
     def reset(self):
         self.labelComment.setText(u'Данные cброшены')
         self.labelComment.setStyleSheet("background: green")
