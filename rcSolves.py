@@ -650,14 +650,16 @@ class Solves(object):
                 if k1==0:
                     return 'error 3'
                 
-#                ee=self.e0rxry2e(e0rxryTemp[0]*0.8,e0rxryTemp[1]*0.8,e0rxryTemp[2]*0.8)
-#                dd=self.e2d(ee)[0]
-#                print 'dd1', dd
+                ee=self.e0rxry2e(e0rxryTemp[0]*0.8,e0rxryTemp[1]*0.8,e0rxryTemp[2]*0.8)
+                dd1=self.e2d(ee)[0]
+                
+                print 'dd1', dd1
 #                print e0rxryTemp[0:3]
 #                print nmxmyTemp[0:3]
                 
                 dd=self.nmxmy2e0rxry([nmxmyTemp[0],nmxmyTemp[1],nmxmyTemp[2]], nn*20, crit)[5]
-                print self.nmxmy2e0rxry([nmxmyTemp[0],nmxmyTemp[1],nmxmyTemp[2]], nn*20, crit)
+                print 'dd2', dd
+#                print self.nmxmy2e0rxry([nmxmyTemp[0],nmxmyTemp[1],nmxmyTemp[2]], nn*20, crit)
 #                print 'dd2', dd2[5]
 #                print dd2[0:3]
 #                print self.e0rxry2nmxmy(dd2[0:3])[0:3]   
@@ -668,7 +670,7 @@ class Solves(object):
         
                 ddel=self.e2d(ee) #определяем начальные dd
   
-                print ddel[0], dd
+#                print ddel[0], dd
                 dddel=[dd[0]/ddel[0][0],dd[3]/ddel[0][3],dd[5]/ddel[0][5]]
                 
                 kLenN='-'
@@ -688,16 +690,17 @@ class Solves(object):
                     kList.append(kLenMy)
                 
                 kS=sum(kList)/(len(kList)*1.)
+                kSmin=min(kList)
 #                print kS, kList
                 for i in range(len(kList)):
                     if abs((kS-kList[i])/kS)>0.06:
-                        print abs((kS-kList[i])/kS),crit
+#                        print abs((kS-kList[i])/kS),crit
                         return 'error 4'
                 if abs(k1-1)>crit:
                     return 'error 5'
                 if k1<0.8:
                     return 'error 6'
-                return nmxmy, kS,n, e0rxryTemp[0:3],  [nTemp,mxTemp,myTemp], dd,dddel, klst[1]
+                return nmxmy, kSmin,n, e0rxryTemp[0:3],  [nTemp,mxTemp,myTemp], dd,dddel, klst[1]
 
             e0rxryTemp1=e0rxryTemp
                 
