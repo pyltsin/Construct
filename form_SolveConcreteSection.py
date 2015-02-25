@@ -236,7 +236,7 @@ class MyWindow(QtGui.QWidget):
         
 
         matrZ=np.array(matrZ)
-
+        print matrX, matrY
         #мешим секцию
         fig = canPlot.figure
         ax=fig.gca(projection='3d')
